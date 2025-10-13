@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 const LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { loading, error, isAuthenticated, type } = useAppSelector((state) => state.auth);
 
   const { 
     control, 
@@ -27,21 +27,25 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/home');
+      // if(type === 'student'){
+      //   navigate('/user/home');
+      // }
+      // if(type === 'admin'){
+      //   navigate('/admin/dashboard');
+      // }
+      navigate('/admin/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, type]);
 
   return (
     <Container size="xs" style={{ marginTop: 100 }}>
       <Card shadow="sm" p="lg">
         <Title order={2} style={{ textAlign: 'center', marginBottom: 20 }}>Login Admin</Title>
-        
         {error && (
           <Alert color="red" title="Login Gagal" mb="md">
             {error}
           </Alert>
         )}
-
         <form onSubmit={handleSubmit(onSubmit)}>
           <Controller
             name="username"

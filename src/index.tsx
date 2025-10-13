@@ -16,7 +16,9 @@ root.render(
   <React.StrictMode>
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <MantineProvider>
+        <MantineProvider theme={{
+          fontFamily: 'Helvetica Neue, sans-serif',
+        }}>
           <App />
         </MantineProvider>
       </QueryClientProvider>

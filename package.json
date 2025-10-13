@@ -7,6 +7,7 @@
     "@mantine/core": "^8.3.3",
     "@mantine/hooks": "^8.3.3",
     "@reduxjs/toolkit": "^2.9.0",
+    "@tabler/icons-react": "^3.35.0",
     "@tanstack/react-query": "^5.90.2",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -21,6 +22,8 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.3",
     "react-scripts": "5.0.1",
+    "recharts": "^3.2.1",
+    "sass": "^1.93.2",
     "web-vitals": "^2.1.4",
     "zod": "^4.1.12"
   },

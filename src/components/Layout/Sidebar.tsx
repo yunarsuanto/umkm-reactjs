@@ -1,6 +1,6 @@
 import { Box, NavLink } from '@mantine/core';
 
-const Sidebar = () => {
+const SidebarSample = () => {
   return (
     <Box style={{ width: 240, padding: '1rem', borderRight: '1px solid #e0e0e0' }}>
       <NavLink label="Home" href="/home" />
@@ -10,4 +10,4 @@ const Sidebar = () => {
   );
 };
 
-export default Sidebar;
+export default SidebarSample;

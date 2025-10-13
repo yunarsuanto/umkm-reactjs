@@ -2,7 +2,9 @@ import { Meta } from "../Meta";
 
 export interface AuthState {
   token: string | null;
+  type: string | null;
   isAuthenticated: boolean;
+  isSuperAdmin: boolean;
   loading: 'idle' | 'pending' | 'succeeded' | 'failed';
   error: string | null;
 }

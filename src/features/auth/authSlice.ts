@@ -12,7 +12,6 @@ export const loginUser = createAsyncThunk<
   async (credentials, { rejectWithValue }) => {
     try {
       const response = await login(credentials)
-      console.log('Login response:', response)
       return response
     } catch (error: any) {
       return rejectWithValue(error.response?.data?.message || 'Login Gagal')
@@ -22,7 +21,9 @@ export const loginUser = createAsyncThunk<
 
 const initialState: AuthState = {
   token: null,
+  type: null,
   isAuthenticated: false,
+  isSuperAdmin: false,
   loading: 'idle',
   error: null,
 };
@@ -48,6 +49,8 @@ const authSlice = createSlice({
         state.loading = 'succeeded';
         state.isAuthenticated = true;
         state.token = action.payload.data.access_token;
+        state.type = action.payload.data.app_type;
+        localStorage.setItem('token', action.payload.data.access_token);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = 'failed';
