@@ -8,7 +8,7 @@ import { DeletePermissionResponse } from '../types/admin/permission/DeletePermis
 export const useDeletePermissions = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
-
+  
   return useMutation<
     DeletePermissionResponse,
     ApiErrorType,
@@ -16,7 +16,7 @@ export const useDeletePermissions = () => {
   >({
     mutationFn: deletePermission,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['permissions'] });
+      queryClient.removeQueries({ queryKey: ['permissions'], exact: false });
       dispatch(closeDeleteModal());
     },
   });

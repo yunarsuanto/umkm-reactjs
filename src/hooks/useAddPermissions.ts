@@ -9,11 +9,10 @@ import { AddPermissionResponse } from '../types/admin/permission/AddPermissionTy
 export const useAddPermissions = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
-
   return useMutation<AddPermissionResponse, ApiErrorType, AddPermissionSchema>({ 
     mutationFn: addPermissions,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['permissions'] });
+      queryClient.removeQueries({ queryKey: ['permissions'], exact: false });
       dispatch(closeCreateModal());
     },
   });

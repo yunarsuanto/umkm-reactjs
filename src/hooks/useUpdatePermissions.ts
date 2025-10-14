@@ -17,7 +17,7 @@ export const useUpdatePermissions = () => {
   >({
     mutationFn: updatePermission,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['permissions'] });
+      queryClient.removeQueries({ queryKey: ['permissions'], exact: false });
       dispatch(closeUpdateModal());
     },
   });
