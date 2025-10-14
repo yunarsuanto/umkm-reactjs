@@ -5,12 +5,14 @@ import { useAppDispatch } from "../../../app/hooks";
 import { GetPermissionDataResponse } from "../../../types/admin/permission/GetPermissionTypes";
 import { openDeleteModal, openUpdateModal, setData } from "../../../features/permission/permissionSlice";
 import { GeneralPermissionDataState } from "../../../types/admin/permission/GeneralPermissionTypes";
+import PaginationControl from "../Pagination";
 
 interface TablePermissionsProps {
   data: GetPermissionDataResponse[];
+  totalPages: number;
 }
 
-const TablePermissions = ({data}: TablePermissionsProps) => {
+const TablePermissions = ({data, totalPages}: TablePermissionsProps) => {
   const dispatch = useAppDispatch()
   const handleEdit = (data: GeneralPermissionDataState) => {
     dispatch(openUpdateModal())
@@ -68,6 +70,13 @@ const TablePermissions = ({data}: TablePermissionsProps) => {
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>{rows}</Table.Tbody>
+        <Table.Tfoot>
+          <Table.Tr>
+            <Table.Td>
+              <PaginationControl total={totalPages} />
+            </Table.Td>
+          </Table.Tr>
+        </Table.Tfoot>
       </Table>
     </Table.ScrollContainer>
   );

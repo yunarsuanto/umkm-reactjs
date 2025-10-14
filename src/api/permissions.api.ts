@@ -8,11 +8,12 @@ import { AddPermissionResponse } from "../types/admin/permission/AddPermissionTy
 import { UpdatePermissionResponse } from "../types/admin/permission/UpdatePermissionTypes";
 import { DeletePermissionSchema } from "../schemas/deletePermission.schema";
 import { DeletePermissionResponse } from "../types/admin/permission/DeletePermissionTypes";
+import { Pagination } from "../types/Pagination";
 
-export const getPermissions = async (): Promise<GetPermissionResponse> => {
+export const getPermissions = async (pagination: Pagination): Promise<GetPermissionResponse> => {
   try {
     const response = await apiClient.get(
-      '/permission/permission.permission-handler/list-permission?page=1&limit=20&search'
+      `/permission/permission.permission-handler/list-permission?page=${pagination.page}&limit=${pagination.limit}&search=`
     );
     return response.data;
   } catch (error) {

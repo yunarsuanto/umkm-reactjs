@@ -8,34 +8,23 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import UpdateModalPermission from '../../components/admin/permissions/UpdateModalPermission';
 import { openCreateModal } from '../../features/permission/permissionSlice';
 import DeleteModalPermission from '../../components/admin/permissions/DeleteModalPermission';
-import { setData } from '../../features/pagination/paginationSlice';
-import { useEffect } from 'react';
 
-const AdminPermissionPage = () => {
+const AdminRolePage = () => {
+  const { data, isLoading, isError, error } = usePermissions({
+    page: 0,
+    limit: 0,
+    prev: 0,
+    next: 0,
+    total_pages: 0,
+    total_records: 0,
+  })
   const navigate = useNavigate()
-  const dispatch = useAppDispatch();
-  const limit = 2
-  const pagination = useAppSelector((state) => state.pagination);
-  const { data, isLoading, isError, error } = usePermissions(pagination)
   const { openCreate, openUpdate, openDelete } = useAppSelector((state) => state.general);
+  const dispatch = useAppDispatch();
 
   const handleOpen = () => {
     dispatch(openCreateModal())
   }
-
-  useEffect(() => {
-    if (data) {
-      dispatch(setData({
-        page: data?.pagination?.page!,
-        limit: limit,
-        prev: data?.pagination?.prev!,
-        next: data?.pagination?.next!,
-        total_pages: data?.pagination?.total_pages!,
-        total_records: data?.pagination?.total_records!,
-      }))
-    }
-  }, [data])
-
   if (isLoading) {
     return (
       <AdminLayout>
@@ -70,17 +59,17 @@ const AdminPermissionPage = () => {
       <Container fluid p={50}>
         <Grid>
           <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-            <h2>Permission</h2>
+            <h2>Role</h2>
           </Grid.Col>
         </Grid>
         <Grid p={10}>
           <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
             <Button variant="default" onClick={handleOpen}>
-              + Permission
+              + Role
             </Button>
           </Grid.Col>
           <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <TablePermissions data={data?.data ?? []} totalPages={pagination.total_pages} />
+            {/* <TablePermissions data={data?.data ?? []} /> */}
           </Grid.Col>
         </Grid>
       </Container>
@@ -88,4 +77,4 @@ const AdminPermissionPage = () => {
   );
 };
 
-export default AdminPermissionPage;
+export default AdminRolePage;

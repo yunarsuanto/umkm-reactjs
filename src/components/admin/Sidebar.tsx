@@ -11,6 +11,7 @@ import {
   IconSwitchHorizontal,
   IconLogout,
   IconChevronRight,
+  IconUserHexagon,
 } from '@tabler/icons-react';
 import classes from '../../index.module.css';
 import React from 'react';
@@ -33,9 +34,10 @@ const Sidebar = () => {
     { link: '', label: 'Security', icon: IconFingerprint },
     { link: '', label: 'SSH Keys', icon: IconKey },
     { link: '', label: 'Databases', icon: IconDatabaseImport },
-    { link: '', label: 'Authentication', icon: Icon2fa },
+    { link: '/admin/authentication', label: 'Authentication', icon: Icon2fa },
     { label: 'Settings', icon: IconSettings, links: [
       { label: 'Permission', link: '/admin/permissions', icon: IconFingerprint },
+      { label: 'Role', link: '/admin/roles', icon: IconUserHexagon },
     ]},
   ];
   const [opened, setOpened] = useState<string | null>(null);
@@ -51,6 +53,7 @@ const Sidebar = () => {
             if (hasLinks) {
               setOpened(opened === item.label ? null : item.label);
             }
+            navigate(item.link!)
           }}
         >
           <item.icon className={classes.linkIcon} stroke={1.5} />
@@ -74,8 +77,7 @@ const Sidebar = () => {
                 className={`${classes.link} ${classes.subLink}`}
                 onClick={(e) => {
                   e.preventDefault()
-                  
-                  navigate('/admin/permissions')
+                  navigate(itm.link)
                 }}
               >
                 <itm.icon className={classes.linkIcon} stroke={1.5} /> 
