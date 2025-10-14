@@ -5,7 +5,6 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import PublicHomePage from './pages/public/PublicHomePage';
 import UserHomePage from './pages/user/UserHomePage';
 import AdminPermissionPage from './pages/admin/AdminPermissionPage';
-import AdminRolePage from './pages/admin/AdminRolePage';
 
 function App() {
   return (
@@ -29,12 +28,12 @@ function App() {
           </ProtectedRoute> 
           }
         />
-        <Route path="/admin/roles" element={
+        {/* <Route path="/admin/roles" element={
           <ProtectedRoute>
             <AdminRolePage />
           </ProtectedRoute> 
           }
-        />
+        /> */}
         {/* user */}
         <Route  path="/user/home" element={
           <ProtectedRoute>

@@ -9,14 +9,17 @@ import UpdateModalPermission from '../../components/admin/permissions/UpdateModa
 import { openCreateModal } from '../../features/permission/permissionSlice';
 import DeleteModalPermission from '../../components/admin/permissions/DeleteModalPermission';
 import { setData } from '../../features/pagination/paginationSlice';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 const AdminPermissionPage = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch();
   const limit = 2
   const pagination = useAppSelector((state) => state.pagination);
-  const { data, isLoading, isError, error } = usePermissions(pagination)
+  const queryOptions = useMemo(() => ({
+    enabled: pagination.page !== 0,
+  }), [pagination.page]);
+  const { data, isLoading, isError, error } = usePermissions(pagination, queryOptions)
   const { openCreate, openUpdate, openDelete } = useAppSelector((state) => state.general);
 
   const handleOpen = () => {
@@ -24,17 +27,28 @@ const AdminPermissionPage = () => {
   }
 
   useEffect(() => {
-    if (data) {
+    dispatch(setData({
+      page: 1,
+      limit: limit,
+      prev: 0,
+      next: 0,
+      total_pages: 0,
+      total_records: 0,
+    }))
+  }, [dispatch, limit])
+
+  useEffect(() => {
+    if(data){
       dispatch(setData({
-        page: data?.pagination?.page!,
+        page: data.pagination.page,
         limit: limit,
-        prev: data?.pagination?.prev!,
-        next: data?.pagination?.next!,
-        total_pages: data?.pagination?.total_pages!,
-        total_records: data?.pagination?.total_records!,
+        prev: data.pagination.prev,
+        next: data.pagination.next,
+        total_pages: data.pagination.total_pages,
+        total_records: data.pagination.total_records,
       }))
     }
-  }, [data])
+  }, [data, dispatch, limit])
 
   if (isLoading) {
     return (

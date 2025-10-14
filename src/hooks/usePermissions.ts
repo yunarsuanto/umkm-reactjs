@@ -4,7 +4,7 @@ import { ApiErrorType } from '../types/ApiError';
 import { GetPermissionResponse } from '../types/admin/permission/GetPermissionTypes';
 import { Pagination } from "../types/Pagination";
 
-export const usePermissions = (pagination: Pagination) => {
+export const usePermissions = (pagination: Pagination, options: {enabled: boolean}) => {
   return useQuery<GetPermissionResponse, ApiErrorType>({
     queryKey: ['permissions', pagination.page, pagination.limit],
     queryFn: () => getPermissions(pagination),
@@ -12,5 +12,6 @@ export const usePermissions = (pagination: Pagination) => {
     gcTime: 1000 * 60 * 10,
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,
+    ...options,
   });
 };

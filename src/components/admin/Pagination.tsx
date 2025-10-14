@@ -1,12 +1,13 @@
-import { Center, Group, Pagination, Text } from '@mantine/core';
+import { Box, Group, Pagination, Text } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { setData } from '../../features/pagination/paginationSlice';
 
 interface PaginationControlProps {
   total: number;
+  align: CanvasTextAlign;
 }
 
-const PaginationControl = ({ total }: PaginationControlProps) => {
+const PaginationControl = ({ total, align }: PaginationControlProps) => {
   const dispatch = useAppDispatch();
   const pagination = useAppSelector((state) => state.pagination);
 
@@ -18,10 +19,9 @@ const PaginationControl = ({ total }: PaginationControlProps) => {
   };
 
   if (total <= 1) return null;
-
   return (
-    <Center mt="xl" style={{ flexDirection: 'column' }}>
-      <Group>
+    <Box mt="xl">
+      <Group justify={align}>
         <Pagination
           total={total}
           value={pagination.page}
@@ -31,10 +31,10 @@ const PaginationControl = ({ total }: PaginationControlProps) => {
           color="blue"
         />
       </Group>
-      <Text mt="sm" c="dimmed" fz="sm">
+      <Text mt="sm" c="dimmed" fz="sm" style={{textAlign: align}}>
         Halaman {pagination.page} dari {total} • Total data {pagination.total_records}
       </Text>
-    </Center>
+    </Box>
   );
 };
 

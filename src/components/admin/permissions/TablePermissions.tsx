@@ -72,8 +72,8 @@ const TablePermissions = ({data, totalPages}: TablePermissionsProps) => {
         <Table.Tbody>{rows}</Table.Tbody>
         <Table.Tfoot>
           <Table.Tr>
-            <Table.Td>
-              <PaginationControl total={totalPages} />
+            <Table.Td colSpan={3}>
+              <PaginationControl total={totalPages} align="left" />
             </Table.Td>
           </Table.Tr>
         </Table.Tfoot>
