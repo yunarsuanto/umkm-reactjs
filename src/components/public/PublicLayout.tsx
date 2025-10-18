@@ -4,13 +4,14 @@ import { Footer } from './Footer';
 
 interface PublicLayoutProps {
   children: ReactNode;
+  setMode: () => void;
 }
 
-const PublicLayout = ({ children }: PublicLayoutProps) => {
+const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
   return (
     <div>
-      <Header />
-      <main>{children}</main>
+      <Header setModeHeader={setMode} />
+        <main>{children}</main>
       <Footer />
     </div>
   );

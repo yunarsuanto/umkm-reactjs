@@ -6,11 +6,12 @@ import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { loginUser } from '../../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { setMode } from '../../features/generalSlice';
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, isAuthenticated, type } = useAppSelector((state) => state.auth);
+  const { loading, error, type } = useAppSelector((state) => state.auth);
 
   const { 
     control, 
@@ -21,21 +22,16 @@ const LoginPage = () => {
     defaultValues: { username: '', password: '' },
   });
 
-  const onSubmit = (data: LoginSchema) => {
-    dispatch(loginUser(data));
-  };
+  const onSubmit = async (data: LoginSchema) => {
+    const resultAction = await dispatch(loginUser(data));
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      // if(type === 'student'){
-      //   navigate('/user/home');
-      // }
-      // if(type === 'admin'){
-      //   navigate('/admin/dashboard');
-      // }
-      navigate('/admin/dashboard');
+    if (loginUser.fulfilled.match(resultAction)) {
+      dispatch(setMode('admin'));
+      navigate('/admin')
+    } else {
+      console.error('Login gagal:', resultAction);
     }
-  }, [isAuthenticated, navigate, type]);
+  };
 
   return (
     <Container size="xs" style={{ marginTop: 100 }}>

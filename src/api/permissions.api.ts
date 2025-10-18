@@ -9,6 +9,7 @@ import { UpdatePermissionResponse } from "../types/admin/permission/UpdatePermis
 import { DeletePermissionSchema } from "../schemas/deletePermission.schema";
 import { DeletePermissionResponse } from "../types/admin/permission/DeletePermissionTypes";
 import { Pagination } from "../types/Pagination";
+import { setMode } from "../features/generalSlice";
 
 export const getPermissions = async (pagination: Pagination): Promise<GetPermissionResponse> => {
   try {
@@ -18,6 +19,10 @@ export const getPermissions = async (pagination: Pagination): Promise<GetPermiss
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { store } from './app/store';
 import App from './App';
 import '@mantine/core/styles.css';
+import { BrowserRouter } from 'react-router-dom';
 
 const queryClient = new QueryClient();
 
@@ -19,7 +20,9 @@ root.render(
         <MantineProvider theme={{
           fontFamily: 'Helvetica Neue, sans-serif',
         }}>
-          <App />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
         </MantineProvider>
       </QueryClientProvider>
     </Provider>

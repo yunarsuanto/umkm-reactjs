@@ -28,6 +28,9 @@ import {
   IconChevronDown,
 } from '@tabler/icons-react';
 import classes from './Header.module.css';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { setMode } from '../../features/generalSlice';
 import { useNavigate } from 'react-router-dom';
 
 const mockdata = [
@@ -63,12 +66,17 @@ const mockdata = [
   },
 ];
 
-export function Header() {
+interface HeaderProps {
+  setModeHeader: () => void;
+}
+
+export function Header({ setModeHeader } : HeaderProps) {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
+  const {token} = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
-
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">
@@ -143,10 +151,22 @@ export function Header() {
               Academy
             </Button>
           </Group>
-          <Group visibleFrom="sm">
-            <Button variant="default" onClick={() => navigate('login') }>Log in</Button>
-            <Button>Sign up</Button>
-          </Group>
+          {token ? (
+            <Group visibleFrom="sm">
+              <Button variant="default" onClick={() => {
+                dispatch(setMode('admin'))
+                navigate('/admin')
+              }}>Admin</Button>
+            </Group>
+          ) : (
+            <Group visibleFrom="sm">
+              <Button variant="default" onClick={() => {
+                setModeHeader() 
+                navigate('/login')
+              }}>Log in</Button>
+              <Button>Sign up</Button>
+            </Group>
+          )}
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
         </Group>
       </header>
@@ -183,10 +203,22 @@ export function Header() {
             Academy
           </Button>
           <Divider my="sm" />
-          <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default" onClick={() => navigate('/login')}>Log in</Button>
-            <Button>Sign up</Button>
-          </Group>
+          {token ? (
+            <Group justify="center" grow pb="xl" px="md">
+              <Button variant="default" onClick={() => {
+                dispatch(setMode('admin'))
+                navigate('/admin')
+              }}>Admin</Button>
+            </Group>
+          ) : (
+            <Group justify="center" grow pb="xl" px="md">
+              <Button variant="default" onClick={() => {
+                setModeHeader() 
+                navigate('/login')
+              }}>Log in</Button>
+              <Button>Sign up</Button>
+            </Group>
+          )}
         </ScrollArea>
       </Drawer>
     </Box>

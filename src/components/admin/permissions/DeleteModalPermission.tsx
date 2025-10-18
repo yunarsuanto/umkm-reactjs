@@ -9,7 +9,7 @@ interface DeleteModalPermissionProps {
 
 const DeleteModalPermission = ({ open }: DeleteModalPermissionProps) => {
   const dispatch = useAppDispatch();
-  const { selectedPermission } = useAppSelector((state) => state.general);
+  const { selectedPermission } = useAppSelector((state) => state.permission);
   const { mutate, isPending, isError, error } = useDeletePermissions();
 
   const handleClose = () => {

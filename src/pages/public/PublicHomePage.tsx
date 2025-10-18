@@ -1,9 +1,13 @@
 import { Container } from '@mantine/core';
 import PublicLayout from '../../components/public/PublicLayout';
 
-const PublicHomePage = () => {
+interface PublicHomePageProps {
+  setMode: () => void
+}
+
+const PublicHomePage = ({setMode} : PublicHomePageProps) => {
   return (
-    <PublicLayout>
+    <PublicLayout setMode={setMode}>
       <Container>
         <h1>Public Home Page</h1>
         <p>This is the content of the public home page.</p>

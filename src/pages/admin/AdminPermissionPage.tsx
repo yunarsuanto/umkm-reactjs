@@ -20,7 +20,7 @@ const AdminPermissionPage = () => {
     enabled: pagination.page !== 0,
   }), [pagination.page]);
   const { data, isLoading, isError, error } = usePermissions(pagination, queryOptions)
-  const { openCreate, openUpdate, openDelete } = useAppSelector((state) => state.general);
+  const { openCreate, openUpdate, openDelete } = useAppSelector((state) => state.permission);
 
   const handleOpen = () => {
     dispatch(openCreateModal())
@@ -49,33 +49,39 @@ const AdminPermissionPage = () => {
       }))
     }
   }, [data, dispatch, limit])
+  
+  useEffect(() => {
+    console.log('----- isError')
+    console.log(isError)
+    console.log('----- isError')
+  }, [isError])
 
-  if (isLoading) {
-    return (
-      <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Loader size="lg" color="blue" />
-          <Text mt="md" c="dimmed">
-            Memuat data izin...
-          </Text>
-        </Center>
-      </AdminLayout>
-    );
-  }
-  if (isError) {
-    if(error.status === 401){
-      navigate('/login')
-    }
-    return (
-      <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Text c="red" fw={500}>
-            Gagal memuat data: {error?.message || 'Terjadi kesalahan tak terduga'}
-          </Text>
-        </Center>
-      </AdminLayout>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <AdminLayout>
+  //       <Center style={{ height: '80vh', flexDirection: 'column' }}>
+  //         <Loader size="lg" color="blue" />
+  //         <Text mt="md" c="dimmed">
+  //           Memuat data izin...
+  //         </Text>
+  //       </Center>
+  //     </AdminLayout>
+  //   );
+  // }
+  // if (isError) {
+  //   if(error.status === 401){
+  //     navigate('/login')
+  //   }
+  //   return (
+  //     <AdminLayout>
+  //       <Center style={{ height: '80vh', flexDirection: 'column' }}>
+  //         <Text c="red" fw={500}>
+  //           Gagal memuat data: {error?.message || 'Terjadi kesalahan tak terduga'}
+  //         </Text>
+  //       </Center>
+  //     </AdminLayout>
+  //   );
+  // }
   return (
     <AdminLayout>
       <AddModalPermission open={openCreate} />

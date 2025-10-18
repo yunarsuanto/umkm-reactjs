@@ -13,7 +13,7 @@ interface UpdateModalPermissionProps {
 
 const UpdateModalPermission = ({ open }: UpdateModalPermissionProps) => {
   const dispatch = useAppDispatch();
-  const { selectedPermission } = useAppSelector((state) => state.general);
+  const { selectedPermission } = useAppSelector((state) => state.permission);
   const { mutate, isPending, isError, error } = useUpdatePermissions();
   const {
     register,
