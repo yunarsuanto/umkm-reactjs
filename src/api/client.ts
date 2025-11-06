@@ -42,7 +42,8 @@ apiClient.interceptors.response.use(
       if (refreshResponse.status === 200) {
         const newToken = refreshResponse.data.data.accessToken;
         const newRefreshToken = refreshResponse.data.data.refreshToken;
-        saveToken(newToken, 3600, newRefreshToken);
+        const role = refreshResponse.data.data.role;
+        saveToken(newToken, 3600, newRefreshToken, role);
         error.config.headers['Authorization'] = `Bearer ${newToken}`;
         return apiClient.request(error.config);
       }
