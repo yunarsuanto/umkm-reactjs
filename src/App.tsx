@@ -63,7 +63,7 @@ function App() {
 
   useEffect(() => {
     dispatch(setResponsive({ isExtraSmall, isSmall, isMedium, isLarge, isDesktop, isExtraLarge }));
-  }, [isExtraSmall, isSmall, isMedium, isLarge, isDesktop, isExtraLarge]);
+  }, [isExtraSmall, isSmall, isMedium, isLarge, isDesktop, isExtraLarge, dispatch]);
   return (
     <Routes>
       {mode === 'admin' ?  (

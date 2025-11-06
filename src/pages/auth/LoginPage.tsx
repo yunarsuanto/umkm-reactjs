@@ -15,7 +15,7 @@ import { LoginWithGoogleSchema } from '../../schemas/login_with_google.schema';
 const LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, googlePayload } = useAppSelector((state) => state.auth);
+  const { loading, error } = useAppSelector((state) => state.auth);
   const { 
     control, 
     handleSubmit, 

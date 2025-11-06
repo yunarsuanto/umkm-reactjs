@@ -1,7 +1,6 @@
 import { BackgroundImage, Box, Center, Container, Grid, Group, Stack, Text, useMantineTheme, Image, Card, Button } from '@mantine/core';
 import PublicLayout from '@/components/public/PublicLayout';
 import { useAppSelector } from '@/app/hooks';
-import { useEffect } from 'react';
 
 interface PublicHomePageProps {
   setMode: () => void

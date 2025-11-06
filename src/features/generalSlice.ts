@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { GeneralState } from "../types/general/generalTypes";
-import { useMediaQuery } from "@mantine/hooks";
 
 const initialState: GeneralState = {
     mode: 'public',
