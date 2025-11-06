@@ -1,6 +1,6 @@
 import { Box, Group, Pagination, Text } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { setData } from '../../features/pagination/paginationSlice';
+import { setDataPagination } from '../../features/paginationSlice';
 
 interface PaginationControlProps {
   total: number;
@@ -12,7 +12,7 @@ const PaginationControl = ({ total, align }: PaginationControlProps) => {
   const pagination = useAppSelector((state) => state.pagination);
 
   const handleChange = (page: number) => {
-    dispatch(setData({
+    dispatch(setDataPagination({
       ...pagination,
       page,
     }));
@@ -32,7 +32,7 @@ const PaginationControl = ({ total, align }: PaginationControlProps) => {
         />
       </Group>
       <Text mt="sm" c="dimmed" fz="sm" style={{textAlign: align}}>
-        Halaman {pagination.page} dari {total} • Total data {pagination.total_records}
+        Halaman {pagination.page} dari {total} • Total data {pagination.totalRecords}
       </Text>
     </Box>
   );

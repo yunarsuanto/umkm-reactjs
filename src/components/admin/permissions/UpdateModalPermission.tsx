@@ -4,8 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useUpdatePermissions } from '../../../hooks/useUpdatePermissions';
 import { updatePermissionSchema, UpdatePermissionSchema } from '../../../schemas/updatePermission.schema';
-import { closeUpdateModal } from '../../../features/permission/permissionSlice';
+import { closeUpdateModal } from '../../../features/permissionSlice';
 import { useEffect } from 'react';
+import { useDebouncedCallback } from '@mantine/hooks';
 
 interface UpdateModalPermissionProps {
   open: boolean;
@@ -33,15 +34,19 @@ const UpdateModalPermission = ({ open }: UpdateModalPermissionProps) => {
     dispatch(closeUpdateModal());
   };
 
-  const onSubmit = (data: UpdatePermissionSchema) => {
+  const debouncedSubmit = useDebouncedCallback((data: UpdatePermissionSchema) => {
     mutate(data, {
       onSuccess: () => {
         dispatch(closeUpdateModal());
         reset()
-      }
-    })
-  };
+      },
+    });
+  }, 500);
 
+  const onSubmit = (data: UpdatePermissionSchema) => {
+    debouncedSubmit(data);
+  };
+  
   useEffect(() => {
     if(selectedPermission.id !== ''){
       reset({

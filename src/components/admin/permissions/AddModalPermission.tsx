@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch } from '../../../app/hooks';
 import { addPermissionSchema, AddPermissionSchema } from '../../../schemas/addPermission.schema';
 import { useAddPermissions } from '../../../hooks/useAddPermissions';
-import { closeCreateModal } from '../../../features/permission/permissionSlice';
+import { closeCreateModal } from '../../../features/permissionSlice';
+import { useDebouncedCallback } from '@mantine/hooks';
 
 interface AddModalPermissionProps {
   open: boolean;
@@ -28,12 +29,14 @@ const AddModalPermission = ({ open }: AddModalPermissionProps) => {
     dispatch(closeCreateModal());
   };
 
-  const onSubmit = (data: AddPermissionSchema) => {
+  const debouncedSubmit = useDebouncedCallback((data: AddPermissionSchema) => {
     mutate(data, {
-        onSuccess: () => {
-          reset();
-        }
-    })
+      onSuccess: () => reset(),
+    });
+  }, 500);
+
+  const onSubmit = (data: AddPermissionSchema) => {
+    debouncedSubmit(data);
   };
 
   return (

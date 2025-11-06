@@ -3,7 +3,7 @@ import classes from '../../../index.module.css';
 import { IconPencil, IconTrash } from "@tabler/icons-react";
 import { useAppDispatch } from "../../../app/hooks";
 import { GetPermissionDataResponse } from "../../../types/admin/permission/GetPermissionTypes";
-import { openDeleteModal, openUpdateModal, setData } from "../../../features/permission/permissionSlice";
+import { openDeleteModal, openUpdateModal, setDataPermission } from "../../../features/permissionSlice";
 import { GeneralPermissionDataState } from "../../../types/admin/permission/GeneralPermissionTypes";
 import PaginationControl from "../Pagination";
 
@@ -16,11 +16,11 @@ const TablePermissions = ({data, totalPages}: TablePermissionsProps) => {
   const dispatch = useAppDispatch()
   const handleEdit = (data: GeneralPermissionDataState) => {
     dispatch(openUpdateModal())
-    dispatch(setData({id: data.id, name: data.name}))
+    dispatch(setDataPermission({id: data.id, name: data.name}))
   }
   const handleDelete = (data: GeneralPermissionDataState) => {
     dispatch(openDeleteModal())
-    dispatch(setData({id: data.id, name: data.name}))
+    dispatch(setDataPermission({id: data.id, name: data.name}))
   }
   const rows = data.map((row, index) => {
     return(

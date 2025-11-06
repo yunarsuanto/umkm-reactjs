@@ -1,7 +1,8 @@
 import { Modal, Button, Group, Alert, Text } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { useDeletePermissions } from '../../../hooks/useDeletePermissions';
-import { closeDeleteModal } from '../../../features/permission/permissionSlice';
+import { closeDeleteModal } from '../../../features/permissionSlice';
+import { useDebouncedCallback } from '@mantine/hooks';
 
 interface DeleteModalPermissionProps {
   open: boolean;
@@ -16,12 +17,16 @@ const DeleteModalPermission = ({ open }: DeleteModalPermissionProps) => {
     dispatch(closeDeleteModal());
   };
 
-  const handleDelete = () => {
-    mutate({id: selectedPermission.id}, {
-      onSuccess: () => {
-        dispatch(closeDeleteModal());
+  const debouncedSubmit = useDebouncedCallback((id: string) => {
+      mutate({id: id}, {
+        onSuccess: () => {
+          dispatch(closeDeleteModal());
       },
     });
+  }, 500);
+
+  const onSubmit = () => {
+    debouncedSubmit(selectedPermission.id);
   };
 
   return (
@@ -46,7 +51,7 @@ const DeleteModalPermission = ({ open }: DeleteModalPermissionProps) => {
         <Button variant="default" onClick={handleClose}>
           Batal
         </Button>
-        <Button color="red" loading={isPending} onClick={handleDelete}>
+        <Button color="red" loading={isPending} onClick={onSubmit}>
           Hapus
         </Button>
       </Group>

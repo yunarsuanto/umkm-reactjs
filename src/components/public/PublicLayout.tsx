@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
+import { Box, useMantineTheme } from '@mantine/core';
 
 interface PublicLayoutProps {
   children: ReactNode;
@@ -8,12 +9,18 @@ interface PublicLayoutProps {
 }
 
 const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
+  const theme = useMantineTheme();
   return (
-    <div>
+    <Box style={{ display: 'flex', flexDirection: 'column', backgroundColor: theme.colors.red[1], fontFamily: 'howdybun'}}>
       <Header setModeHeader={setMode} />
-        <main>{children}</main>
+        <Box component="main" style={{
+          flex: 1,
+          overflowY: 'auto',
+        }}>
+          {children}
+        </Box>
       <Footer />
-    </div>
+    </Box>
   );
 };
 

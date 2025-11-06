@@ -4,7 +4,7 @@ import { ApiErrorType } from '../types/ApiError';
 import { useAppDispatch } from '../app/hooks';
 import { UpdatePermissionSchema } from '../schemas/updatePermission.schema';
 import { UpdatePermissionResponse } from '../types/admin/permission/UpdatePermissionTypes';
-import { closeUpdateModal } from '../features/permission/permissionSlice';
+import { closeUpdateModal } from '../features/permissionSlice';
 
 export const useUpdatePermissions = () => {
   const queryClient = useQueryClient();

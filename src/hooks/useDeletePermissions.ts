@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deletePermission } from '../api/permissions.api';
 import { ApiErrorType } from '../types/ApiError';
 import { useAppDispatch } from '../app/hooks';
-import { closeDeleteModal } from '../features/permission/permissionSlice';
+import { closeDeleteModal } from '../features/permissionSlice';
 import { DeletePermissionResponse } from '../types/admin/permission/DeletePermissionTypes';
 
 export const useDeletePermissions = () => {

@@ -16,6 +16,9 @@ import {
   ScrollArea,
   rem,
   useMantineTheme,
+  Image,
+  rgba,
+  BackgroundImage,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import {
@@ -28,7 +31,6 @@ import {
   IconChevronDown,
 } from '@tabler/icons-react';
 import classes from './Header.module.css';
-import { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { setMode } from '../../features/generalSlice';
 import { useNavigate } from 'react-router-dom';
@@ -74,7 +76,7 @@ export function Header({ setModeHeader } : HeaderProps) {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
-  const {token} = useAppSelector((state) => state.auth)
+  const {token, role} = useAppSelector((state) => state.auth)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const links = mockdata.map((item) => (
@@ -96,75 +98,83 @@ export function Header({ setModeHeader } : HeaderProps) {
   ));
 
   return (
-    <Box pb={120}>
-      <header className={classes.header}>
+    
+    <Box pb={60}>
+      <header className={classes.header} style={{
+        position: 'fixed',
+        top: 0,
+        width: '100%',
+        zIndex: 1000,
+        backgroundColor: theme.colors.green[0],
+      }}>
         <Group justify="space-between" h="100%">
-          <Text>Logo</Text>
+          <Box pl={20}>
+            <Image
+              src={`/logo.png`}
+              alt={'cecep'}
+              height={50}
+              fit="cover"
+            />
+          </Box>
           <Group h="100%" gap={0} visibleFrom="sm">
-            <Button component='a' href={'/dashboard'} variant="subtle" color='lime' className={classes.link}>
-              Home
+            <Button component='a' href={'/'} variant="subtle" color='lime' className={classes.link}>
+              <Text style={{fontSize: '30px'}}>
+                Home
+              </Text>
             </Button>
-            <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
-              <HoverCard.Target>
-                <Button variant="subtle" className={classes.link}>
-                  <Center inline>
-                    <Box component="span" mr={5}>
-                      Features
-                    </Box>
-                    <IconChevronDown
-                      style={{ width: rem(16), height: rem(16) }}
-                      color={theme.colors.blue[6]}
-                    />
-                  </Center>
-                </Button>
-              </HoverCard.Target>
-              <HoverCard.Dropdown style={{ overflow: 'hidden' }}>
-                <Group justify="space-between" px="md">
-                  <Text fw={500}>Features</Text>
-                  <Anchor href="#" fz="xs">
-                    View all
-                  </Anchor>
-                </Group>
-                <Divider my="sm" />
-                <SimpleGrid cols={2} spacing={0}>
-                  {links}
-                </SimpleGrid>
-                <div className={classes.dropdownFooter}>
-                  <Group justify="space-between">
-                    <div>
-                      <Text fw={500} fz="sm">
-                        Get started
-                      </Text>
-                      <Text size="xs" c="dimmed">
-                        Their food sources have decreased, and their numbers
-                      </Text>
-                    </div>
-                    <Button variant="default">Get started</Button>
-                  </Group>
-                </div>
-              </HoverCard.Dropdown>
-            </HoverCard>
-            <Button variant="subtle" className={classes.link}>
-              Learn
+            <Button variant="subtle" color='yellow' className={classes.link}>
+              <Text style={{fontSize: '30px'}}>
+                Learn
+              </Text>
             </Button>
-            <Button variant="subtle" className={classes.link}>
-              Academy
+            <Button variant="subtle" color='blue' className={classes.link}>
+              <Text style={{fontSize: '30px'}}>
+                Academy
+              </Text>
             </Button>
           </Group>
-          {token ? (
+          {token && role === 'admin' && (
             <Group visibleFrom="sm">
               <Button variant="default" onClick={() => {
                 dispatch(setMode('admin'))
                 navigate('/admin')
-              }}>Admin</Button>
+              }}>
+                <Text style={{fontSize: '20px'}}>
+                  Admin
+                </Text>
+              </Button>
             </Group>
-          ) : (
+          )}
+          {token && role === 'user' && (
             <Group visibleFrom="sm">
               <Button variant="default" onClick={() => {
+                dispatch(setMode('user'))
+                navigate('/user')
+              }}>
+                <Text style={{fontSize: '20px'}}>
+                  User
+                </Text>
+              </Button>
+            </Group>
+          )}
+          {!token && (
+            <Group visibleFrom="sm">
+              <Button variant="subtle" color='cyan' onClick={() => {
                 setModeHeader() 
                 navigate('/login')
-              }}>Log in</Button>
-              <Button>Sign up</Button>
+              }}>
+                <Text style={{fontSize: '20px'}}>
+                  Log in
+                </Text>
+              </Button>
+              <Button variant="filled" color='pink' onClick={() => {
+                setModeHeader()
+                navigate('/register')
+              }}>
+                <Text style={{fontSize: '20px'}}>
+                  Register
+                </Text>
+              </Button>
             </Group>
           )}
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
@@ -181,44 +191,64 @@ export function Header({ setModeHeader } : HeaderProps) {
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-          <Button variant="subtle" className={classes.link}>
-            Home
+          <Button variant="subtle" color='lime' className={classes.link}>
+            <Text style={{fontSize: '20px'}}>
+              Home
+            </Text>
           </Button>
-          <Button variant="subtle" className={classes.link} onClick={toggleLinks}>
-            <Center inline>
-              <Box component="span" mr={5}>
-                Features
-              </Box>
-              <IconChevronDown
-                style={{ width: rem(16), height: rem(16) }}
-                color={theme.colors.blue[6]}
-              />
-            </Center>
+          <Button variant="subtle" color='yellow' className={classes.link}>
+            <Text style={{fontSize: '20px'}}>
+              Learn
+            </Text>
           </Button>
-          <Collapse in={linksOpened}>{links}</Collapse>
-          <Button variant="subtle" className={classes.link}>
-            Learn
+          <Button variant="subtle" color='blue' className={classes.link}>
+            <Text style={{fontSize: '20px'}}>
+              Academy
+            </Text>
           </Button>
-          <Button variant="subtle" className={classes.link}>
-            Academy
-          </Button>
-          <Divider my="sm" />
-          {token ? (
-            <Group justify="center" grow pb="xl" px="md">
-              <Button variant="default" onClick={() => {
-                dispatch(setMode('admin'))
-                navigate('/admin')
-              }}>Admin</Button>
-            </Group>
-          ) : (
-            <Group justify="center" grow pb="xl" px="md">
-              <Button variant="default" onClick={() => {
+          {token && role === 'admin' && (
+            <Button variant="default" onClick={() => {
+              dispatch(setMode('admin'))
+              navigate('/admin')
+            }}>
+              <Text style={{fontSize: '20px'}}>
+                Admin
+              </Text>
+            </Button>
+          )}
+          {token && role === 'user' && (
+            <Button variant="default" onClick={() => {
+              dispatch(setMode('user'))
+              navigate('/user')
+            }}>
+              <Text style={{fontSize: '20px'}}>
+                User
+              </Text>
+            </Button>
+          )}
+          {!token && (
+            <div style={{float: 'right'}}>
+              <Button variant="subtle" color='cyan' style={{margin: 5}}
+              onClick={() => {
                 setModeHeader() 
                 navigate('/login')
-              }}>Log in</Button>
-              <Button>Sign up</Button>
-            </Group>
+              }}>
+                <Text style={{fontSize: '20px'}}>
+                  Log in
+                </Text>
+              </Button>
+              <Button variant="filled" color='pink' style={{margin: 5}}
+              onClick={() => {
+                setModeHeader()
+                navigate('/register')
+              }}>
+                <Text style={{fontSize: '20px'}}>
+                  Register
+                </Text>
+              </Button>
+            </div>
           )}
+          <Divider my="sm" />
         </ScrollArea>
       </Drawer>
     </Box>

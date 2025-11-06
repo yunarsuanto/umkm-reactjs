@@ -1,9 +1,9 @@
 import { Container, Grid } from '@mantine/core';
-import AdminLayout from '../../components/admin/AdminLayout';
-import StatsGrid from '../../components/admin/dashboard/StatsGrid';
-import { StatsRing } from '../../components/admin/dashboard/StatsRing';
-import { LineChart } from '../../components/admin/dashboard/LineChart';
-import { TableReviews } from '../../components/admin/dashboard/TableReviews';
+import AdminLayout from '@/components/admin/AdminLayout';
+import StatsGrid from '@/components/admin/dashboard/StatsGrid';
+import { StatsRing } from '@/components/admin/dashboard/StatsRing';
+import { LineChart } from '@/components/admin/dashboard/LineChart';
+import { TableReviews } from '@/components/admin/dashboard/TableReviews';
 
 const AdminDashboardPage = () => {
   const sampleData = [

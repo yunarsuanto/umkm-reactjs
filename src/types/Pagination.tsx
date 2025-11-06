@@ -1,8 +1,9 @@
 export interface Pagination {
+    search: string
     page: number
     limit: number
     prev: number
     next: number
-    total_pages: number
-    total_records: number
+    totalPages: number
+    totalRecords: number
 }

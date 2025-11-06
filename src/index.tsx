@@ -7,8 +7,11 @@ import { store } from './app/store';
 import App from './App';
 import '@mantine/core/styles.css';
 import { BrowserRouter } from 'react-router-dom';
+import 'leaflet/dist/leaflet.css';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const queryClient = new QueryClient();
+const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID!;
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -18,10 +21,12 @@ root.render(
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <MantineProvider theme={{
-          fontFamily: 'Helvetica Neue, sans-serif',
+          fontFamily: 'Helvetica Neue, sans-serif, howdybun, sunday-shine, child-hood',
         }}>
           <BrowserRouter>
-            <App />
+            <GoogleOAuthProvider clientId={CLIENT_ID}>
+              <App />
+            </GoogleOAuthProvider>
           </BrowserRouter>
         </MantineProvider>
       </QueryClientProvider>

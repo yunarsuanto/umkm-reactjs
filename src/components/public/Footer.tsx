@@ -56,7 +56,7 @@ export function Footer() {
 
   return (
     <footer className={classes.footer}>
-      <Container className={classes.inner}>
+      {/* <Container className={classes.inner}>
         <div className={classes.logo}>
           <Text>Logo</Text>
           <Text size="xs" c="dimmed" className={classes.description}>
@@ -64,13 +64,12 @@ export function Footer() {
           </Text>
         </div>
         <div className={classes.groups}>{groups}</div>
-      </Container>
+      </Container> */}
       <Container className={classes.afterFooter}>
-        <Text c="dimmed" size="sm">
-          © 2024 mantine.dev. All rights reserved.
-        </Text>
-
         <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
+          <Text c="dimmed" size="sm">
+            © 2024 mantine.dev. All rights reserved.
+          </Text>
           <ActionIcon size="lg" color="gray" variant="subtle">
             <IconBrandTwitter style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
           </ActionIcon>

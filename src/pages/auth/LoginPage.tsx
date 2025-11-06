@@ -3,36 +3,92 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginSchema } from '../../schemas/login.schema';
 import { TextInput, Button, Card, Container, Title, Group, Alert } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { loginUser } from '../../features/auth/authSlice';
+import { loginUser, loginUserWithGoogle } from '../../features/authSlice';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
 import { setMode } from '../../features/generalSlice';
+import { useEffect } from 'react';
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import {jwtDecode} from "jwt-decode";
+import { GooglePayload } from '../../types/general/AuthTypes';
+import { LoginWithGoogleSchema } from '../../schemas/login_with_google.schema';
 
 const LoginPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { loading, error, type } = useAppSelector((state) => state.auth);
-
+  const { loading, error, googlePayload } = useAppSelector((state) => state.auth);
   const { 
     control, 
     handleSubmit, 
     formState: { errors } 
   } = useForm<LoginSchema>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { username: '', password: '' },
+    defaultValues: { username: '', password: '', platform: 'web'},
   });
 
   const onSubmit = async (data: LoginSchema) => {
-    const resultAction = await dispatch(loginUser(data));
-
-    if (loginUser.fulfilled.match(resultAction)) {
-      dispatch(setMode('admin'));
-      navigate('/admin')
-    } else {
-      console.error('Login gagal:', resultAction);
+    const resultAction = await dispatch(loginUser(data)).unwrap();
+    switch (resultAction.data.role) {
+      case 'admin':
+        dispatch(setMode('admin'));
+        navigate('/admin');
+        break;
+      case 'superadmin':
+        dispatch(setMode('admin'));
+        navigate('/admin');
+        break;
+      case 'user':
+        dispatch(setMode('user'));
+        navigate('/user');
+        break;
+      default:
+        dispatch(setMode('public'));
+        navigate('/')
+        break;
     }
   };
 
+  const googleHandleSuccess = async (credentialResponse: CredentialResponse) => {
+    if(credentialResponse.credential){
+      const decoded = jwtDecode<GooglePayload>(credentialResponse.credential);
+      if(decoded){
+        const data:LoginWithGoogleSchema = {
+          token: credentialResponse.credential,
+          platform: 'web'
+        }
+        const resultAction = await dispatch(loginUserWithGoogle(data)).unwrap();
+        switch (resultAction.data.role) {
+          case 'admin':
+            dispatch(setMode('admin'));
+            navigate('/admin');
+            break;
+          case 'superadmin':
+            dispatch(setMode('admin'));
+            navigate('/admin');
+            break;
+          case 'user':
+            dispatch(setMode('user'));
+            navigate('/user');
+            break;
+          default:
+            dispatch(setMode('public'));
+            navigate('/')
+            break;
+        }
+      }
+    }
+  };
+
+  const googleHandleError = () => {
+    console.log('googleHandleError')
+  }
+  const { token, role } = useAppSelector((state) => state.auth)
+
+  useEffect(() => {
+    console.log('------------role')
+    console.log(token)
+    console.log(role)
+    console.log('------------role')
+  }, [token, role])
   return (
     <Container size="xs" style={{ marginTop: 100 }}>
       <Card shadow="sm" p="lg">
@@ -71,6 +127,7 @@ const LoginPage = () => {
             )}
           />
           <Group justify="flex-end">
+            <GoogleLogin onSuccess={googleHandleSuccess} onError={googleHandleError} useOneTap />
             <Button type="submit" loading={loading === 'pending'}>
               Login
             </Button>

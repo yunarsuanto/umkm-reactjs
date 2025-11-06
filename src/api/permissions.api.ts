@@ -11,10 +11,10 @@ import { DeletePermissionResponse } from "../types/admin/permission/DeletePermis
 import { Pagination } from "../types/Pagination";
 import { setMode } from "../features/generalSlice";
 
-export const getPermissions = async (pagination: Pagination): Promise<GetPermissionResponse> => {
+export const getPermission = async (pagination: Pagination): Promise<GetPermissionResponse> => {
   try {
     const response = await apiClient.get(
-      `/permission/permission.permission-handler/list-permission?page=${pagination.page}&limit=${pagination.limit}&search=`
+      `/admin/permission/get?page=${pagination.page}&limit=${pagination.limit}&search=${pagination.search}`
     );
     return response.data;
   } catch (error) {
@@ -33,10 +33,10 @@ export const getPermissions = async (pagination: Pagination): Promise<GetPermiss
   }
 };
 
-export const addPermissions = async (data: AddPermissionSchema): Promise<AddPermissionResponse> => {
+export const addPermission = async (data: AddPermissionSchema): Promise<AddPermissionResponse> => {
   try {
     const response = await apiClient.post(
-      '/permission/permission.permission-handler/create-permission',
+      '/admin/permission/create',
       data
     );
     return response.data;
@@ -55,7 +55,7 @@ export const addPermissions = async (data: AddPermissionSchema): Promise<AddPerm
 export const updatePermission = async (data: UpdatePermissionSchema): Promise<UpdatePermissionResponse> => {
   try {
     const response = await apiClient.patch(
-      `/permission/permission.permission-handler/update-permission`,
+      `/admin/permission/update`,
       data
     );
     return response.data;
@@ -74,7 +74,7 @@ export const updatePermission = async (data: UpdatePermissionSchema): Promise<Up
 export const deletePermission = async (data: DeletePermissionSchema): Promise<DeletePermissionResponse> => {
   try {
     const response = await apiClient.delete(
-      `/permission/permission.permission-handler/delete-permission`,
+      `/admin/permission/delete`,
       {data: {id: data.id}}
     );
     return response.data;
