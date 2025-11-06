@@ -36,8 +36,8 @@
     "zod": "^4.1.12"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "vite",
+    "build": "tsc && vite build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "vite"
