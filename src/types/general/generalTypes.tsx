@@ -12,6 +12,9 @@ export interface GeneralState {
     isLarge: boolean
     isDesktop: boolean
     isExtraLarge: boolean
+    progressBar: number
+    errorFileNull: string
+    playVideo: boolean
 }
 
 export interface UploadFileResponse {

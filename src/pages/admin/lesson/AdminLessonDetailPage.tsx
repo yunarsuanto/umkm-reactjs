@@ -11,9 +11,8 @@ import DeleteModalLessonItem from '@/components/admin/lessons/DeleteModalLessonI
 
 const AdminLessonDetailPage = () => {
     const dispatch = useAppDispatch();
+    const { category_lesson_id } = useParams<{ category_lesson_id: string }>();
     const { lesson_id } = useParams<{ lesson_id: string }>();
-    const { parent_id } = useParams<{ parent_id: string }>();
-    const { child_id } = useParams<{ child_id: string }>();
     const navigate = useNavigate()
     const { data: dataDetail } = useDetailLessons(lesson_id!, {
         enabled: lesson_id !== '' && typeof lesson_id !== 'undefined',
@@ -39,6 +38,7 @@ const AdminLessonDetailPage = () => {
             totalRecords: 0,
         }))
     }, [dispatch, limit])
+
     return (
         <>
         <AdminLayout>
@@ -49,10 +49,10 @@ const AdminLessonDetailPage = () => {
                         <Group justify={'space-between'}>
                             <h2>{dataDetail?.data.title}</h2>
                             <Group>
-                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${parent_id}/sub-category/${child_id}/edit/${lesson_id}/lesson-item/create`)}>
+                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/item/create`)}>
                                     <img src={'/add.svg'} alt="add" width={30} height={30} />  
                                 </Button>
-                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${parent_id}/sub-category/${child_id}`)}>
+                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}`)}>
                                     <img src={'/back.svg'} alt="add" width={30} height={30} />  
                                 </Button>
                             </Group>
@@ -62,7 +62,7 @@ const AdminLessonDetailPage = () => {
                         <Card withBorder p="xl" radius="md">
                             <Grid>
                                 <Grid.Col span={9}>
-                                    <Text size="sm" c="dimmed">{dataDetail?.data.description}</Text>
+                                    <Text size="sm" c="dimmed">{dataDetail?.data.description} wadawd</Text>
                                     <Divider my="sm" />
                                 </Grid.Col>
                                 <Grid.Col span={3} style={{textAlign: 'center'}}>
@@ -72,9 +72,9 @@ const AdminLessonDetailPage = () => {
                                 </Grid.Col>
                             </Grid>
                             <Grid>
-                                <CardLessonItems data={dataLessonItems?.data ?? []} totalPages={0} parent_id={parent_id!} child_id={child_id!} lesson_id={lesson_id!} />
+                                <CardLessonItems data={dataLessonItems?.data ?? []} totalPages={0} category_lesson_id={category_lesson_id!} lesson_id={lesson_id!} />
                                 <Grid.Col span={12}>
-                                    <Divider my="xl" label="Address | Location | NPWP | KTP" />
+                                    <Divider my="xl" label="Lesson Item" />
                                 </Grid.Col>
                             </Grid>
                         </Card>

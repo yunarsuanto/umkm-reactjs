@@ -18,7 +18,7 @@ const AdminCategoryLessonPage = () => {
   const queryOptions = useMemo(() => ({
     enabled: pagination.page !== 0,
   }), [pagination.page]);
-  const { data, isLoading, isError, error } = useCategoryLessons(pagination, {has_parent: false}, queryOptions)
+  const { data, isLoading, isError, error } = useCategoryLessons(pagination, {}, queryOptions)
   const { openDelete } = useAppSelector((state) => state.categoryLesson);
   const { search } = useAppSelector((state) => state.general);
   const [debouncedSearch] = useDebouncedValue(search, 500);
@@ -40,7 +40,7 @@ const AdminCategoryLessonPage = () => {
   }, [dispatch, limit])
 
   useEffect(() => {
-    if(data){
+    if(data?.pagination){
       dispatch(setDataPagination({
         search: data.pagination.search,
         page: data.pagination.page,
@@ -89,7 +89,7 @@ const AdminCategoryLessonPage = () => {
       <Container fluid p={50}>
         <Grid>
           <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-            <h2>Lesson</h2>
+            <h2>Category Lesson</h2>
           </Grid.Col>
         </Grid>
         <Grid p={10}>

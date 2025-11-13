@@ -15,5 +15,6 @@ export interface GetLessonItemDataResponse {
   id: string
   lesson_id: string
   content: string
+  media: string
   order: number
 }

@@ -1,7 +1,26 @@
 import { z } from 'zod';
 
+const allowedMimeTypes = [
+  "image/png",
+  "image/jpeg",
+  "image/webp",
+  "application/pdf",
+  "video/webm",
+  "video/mp4",
+  "audio/mpeg",
+];
+
+
 export const uploadFileSchema = z.object({
-  file: z.string().min(4, { message: 'File tidak valid' }).regex(/^(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=)?$/, { message: 'Format File tidak valid' }),
+  file: z
+  .instanceof(File)
+  .refine((file) => file.size > 0, { message: "File wajib diunggah" })
+  .refine((file) => allowedMimeTypes.includes(file.type), {
+    message: "Tipe file tidak didukung",
+  })
+  .refine((file) => file.size <= 10 * 1024 * 1024, {
+    message: "Ukuran file maksimal 10MB",
+  }),
 });
 
 export type UploadFileSchema = z.infer<typeof uploadFileSchema>;

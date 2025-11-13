@@ -11,4 +11,7 @@ export interface DetailLessonItemDataResponse {
   lesson_id: string
   content: string
   order: number
+  media: string
+  group: number
+  is_done: boolean
 }

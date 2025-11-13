@@ -109,27 +109,34 @@ export function Header({ setModeHeader } : HeaderProps) {
       }}>
         <Group justify="space-between" h="100%">
           <Box pl={20}>
-            <Image
-              src={`/logo.png`}
-              alt={'cecep'}
-              height={50}
-              fit="cover"
-            />
+            <Button component='a' href={'/#home'} variant="subtle" color='lime' className={classes.link}>
+              <Image
+                src={`/logo.png`}
+                alt={'cecep'}
+                height={'100%'}
+                fit="cover"
+              />
+            </Button>
           </Box>
           <Group h="100%" gap={0} visibleFrom="sm">
-            <Button component='a' href={'/'} variant="subtle" color='lime' className={classes.link}>
+            <Button component='a' href={'/#home'} variant="subtle" color='lime' className={classes.link}>
               <Text style={{fontSize: '30px'}}>
-                Home
+                Beranda
               </Text>
             </Button>
-            <Button variant="subtle" color='yellow' className={classes.link}>
+            <Button component='a' href='/#feature' variant="subtle" color='yellow' className={classes.link}>
               <Text style={{fontSize: '30px'}}>
-                Learn
+                Fitur
               </Text>
             </Button>
-            <Button variant="subtle" color='blue' className={classes.link}>
+            <Button variant="subtle" component='a' href='/#about' color='blue' className={classes.link}>
               <Text style={{fontSize: '30px'}}>
-                Academy
+                Tentang Kami
+              </Text>
+            </Button>
+            <Button variant="subtle" component='a' href='/#contact' color='pink' className={classes.link}>
+              <Text style={{fontSize: '30px'}}>
+                Kontak
               </Text>
             </Button>
           </Group>

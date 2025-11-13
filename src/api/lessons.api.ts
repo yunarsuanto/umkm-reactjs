@@ -19,6 +19,8 @@ import { UpdateLessonSchema } from "@/schemas/updateLesson.schema";
 import { UpdateLessonResponse } from "@/types/admin/lesson/UpdateLessonTypes";
 import { DeleteLessonSchema } from "@/schemas/deleteLesson.schema";
 import { DeleteLessonResponse } from "@/types/admin/lesson/DeleteLessonTypes";
+import { CopyLessonSchema } from "@/schemas/copyLesson.schema";
+import { CopyLessonResponse } from "@/types/admin/lesson/CopyLessonTypes";
 
 export const getLesson = async (pagination: Pagination, req: GetLessonRequest): Promise<GetLessonResponse> => {
   try {
@@ -107,6 +109,25 @@ export const deleteLesson = async (data: DeleteLessonSchema): Promise<DeleteLess
     const response = await apiClient.delete(
       `/admin/lesson/delete`,
       {data: {id: data.id}}
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new ApiErrorClass(
+        error.message,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+    throw error;
+  }
+};
+
+export const copyLesson = async (data: CopyLessonSchema): Promise<CopyLessonResponse> => {
+  try {
+    const response = await apiClient.post(
+      `/admin/lesson/copy`,
+      data,
     );
     return response.data;
   } catch (error) {

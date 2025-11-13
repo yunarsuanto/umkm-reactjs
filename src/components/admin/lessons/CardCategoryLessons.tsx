@@ -4,6 +4,7 @@ import { openDeleteModal, setDataCategoryLesson } from "@/features/categoryLesso
 import { useNavigate } from "react-router-dom";
 import { GetCategoryLessonDataResponse } from "../../../types/admin/category_lesson/GetCategoryLessonTypes";
 import { GeneralCategoryLessonDataState } from "../../../types/admin/category_lesson/GeneralCategoryLessonTypes";
+import { useEffect } from "react";
 
 interface CardCategoryLessonsProps {
   data: GetCategoryLessonDataResponse[];
@@ -20,9 +21,9 @@ const CardCategoryLessons = ({data}: CardCategoryLessonsProps) => {
 
   return (
     <Grid>
-      {data && data.map((row, index) => {
+      {Array.isArray(data) && data.map((row, index) => {
         return (
-          <Grid.Col span={3} key={`${index}-${row.id}`}>
+          <Grid.Col span={3} key={`${index}-${row.id}`} style={{textAlign: 'center'}}>
             <Card shadow="sm" padding="lg" radius="md" withBorder>
               <Card.Section>
                 <Image
@@ -31,9 +32,12 @@ const CardCategoryLessons = ({data}: CardCategoryLessonsProps) => {
                   alt="Norway"
                 />
               </Card.Section>
-              <Group justify="space-between" mt="md" mb="xs">
+              <Group style={{width: '100%'}}>
                   <Text fw={500}>{row.title}</Text>
-                  <Group justify="center">
+                  <Group>
+                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${row.id}`)}>
+                      <img src={'/detail.svg'} alt="add" width={30} height={30} />  
+                    </Button>
                     <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/edit/${row.id}`)}>
                       <img src={'/edit.svg'} alt="add" width={30} height={30} />  
                     </Button>
@@ -49,13 +53,11 @@ const CardCategoryLessons = ({data}: CardCategoryLessonsProps) => {
                   </Group>
               </Group>
               <Text size="sm" c="dimmed">
-                {row.description}
+                Deskripsi : {row.description}
               </Text>
-              <Button color="pink" fullWidth mt="md" radius="md" onClick={() => {
-                navigate(`/admin/category-lessons/detail/${row.id}`)
-              }}>
-                Detil
-              </Button>
+              <Text size="sm">
+                Tipe : {row.category_lesson_type}
+              </Text>
             </Card>
           </Grid.Col>
         )

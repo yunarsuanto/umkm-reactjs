@@ -1,24 +1,26 @@
-import { Alert, Button, Card, Container, Grid, Group, Textarea, TextInput, useMantineTheme } from '@mantine/core';
+import { Alert, Button, Card, Container, Grid, Group, Select, Textarea, TextInput, useMantineTheme } from '@mantine/core';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { setImageBase64} from '../../../features/categoryLessonSlice';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { generateBase64, removeBase64Prefix } from '../../../constants/generateBase64';
-import { useUploadFile } from '../../../hooks/useUploadFile';
-import { UploadFileSchema } from '../../../schemas/uploadFile.schema';
 import { useDebouncedCallback } from '@mantine/hooks';
 import { useEffect } from 'react';
 import { updateCategoryLessonSchema, UpdateCategoryLessonSchema } from '../../../schemas/updateCategoryLesson.schema';
 import { useUpdateCategoryLessons } from '../../../hooks/useUpdateCategoryLessons';
 import { useDetailCategoryLessons } from '../../../hooks/useDetailCategoryLessons';
+import { useUploadFileBase64 } from '@/hooks/useUploadFile';
+import { UploadFileBase64Schema } from '@/schemas/uploadFileBase64.schema';
+import categoryLessonTypes from '@/constants/category_lesson_types';
 
 const AdminCategoryLessonUpdatePage = () => {
     const { id } = useParams<{ id: string }>();
     const dispatch = useAppDispatch();
     const {
+        control,
         register,
         handleSubmit,
         formState: { errors, isValid },
@@ -28,7 +30,7 @@ const AdminCategoryLessonUpdatePage = () => {
     });
     const {imageBase64} = useAppSelector((state) => state.categoryLesson)
     const { mutateAsync, isPending, isError, error } = useUpdateCategoryLessons();
-    const { mutateAsync:imageMutate } = useUploadFile();
+    const { mutateAsync:imageMutate } = useUploadFileBase64();
     const theme = useMantineTheme()
     const navigate = useNavigate()
     const { data: dataDetail } = useDetailCategoryLessons(id!, {
@@ -38,10 +40,10 @@ const AdminCategoryLessonUpdatePage = () => {
     const debouncedSubmit = useDebouncedCallback( async (data: UpdateCategoryLessonSchema) => {
         let payload: UpdateCategoryLessonSchema = {...data, id: id!}
         if(imageBase64 && imageBase64 !== ''){
-        const image: UploadFileSchema = {
-            file: imageBase64,
-        }
-        const res = await imageMutate(image);
+            const image: UploadFileBase64Schema = {
+                file: imageBase64,
+            }
+            const res = await imageMutate(image);
             payload = {...payload, media: res.data.path}
         }
         dispatch(setImageBase64(''));
@@ -73,6 +75,7 @@ const AdminCategoryLessonUpdatePage = () => {
                 category_lesson_id: dataDetail.data.category_lesson_id,
                 title: dataDetail.data.title,
                 description: dataDetail.data.description,
+                category_lesson_type: dataDetail.data.category_lesson_type,
                 media: dataDetail.data.media,
             })
         }
@@ -101,6 +104,26 @@ const AdminCategoryLessonUpdatePage = () => {
                             required
                         />
                         </Grid.Col>
+                        <Grid.Col span={{base: 4, lg: 4, md: 4, xs: 4}} p={20}>
+                            <Controller
+                                name="category_lesson_type"
+                                control={control}
+                                rules={{
+                                required: "isian ini harus diisi"
+                                }}
+                                render={({ field }) => (
+                                <Select
+                                    {...field}
+                                    label="Pilih Tipe"
+                                    placeholder="Cari Tipe..."
+                                    searchable
+                                    nothingFoundMessage="Tidak ditemukan"
+                                    data={categoryLessonTypes()}
+                                    error={errors.category_lesson_type?.message}
+                                />
+                                )}
+                            />
+                            </Grid.Col>
                         <Grid.Col span={{base: 8, lg: 8, md: 8, xs: 8}} p={20}>
                         <Textarea
                             label="description"

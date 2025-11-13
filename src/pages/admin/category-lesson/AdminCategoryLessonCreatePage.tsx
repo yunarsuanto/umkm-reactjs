@@ -1,21 +1,24 @@
-import { Alert, Button, Card, Container, Grid, Group, Textarea, TextInput, useMantineTheme } from '@mantine/core';
+import { Alert, Button, Card, Container, Grid, Group, Select, Textarea, TextInput, useMantineTheme } from '@mantine/core';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
 import { setImageBase64 } from '@/features/categoryLessonSlice';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { generateBase64, removeBase64Prefix } from '@/constants/generateBase64';
-import { useUploadFile } from '@/hooks/useUploadFile';
-import { UploadFileSchema } from '@/schemas/uploadFile.schema';
 import { useDebouncedCallback } from '@mantine/hooks';
 import { addCategoryLessonSchema, AddCategoryLessonSchema } from '@/schemas/addCategoryLesson.schema';
 import { useAddCategoryLessons } from '@/hooks/useAddCategoryLessons';
+import { useUploadFileBase64 } from '@/hooks/useUploadFile';
+import categoryLessonTypes from '@/constants/category_lesson_types';
+import { setErrorFileNull } from '@/features/generalSlice';
+import { UploadFileBase64Schema } from '@/schemas/uploadFileBase64.schema';
 
 const AdminCategoryLessonCreatePage = () => {
   const dispatch = useAppDispatch();
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isValid },
@@ -24,15 +27,22 @@ const AdminCategoryLessonCreatePage = () => {
     resolver: zodResolver(addCategoryLessonSchema),
   });
   const {imageBase64} = useAppSelector((state: any) => state.categoryLesson)
+  const {errorFileNull} = useAppSelector((state: any) => state.general)
   const { mutateAsync, isPending, isError, error } = useAddCategoryLessons();
-  const { mutateAsync:imageMutate } = useUploadFile();
+  const { mutateAsync:imageMutate } = useUploadFileBase64();
   const theme = useMantineTheme()
   const navigate = useNavigate()
 
   const debouncedSubmit = useDebouncedCallback( async (data: AddCategoryLessonSchema) => {
     let payload: AddCategoryLessonSchema = {...data}
+    if(!imageBase64 || imageBase64 === '') {
+      dispatch(setErrorFileNull('file tidak boleh kosong'))
+      return
+    }else{
+      dispatch(setErrorFileNull(''))
+    }
     if(imageBase64 && imageBase64 !== ''){
-      const image: UploadFileSchema = {
+      const image: UploadFileBase64Schema = {
         file: imageBase64,
       }
       const res = await imageMutate(image);
@@ -81,7 +91,27 @@ const AdminCategoryLessonCreatePage = () => {
                     required
                   />
                 </Grid.Col>
-                <Grid.Col span={{base: 8, lg: 8, md: 8, xs: 8}} p={20}>
+                <Grid.Col span={{base: 4, lg: 4, md: 4, xs: 4}} p={20}>
+                  <Controller
+                    name="category_lesson_type"
+                    control={control}
+                    rules={{
+                      required: "isian ini harus diisi"
+                    }}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label="Pilih Tipe"
+                        placeholder="Cari Tipe..."
+                        searchable
+                        nothingFoundMessage="Tidak ditemukan"
+                        data={categoryLessonTypes()}
+                        error={errors.category_lesson_type?.message}
+                      />
+                    )}
+                  />
+                </Grid.Col>
+                <Grid.Col span={{base: 4, lg: 4, md: 4, xs: 4}} p={20}>
                   <Textarea
                     label="description"
                     {...register('description')}
@@ -95,6 +125,7 @@ const AdminCategoryLessonCreatePage = () => {
                     accept="image/*"
                     label="Image"
                     onChange={(e) => ChangeImage(e)}
+                    error={errorFileNull}
                   />
                   {imageBase64 !== '' && (
                     <img

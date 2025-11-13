@@ -83,12 +83,12 @@ const LoginPage = () => {
   }
   const { token, role } = useAppSelector((state) => state.auth)
 
-  useEffect(() => {
-    console.log('------------role')
-    console.log(token)
-    console.log(role)
-    console.log('------------role')
-  }, [token, role])
+  // useEffect(() => {
+  //   console.log('------------role')
+  //   console.log(token)
+  //   console.log(role)
+  //   console.log('------------role')
+  // }, [token, role])
   return (
     <Container size="xs" style={{ marginTop: 100 }}>
       <Card shadow="sm" p="lg">

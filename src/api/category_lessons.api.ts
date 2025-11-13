@@ -11,11 +11,34 @@ import { UpdateCategoryLessonSchema } from "../schemas/updateCategoryLesson.sche
 import { UpdateCategoryLessonResponse } from "../types/admin/category_lesson/UpdateCategoryLessonTypes";
 import { DeleteCategoryLessonSchema } from "../schemas/deleteCategoryLesson.schema";
 import { DeleteCategoryLessonResponse } from "../types/admin/category_lesson/DeleteCategoryLessonTypes";
+import { GetCategoryLessonPublicRequest, GetCategoryLessonPublicResponse } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
+
+export const getCategoryLessonPublic = async (pagination: Pagination, req: GetCategoryLessonPublicRequest): Promise<GetCategoryLessonPublicResponse> => {
+  try {
+    const response = await apiClient.get(
+      `/category-lesson/get?page=${pagination.page}&limit=${pagination.limit}&search=${pagination.search}`
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        setMode('public');
+      }
+      throw new ApiErrorClass(
+        error.message,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+    throw error;
+  }
+};
 
 export const getCategoryLesson = async (pagination: Pagination, req: GetCategoryLessonRequest): Promise<GetCategoryLessonResponse> => {
   try {
     const response = await apiClient.get(
-      `/admin/category-lesson/get?page=${pagination.page}&limit=${pagination.limit}&search=${pagination.search}&has_parent=${req.has_parent}`
+      `/admin/category-lesson/get?page=${pagination.page}&limit=${pagination.limit}&search=${pagination.search}`
     );
     return response.data;
   } catch (error) {

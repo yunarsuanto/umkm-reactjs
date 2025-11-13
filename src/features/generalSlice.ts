@@ -13,6 +13,9 @@ const initialState: GeneralState = {
     isLarge: false,
     isDesktop: false,
     isExtraLarge: false,
+    progressBar: 0,
+    errorFileNull: '',
+    playVideo: false,
 };
 
 const generalSlice = createSlice({
@@ -43,6 +46,15 @@ const generalSlice = createSlice({
             state.isDesktop = isDesktop;
             state.isExtraLarge = isExtraLarge;
         },
+        setProgressBar: (state, action: PayloadAction<number>) => {
+            state.progressBar = action.payload
+        },
+        setErrorFileNull: (state, action: PayloadAction<string>) => {
+            state.errorFileNull = action.payload
+        },
+        setPlayVideo: (state, action: PayloadAction<boolean>) => {
+            state.playVideo = action.payload
+        },
     },
 })
 
@@ -53,5 +65,8 @@ export const {
         changeSwitchToAddDetail,
         setSearch,
         setResponsive,
+        setProgressBar,
+        setErrorFileNull,
+        setPlayVideo,
     } = generalSlice.actions;
 export default generalSlice.reducer;

@@ -1,6 +1,7 @@
 import { BackgroundImage, Box, Center, Container, Grid, Group, Stack, Text, useMantineTheme, Image, Card, Button } from '@mantine/core';
 import PublicLayout from '@/components/public/PublicLayout';
 import { useAppSelector } from '@/app/hooks';
+import { useNavigate } from 'react-router-dom';
 
 interface PublicHomePageProps {
   setMode: () => void
@@ -13,12 +14,12 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
   const fontSizeContent = isExtraSmall || isSmall ? 20 : isMedium ? 25 : isLarge || isDesktop ||isExtraLarge ? 30 : 0
   const justifyFirstItem = isExtraSmall || isSmall || isMedium || isLarge || isDesktop ? 'center' : isExtraLarge ? 'flex-end' : ''
   const justifySecondItem = isExtraSmall || isSmall || isMedium || isLarge || isDesktop ? 'center' : isExtraLarge ? 'flex-start' : ''
-
+  const navigate = useNavigate()
   return (
     <PublicLayout setMode={setMode}>
       <Container fluid p={0}>
         <Stack gap={0}>
-          <Box>
+          <Box id='home'>
             <BackgroundImage
               src="/bgcontent-2.jpeg"
               style={{
@@ -36,31 +37,40 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
                 }}
               />
                 <Grid style={{position: 'relative', zIndex: 2}}>
-                  <Grid.Col span={{lg: 6, md: 12, sm: 12}} h={{lg: 500, md: 300, sm: 200}} style={{justifyItems: justifyFirstItem, alignContent: 'center'}}>
+                  <Grid.Col span={{lg: 6, md: 6, sm: 12}} h={{lg: 500, md: 300, sm: 200}} style={{justifyItems: justifyFirstItem, alignContent: 'center'}}>
                     <Box>
                       <Text style={{color: theme.colors.blue[9], fontSize: fontSizeHeader}}>
                         🌈 Belajar 
                       </Text>
-                      <Text style={{fontSize: fontSizeContent, fontFamily: 'child-hood'}}>
-                        Jadi Petualangan Seru!
-                      </Text>
+                      <Stack>
+                        <Text style={{fontSize: fontSizeContent, fontFamily: 'child-hood'}}>
+                          Jadi Petualangan Seru!
+                        </Text>
+                        <Button variant='filled' color='pink' onClick={() => {
+                          navigate('/play')
+                        }}>
+                          <Text style={{fontSize: '20px'}}>
+                            Mainkan
+                          </Text>
+                        </Button>
+                      </Stack>
                     </Box>
                   </Grid.Col>
-                  <Grid.Col span={{lg: 6, md: 12, sm: 12}} h={{lg: 500, md: 300, sm: 200}} style={{justifyItems: justifySecondItem, alignContent: 'center', paddingLeft: 30}}>
+                  <Grid.Col span={{lg: 6, md: 6, sm: 12}} h={{lg: 500, md: 300, sm: 200}} style={{justifyItems: justifySecondItem, alignContent: 'center', paddingLeft: 30}}>
                       <Box p={10}>
-                        <Group>
                           <Image src='/no-bg-2.png' style={{width: 200}} />
-                          <Text style={{fontSize: fontSizeContent, fontFamily: 'child-hood', color: theme.colors.pink[9]}}>
-                            Yuk jelajahi kegiatan seru <br />
-                            yang bikin imajinasi makin luas.<br /> 
-                          </Text>
-                        </Group>
+                          <Group>
+                            <Text style={{fontSize: fontSizeContent, fontFamily: 'child-hood', color: theme.colors.pink[9]}}>
+                              Yuk jelajahi kegiatan seru <br />
+                              yang bikin imajinasi makin luas.<br /> 
+                            </Text>
+                          </Group>
                       </Box>
                   </Grid.Col>
                 </Grid>
             </BackgroundImage>
           </Box>
-          <Box>
+          <Box id='feature'>
             <BackgroundImage
               src="/gradient-2.jpeg"
               style={{
@@ -79,8 +89,8 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
               />
               <Box style={{ position: 'relative', zIndex: 2 }}>
                 <Center py={40}>
-                  <Text style={{ fontSize: fontSizeHeader, color: theme.colors.indigo[9]}}>
-                    ✏️ Fitur
+                  <Text style={{ fontSize: fontSizeContent, color: theme.colors.grape[9]}}>
+                    Fitur
                   </Text>
                 </Center>
                 <Grid justify="center" gutter="xl" px={40} pb={60}>
@@ -132,6 +142,100 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
               </Box>
             </BackgroundImage>
           </Box>
+          <Box id='about'>
+            <Card style={{textAlign: 'center'}}>
+              <Card.Section>
+                <Center py={40}>
+                  <Text style={{ fontSize: fontSizeContent, color: theme.colors.orange[9]}}>
+                    Tentang Kami
+                  </Text>
+                </Center>
+              </Card.Section>
+              <Text mt="md">
+                Kami adalah tim kreatif yang percaya belajar bisa jadi petualangan seru.
+              </Text>
+              <Text mt="md" c="dimmed">
+                Dengan berbagai fitur interaktif,
+              </Text>
+              <Text mt="md">
+                kami ingin membuat anak-anak menikmati belajar sambil mengeksplorasi imajinasi mereka.
+              </Text>
+              <Text mt="md" c="dimmed">
+                Belajar membaca, menulis, dan berhitung jadi lebih menyenangkan dan penuh warna!
+              </Text>
+            </Card>
+          </Box>
+          <Box id='contact'>
+            <Card style={{textAlign: 'center'}}>
+              <Card.Section>
+                <Center py={40}>
+                  <Text style={{ fontSize: fontSizeContent, color: theme.colors.green[9]}}>
+                    Kontak
+                  </Text>
+                </Center>
+              </Card.Section>
+              <Text mt="md">
+                Email: yokila@gmail.com
+              </Text>
+              <Text mt="md" c="dimmed">
+                Whatsapp: 087799749729
+              </Text>
+              <Text mt="md">
+                Tuliskan Saran dan Kritik Anda Ke Email / Whatsapp Kami
+              </Text>
+            </Card>
+          </Box>
+          {/* <Box>
+            <BackgroundImage
+              src="/savana.jpeg"
+            >
+              
+              <Box style={{ position: 'relative', zIndex: 2 }}>
+                <Center py={40}>
+                  <Text style={{ fontSize: fontSizeHeader, color: theme.colors.red[9]}}>
+                    Sample
+                  </Text>
+                </Center>
+                <Grid justify="center" gutter="xl" px={40} pb={60} style={{textAlign: 'center'}}>
+                  <Grid.Col span={{ lg: 4, md: 6, sm: 12 }}>
+                    <video 
+                      src="/gajah.webm"
+                      autoPlay
+                      muted
+                      loop
+                      style={{
+                        width: 300,
+                        objectPosition: 'center center',
+                      }}
+                      onClick={() => {
+                        speak('gajah')
+                      }}
+                    />
+                    <Text style={{color: theme.colors.blue[9], fontSize: 30}}>
+                      Gajah
+                    </Text>
+                  </Grid.Col>
+                  <Grid.Col span={{ lg: 4, md: 6, sm: 12 }} onClick={() => {
+                    speak('jerapah')
+                  }}>
+                    <video 
+                      src="/jerapah.webm"
+                      autoPlay
+                      muted
+                      loop
+                      style={{
+                        width: 300,
+                        objectPosition: 'center center',
+                      }}
+                    />
+                    <Text style={{color: theme.colors.blue[9], fontSize: 30}}>
+                      jerapah
+                    </Text>
+                  </Grid.Col>
+                </Grid>
+              </Box>
+            </BackgroundImage>
+          </Box> */}
         </Stack>
       </Container>
     </PublicLayout>

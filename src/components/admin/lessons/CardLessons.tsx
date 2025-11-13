@@ -3,7 +3,7 @@ import classes from '../../../index.module.css';
 import { IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useAppDispatch } from "../../../app/hooks";
 import PaginationControl from "../Pagination";
-import { openDeleteModal } from "@/features/lessonSlice";
+import { openDeleteModal, setCopyModal } from "@/features/lessonSlice";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { GetLessonDataResponse } from "@/types/admin/lesson/GetLessonTypes";
@@ -12,17 +12,22 @@ import { setDataLesson } from "@/features/lessonSlice";
 
 interface CardLessonsProps {
   data: GetLessonDataResponse[];
-  parent_id: string;
-  child_id: string;
+  category_lesson_id: string;
+  // lesson_id: string;
   totalPages: number;
 }
 
-const CardLessons = ({data, totalPages, parent_id, child_id}: CardLessonsProps) => {
+const CardLessons = ({data, totalPages, category_lesson_id}: CardLessonsProps) => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const handleDelete = (data: GeneralLessonDataState) => {
     dispatch(openDeleteModal())
-    dispatch(setDataLesson({id: data.id, title: data.title}))
+    dispatch(setDataLesson({id: data.id, title: data.title, level: data.level}))
+  }
+  
+  const handleCopy = (data: GeneralLessonDataState) => {
+    dispatch(setCopyModal(true))
+    dispatch(setDataLesson({id: data.id, title: data.title, level: data.level}))
   }
 
   return (
@@ -40,16 +45,34 @@ const CardLessons = ({data, totalPages, parent_id, child_id}: CardLessonsProps) 
               </Card.Section>
               <Group justify="space-between" mt="md" mb="xs">
                   <Text fw={500}>{row.title}</Text>
-                  <Group justify="center">
-                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${parent_id}/sub-category/${child_id}/edit/${row.id}`)}>
-                      <img src={'/edit.svg'} alt="add" width={30} height={30} />  
+                  <Group justify="center" style={{width: '100%'}}>
+                    <Button variant={'white'} style={{padding: 2}} onClick={() => 
+                      navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${row.id}`)
+                    }>
+                      <img src={'/detail.svg'} alt="add" width={30} height={30} />
                     </Button>
                     <Button variant={'white'} style={{padding: 2}} onClick={() => {
                       const data:GeneralLessonDataState = {
                         id: row.id,
                         title: row.title,
+                        level: row.level
                       }
-                      handleDelete(row)
+                      handleCopy(data)
+                    }}>
+                      <img src={'/copy.svg'} alt="add" width={30} height={30} />
+                    </Button>
+                    <Button variant={'white'} style={{padding: 2}} onClick={() => 
+                      navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/edit/${row.id}`)
+                    }>
+                      <img src={'/edit.svg'} alt="add" width={30} height={30} />
+                    </Button>
+                    <Button variant={'white'} style={{padding: 2}} onClick={() => {
+                      const data:GeneralLessonDataState = {
+                        id: row.id,
+                        title: row.title,
+                        level: row.level,
+                      }
+                      handleDelete(data)
                     }}>
                       <img src={'/delete.svg'} alt="add" width={30} height={30} />  
                     </Button>
@@ -58,11 +81,9 @@ const CardLessons = ({data, totalPages, parent_id, child_id}: CardLessonsProps) 
               <Text size="sm" c="dimmed">
                 {row.description}
               </Text>
-              <Button color="pink" fullWidth mt="md" radius="md" onClick={() => {
-                navigate(`/admin/category-lessons/detail/${parent_id}/sub-category/${child_id}/detail/${row.id}`)
-              }}>
-                Detil
-              </Button>
+              <Text size="sm">
+                Level {row.level}, Tipe: {row.lesson_type}
+              </Text>
             </Card>
           </Grid.Col>
         )

@@ -2,22 +2,24 @@ import { Alert, Button, Card, Container, Grid, Group, Select, Textarea, TextInpu
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/app/hooks';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { generateBase64, removeBase64Prefix } from '@/constants/generateBase64';
-import { useUploadFile } from '@/hooks/useUploadFile';
-import { UploadFileSchema } from '@/schemas/uploadFile.schema';
 import { useDebouncedCallback } from '@mantine/hooks';
 import { addLessonSchema, AddLessonSchema } from '@/schemas/addLesson.schema';
 import { useAddLessons } from '@/hooks/useAddLessons';
 import { setImageBase64 } from '@/features/lessonSlice';
+import { useUploadFileBase64 } from '@/hooks/useUploadFile';
+import { UploadFileBase64Schema } from '@/schemas/uploadFileBase64.schema';
+import { setErrorFileNull } from '@/features/generalSlice';
+import lessonTypes from '@/constants/lesson_types';
 
 const AdminLessonCreatePage = () => {
-  const { parent_id } = useParams<{ parent_id: string }>();
-  const { child_id } = useParams<{ child_id: string }>();
+  const { category_lesson_id } = useParams<{ category_lesson_id: string }>();
   const dispatch = useAppDispatch();
   const {
+    control,
     register,
     handleSubmit,
     formState: { errors, isValid },
@@ -25,22 +27,32 @@ const AdminLessonCreatePage = () => {
     setValue,
   } = useForm<AddLessonSchema>({
     resolver: zodResolver(addLessonSchema),
+    defaultValues: {
+      level: 1,
+    },
   });
   
   const {imageBase64} = useAppSelector((state: any) => state.lesson)
+  const {errorFileNull} = useAppSelector((state: any) => state.general)
   const { mutateAsync, isPending, isError, error } = useAddLessons();
-  const { mutateAsync:imageMutate } = useUploadFile();
+  const { mutateAsync:imageMutate } = useUploadFileBase64();
   const theme = useMantineTheme()
   const navigate = useNavigate()
 
   const debouncedSubmit = useDebouncedCallback( async (data: AddLessonSchema) => {
     let payload: AddLessonSchema = {...data}
+    if(!imageBase64 || imageBase64 === '') {
+      dispatch(setErrorFileNull('file tidak boleh kosong'))
+      return
+    }else{
+      dispatch(setErrorFileNull(''))
+    }
     if(imageBase64 && imageBase64 !== ''){
-      const image: UploadFileSchema = {
+      const image: UploadFileBase64Schema = {
         file: imageBase64,
       }
       const res = await imageMutate(image);
-      payload = {...payload, media: res.data.path, category_lesson_id: child_id}
+      payload = {...payload, media: res.data.path, category_lesson_id: category_lesson_id}
     }
     await mutateAsync(payload)
     reset();
@@ -86,8 +98,9 @@ const AdminLessonCreatePage = () => {
                       { value: '2', label: 'Second' },
                       { value: '3', label: 'Third' },
                     ]}
+                    value={'1'}
                     onChange={(val) => {
-                      setValue('level', val ? Number(val) : 0 )
+                      setValue('level', val ? Number(val) : 1 )
                     }}
                   />
                 </Grid.Col>
@@ -107,12 +120,33 @@ const AdminLessonCreatePage = () => {
                     required
                   />
                 </Grid.Col>
+                <Grid.Col span={{base: 4, lg: 4, md: 4, xs: 4}} p={20}>
+                  <Controller
+                    name="lesson_type"
+                    control={control}
+                    rules={{
+                      required: "isian ini harus diisi"
+                    }}
+                    render={({ field }) => (
+                      <Select
+                        {...field}
+                        label="Pilih Tipe"
+                        placeholder="Cari Tipe..."
+                        searchable
+                        nothingFoundMessage="Tidak ditemukan"
+                        data={lessonTypes()}
+                        error={errors.lesson_type?.message}
+                      />
+                    )}
+                  />
+                </Grid.Col>
                 <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
                   <TextInput
                     type='file'
                     accept="image/*"
                     label="Image"
                     onChange={(e) => ChangeImage(e)}
+                    error={errorFileNull}
                   />
                   {imageBase64 !== '' && (
                     <img
@@ -129,7 +163,7 @@ const AdminLessonCreatePage = () => {
               <Group justify="flex-end" mt="md">
                 <Button  loading={isPending} color={`${theme.colors.gray[5]}`} onClick={(e) => {
                   e.preventDefault()
-                  navigate(`/admin/category-lessons/detail/${parent_id}/sub-category/${child_id}`)
+                  navigate(`/admin/category-lessons/detail/${category_lesson_id}`)
                 }}>
                   Back
                 </Button>

@@ -12,5 +12,6 @@ export interface DetailLessonDataResponse {
   description: string
   media: string
   category_lesson_id: string
+  lesson_type: string
   level: number
 }

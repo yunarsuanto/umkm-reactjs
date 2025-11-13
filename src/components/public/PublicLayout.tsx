@@ -1,17 +1,20 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { Box, useMantineTheme } from '@mantine/core';
+import { useLocation } from 'react-router-dom';
 
 interface PublicLayoutProps {
   children: ReactNode;
   setMode: () => void;
 }
 
+
 const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
   const theme = useMantineTheme();
+  const location = useLocation();
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', backgroundColor: theme.colors.red[1], fontFamily: 'howdybun'}}>
+    <Box style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', fontFamily: 'howdybun'}}>
       <Header setModeHeader={setMode} />
         <Box component="main" style={{
           flex: 1,
@@ -19,7 +22,9 @@ const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
         }}>
           {children}
         </Box>
-      <Footer />
+      {location.pathname !== '/play' && (
+        <Footer />
+      )}
     </Box>
   );
 };

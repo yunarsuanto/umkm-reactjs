@@ -9,8 +9,11 @@ export const updateLessonItemSchema = z.object({
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
     { message: 'ID harus berupa UUID yang valid' }
   ).optional().or(z.literal('')),
-  content: z.string().min(6, { message: 'Title is required min 6' }),
+  content: z.string().min(1, { message: 'Title is required min 1' }),
   order: z.number().int().min(1, { message: 'Level must be at least 1' }),
+  media: z.string().optional(),
+  group: z.number().min(1, { message: 'Title is required min 1' }),
+  is_done: z.boolean().optional(),
 });
 
 export type UpdateLessonItemSchema = z.infer<typeof updateLessonItemSchema>;

@@ -7,7 +7,7 @@ const initialState: GeneralLessonItemState = {
         id: '',
         content: '',
     },
-    imageBase64: '',
+    image: '',
     showMediaModal: false,
 };
 
@@ -28,6 +28,9 @@ const lessonSlice = createSlice({
         clearDataLessonItem: (state) => {
             state.selectedLessonItem = { id: '', content: '' };
         },
+        setImage: (state, action: PayloadAction<string>) => {
+            state.image = action.payload
+        },
     },
 });
 
@@ -36,5 +39,6 @@ export const {
         closeDeleteModal,
         setDataLessonItem,
         clearDataLessonItem,
+        setImage,
     } = lessonSlice.actions;
 export default lessonSlice.reducer;

@@ -15,7 +15,7 @@ import { useAddUserRole } from '../../../hooks/useAddUserRole';
 import { addUserRoleSchema, AddUserRoleSchema } from '../../../schemas/addUserRole.schema';
 import { DeleteUserRoleDataState } from '../../../types/admin/user_role/DeleteUserRoleType';
 import { useDeleteUserRole } from '../../../hooks/useDeleteUserRole';
-import { useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedCallback, useDebouncedValue } from '@mantine/hooks';
 
 interface ShowModalUserProps {
   open: boolean;
@@ -38,17 +38,17 @@ const ShowModalUser = ({ open }: ShowModalUserProps) => {
 
   const {switchToAddDetail} = useAppSelector((state) => state.general)
   const {selectedUserRole, selectedUserRoleDelete} = useAppSelector((state) => state.userRole)
-  const { mutate, isPending } = useAddUserRole();
+  const { mutateAsync, isPending } = useAddUserRole();
   const { mutate: mutateDelete, isPending: isPendingDelete } = useDeleteUserRole();
 
   const {
-      control,
-      handleSubmit,
-      formState: { errors },
-      reset,
-    } = useForm<AddUserRoleSchema>({
-      resolver: zodResolver(addUserRoleSchema),
-    });
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<AddUserRoleSchema>({
+    resolver: zodResolver(addUserRoleSchema),
+  });
 
   const handleClose = () => {
     dispatch(closeShowModal());
@@ -62,17 +62,39 @@ const ShowModalUser = ({ open }: ShowModalUserProps) => {
     dispatch(changeSwitchToAddDetail())
   }
   
-  const onSubmit = () => {
-    mutate(selectedUserRole, {
-        onSuccess: () => {
-          reset();
-          dispatch(clearDataUserRole());
-          dispatch(changeSwitchToAddDetail())
-          dispatch(clearPagination());
-          dispatch(setSearch(''));
-        }
+  const debouncedSubmit = useDebouncedCallback( async (data: AddUserRoleSchema) => {
+    let payload: AddUserRoleSchema = {...data}
+    payload = {...payload, is_active: true}
+    await mutateAsync(payload)
+    reset();
+    dispatch(clearDataUserRole());
+    dispatch(changeSwitchToAddDetail())
+    dispatch(clearPagination());
+    dispatch(setSearch(''));
+  }, 500);
+
+  const onSubmit = async (data: AddUserRoleSchema) => {
+    await new Promise<void>((resolve) => {
+      debouncedSubmit(data);
+      setTimeout(resolve, 600);
     })
-  }
+  };
+  // const onSubmit = () => {
+  //   const d:AddUserRoleSchema = {
+  //     user_id: selectedUserRole.user_id,
+  //     role_id: selectedUserRole.role_id,
+  //     is_active: true,
+  //   }
+  //   mutate(selectedUserRole, {
+  //       onSuccess: () => {
+  //         reset();
+  //         dispatch(clearDataUserRole());
+  //         dispatch(changeSwitchToAddDetail())
+  //         dispatch(clearPagination());
+  //         dispatch(setSearch(''));
+  //       }
+  //   })
+  // }
   
   const handleDelete = (data: DeleteUserRoleDataState) => {
     dispatch(setDataUserRoleDelete({user_id: data.user_id, role_id: data.role_id}))

@@ -10,6 +10,7 @@ export interface DetailCategoryLessonDataResponse {
   id: string
   title: string
   description: string
+  category_lesson_type: string
   media: string
   category_lesson_id: string
   childs: GetCategoryLessonDataResponse[]

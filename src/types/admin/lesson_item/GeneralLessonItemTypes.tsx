@@ -2,7 +2,7 @@
 export interface GeneralLessonItemState {
     openDelete: boolean;
     selectedLessonItem: GeneralLessonItemDataState;
-    imageBase64: string;
+    image: string;
     showMediaModal: boolean;
 }
 
