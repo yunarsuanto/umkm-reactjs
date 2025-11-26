@@ -1,4 +1,4 @@
-import { Button, Card, Container, Grid, Group, Text, Divider, Image } from '@mantine/core';
+import { Button, Card, Container, Grid, Group, Text, Divider, Image, Tooltip } from '@mantine/core';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
@@ -8,6 +8,8 @@ import { useDetailLessons } from '@/hooks/useDetailLessons';
 import { useLessonItems } from '@/hooks/useLessonItems';
 import CardLessonItems from '@/components/admin/lessons/CardLessonItems';
 import DeleteModalLessonItem from '@/components/admin/lessons/DeleteModalLessonItem';
+import { useLessonGroups } from '@/hooks/useLessonGroups';
+import CardLessonGroups from '@/components/admin/lessons/CardLessonGroups';
 
 const AdminLessonDetailPage = () => {
     const dispatch = useAppDispatch();
@@ -24,6 +26,8 @@ const AdminLessonDetailPage = () => {
     enabled: pagination.page !== 0,
     }), [pagination.page]);
     const { data: dataLessonItems } = useLessonItems(pagination, {lesson_id: lesson_id!}, queryOptions)
+    
+    const { data: dataLessonGroups } = useLessonGroups(pagination, {lesson_id: lesson_id!}, queryOptions)
     
     const { openDelete } = useAppSelector((state) => state.lessonItem);
 
@@ -49,12 +53,21 @@ const AdminLessonDetailPage = () => {
                         <Group justify={'space-between'}>
                             <h2>{dataDetail?.data.title}</h2>
                             <Group>
-                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/item/create`)}>
-                                    <img src={'/add.svg'} alt="add" width={30} height={30} />  
-                                </Button>
-                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}`)}>
-                                    <img src={'/back.svg'} alt="add" width={30} height={30} />  
-                                </Button>
+                                <Tooltip label="Create Lesson Item">    
+                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/item/create`)}>
+                                        <img src={'/add.svg'} alt="add" width={30} height={30} />  
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip label="Create Lesson Group">    
+                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/group/create`)}>
+                                        <img src={'/add.svg'} alt="add" width={30} height={30} />  
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip label="Kembali">
+                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}`)}>
+                                        <img src={'/back.svg'} alt="add" width={30} height={30} />  
+                                    </Button>
+                                </Tooltip>
                             </Group>
                         </Group>
                     </Grid.Col>
@@ -69,6 +82,12 @@ const AdminLessonDetailPage = () => {
                                     {dataDetail && dataDetail.data.media && (
                                         <Image src={`${import.meta.env.VITE_API_IMAGE_URL}${dataDetail.data.media}`} fit='contain' radius={'md'} p={5} />
                                     )}
+                                </Grid.Col>
+                            </Grid>
+                            <Grid>
+                                <CardLessonGroups data={dataLessonGroups?.data ?? []} totalPages={0} category_lesson_id={category_lesson_id!} lesson_id={lesson_id!} />
+                                <Grid.Col span={12}>
+                                    <Divider my="xl" label="Lesson Item" />
                                 </Grid.Col>
                             </Grid>
                             <Grid>

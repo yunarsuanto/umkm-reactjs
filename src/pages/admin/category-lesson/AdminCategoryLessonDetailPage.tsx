@@ -1,4 +1,4 @@
-import { Button, Card, Container, Grid, Group, Text, Divider, Image } from '@mantine/core';
+import { Button, Card, Container, Grid, Group, Text, Divider, Image, Tooltip } from '@mantine/core';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDetailCategoryLessons } from '@/hooks/useDetailCategoryLessons';
@@ -47,12 +47,16 @@ const AdminCategoryLessonDetailPage = () => {
                         <Group justify={'space-between'}>
                             <h2>{dataDetail?.data.title}</h2>
                             <Group>
-                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/create`)}>
-                                    <img src={'/add.svg'} alt="add" width={30} height={30} />  
-                                </Button>
-                                <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons`)}>
-                                    <img src={'/back.svg'} alt="add" width={30} height={30} />  
-                                </Button>
+                                <Tooltip label="Create Lesson">
+                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/create`)}>
+                                        <img src={'/add.svg'} alt="add" width={30} height={30} />  
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip label="Back">
+                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons`)}>
+                                        <img src={'/back.svg'} alt="add" width={30} height={30} />  
+                                    </Button>
+                                </Tooltip>
                             </Group>
                         </Group>
                     </Grid.Col>

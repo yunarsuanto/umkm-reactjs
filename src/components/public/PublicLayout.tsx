@@ -15,7 +15,9 @@ const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
   const location = useLocation();
   return (
     <Box style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', fontFamily: 'howdybun'}}>
-      <Header setModeHeader={setMode} />
+      {location.pathname === '/' && (
+        <Header setModeHeader={setMode} />
+      )}
         <Box component="main" style={{
           flex: 1,
           overflowY: 'auto',

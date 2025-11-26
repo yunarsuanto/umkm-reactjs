@@ -7,15 +7,13 @@ const initialState: GeneralState = {
     open: '',
     switchToAddDetail: false,
     search: '',
-    isExtraSmall: false,
-    isSmall: false,
-    isMedium: false,
-    isLarge: false,
-    isDesktop: false,
-    isExtraLarge: false,
     progressBar: 0,
     errorFileNull: '',
-    playVideo: false,
+    playVideoKamuHebat: false,
+    playVideoUhSalah: false,
+    playVideoAyo: false,
+    playVideoKemon: false,
+    playVideoGabung: false,
 };
 
 const generalSlice = createSlice({
@@ -37,23 +35,26 @@ const generalSlice = createSlice({
         setSearch: (state, action: PayloadAction<string>) => {
             state.search = action.payload
         },
-        setResponsive: (state, action) => {
-            const { isExtraSmall, isSmall, isMedium, isLarge, isDesktop, isExtraLarge } = action.payload;
-            state.isExtraSmall = isExtraSmall;
-            state.isSmall = isSmall;
-            state.isMedium = isMedium;
-            state.isLarge = isLarge;
-            state.isDesktop = isDesktop;
-            state.isExtraLarge = isExtraLarge;
-        },
         setProgressBar: (state, action: PayloadAction<number>) => {
             state.progressBar = action.payload
         },
         setErrorFileNull: (state, action: PayloadAction<string>) => {
             state.errorFileNull = action.payload
         },
-        setPlayVideo: (state, action: PayloadAction<boolean>) => {
-            state.playVideo = action.payload
+        setPlayVideoKamuHebat: (state, action: PayloadAction<boolean>) => {
+            state.playVideoKamuHebat = action.payload
+        },
+        setPlayVideoUhSalah: (state, action: PayloadAction<boolean>) => {
+            state.playVideoUhSalah = action.payload
+        },
+        setPlayVideoAyo: (state, action: PayloadAction<boolean>) => {
+            state.playVideoAyo = action.payload
+        },
+        setPlayVideoKemon: (state, action: PayloadAction<boolean>) => {
+            state.playVideoKemon = action.payload
+        },
+        setPlayVideoGabung: (state, action: PayloadAction<boolean>) => {
+            state.playVideoGabung = action.payload
         },
     },
 })
@@ -64,9 +65,12 @@ export const {
         setOpen,
         changeSwitchToAddDetail,
         setSearch,
-        setResponsive,
         setProgressBar,
         setErrorFileNull,
-        setPlayVideo,
+        setPlayVideoKamuHebat,
+        setPlayVideoUhSalah,
+        setPlayVideoAyo,
+        setPlayVideoKemon,
+        setPlayVideoGabung,
     } = generalSlice.actions;
 export default generalSlice.reducer;

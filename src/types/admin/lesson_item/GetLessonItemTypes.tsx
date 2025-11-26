@@ -17,4 +17,5 @@ export interface GetLessonItemDataResponse {
   content: string
   media: string
   order: number
+  level: number
 }

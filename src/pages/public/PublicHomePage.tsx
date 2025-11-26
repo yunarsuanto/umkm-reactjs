@@ -1,7 +1,8 @@
 import { BackgroundImage, Box, Center, Container, Grid, Group, Stack, Text, useMantineTheme, Image, Card, Button } from '@mantine/core';
 import PublicLayout from '@/components/public/PublicLayout';
-import { useAppSelector } from '@/app/hooks';
 import { useNavigate } from 'react-router-dom';
+import { useDeviceMode } from '@/constants/dimension';
+import { useEffect } from 'react';
 
 interface PublicHomePageProps {
   setMode: () => void
@@ -9,12 +10,79 @@ interface PublicHomePageProps {
 
 const PublicHomePage = ({setMode} : PublicHomePageProps) => {
   const theme = useMantineTheme();
-  const { isExtraSmall, isSmall, isMedium, isLarge, isDesktop, isExtraLarge } = useAppSelector((state) => state.general )
-  const fontSizeHeader = isExtraSmall || isSmall ? 30 : isMedium ? 40 : isLarge || isDesktop ||isExtraLarge ? 50 : 0
-  const fontSizeContent = isExtraSmall || isSmall ? 20 : isMedium ? 25 : isLarge || isDesktop ||isExtraLarge ? 30 : 0
-  const justifyFirstItem = isExtraSmall || isSmall || isMedium || isLarge || isDesktop ? 'center' : isExtraLarge ? 'flex-end' : ''
-  const justifySecondItem = isExtraSmall || isSmall || isMedium || isLarge || isDesktop ? 'center' : isExtraLarge ? 'flex-start' : ''
   const navigate = useNavigate()
+  const { device, orientation } = useDeviceMode();
+  
+  const HEADER_STYLE: any = {
+    "mobile-small": { font: 20, heightFirst: 200, heightSecond: 350, paddingLeft: 0 },
+    "mobile-medium": { font: 20, heightFirst: 220, heightSecond: 360, paddingLeft: 0 },
+    "mobile-medium-plus": { font: 22, heightFirst: 230, heightSecond: 370, paddingLeft: 0 },
+    "mobile-large": { font: 25, heightFirst: 240, heightSecond: 380, paddingLeft: 0 },
+
+    "tablet": { font: 28, heightFirst: 250, heightSecond: 400, paddingLeft: 10 },
+    "tablet-large": { font: 30, heightFirst: 260, heightSecond: 420, paddingLeft: 15 },
+    "tablet-extra-large": { font: 32, heightFirst: 270, heightSecond: 440, paddingLeft: 20 },
+
+    "laptop": { font: 35, heightFirst: 280, heightSecond: 460, paddingLeft: 20 },
+    "laptop-standart": { font: 38, heightFirst: 300, heightSecond: 480, paddingLeft: 50 },
+    "laptop-large": { font: 40, heightFirst: 320, heightSecond: 500, paddingLeft: 100 },
+    "laptop-extra-large": { font: 42, heightFirst: 340, heightSecond: 520, paddingLeft: 120 },
+
+    "desktop": { font: 45, heightFirst: 360, heightSecond: 550, paddingLeft: 150 },
+    "desktop-large": { font: 48, heightFirst: 380, heightSecond: 580, paddingLeft: 180 },
+
+    "4k": { font: 50, heightFirst: 400, heightSecond: 600, paddingLeft: 200 },
+  };
+
+  const CONTENT_STYLE: any = {
+    "mobile-small": { font: 12 },
+    "mobile-medium": { font: 13 },
+    "mobile-medium-plus": { font: 13 },
+    "mobile-large": { font: 15 },
+
+    "tablet": { font: 17 },
+    "tablet-large": { font: 17 },
+    "tablet-extra-large": { font: 17 },
+
+    "laptop": { font: 20 },
+    "laptop-standart": { font: 20 },
+    "laptop-large": { font: 25 },
+    "laptop-extra-large": { font: 25 },
+
+    "desktop": { font: 30 },
+    "desktop-large": { font: 30 },
+
+    "4k": { font: 35 },
+  };
+  
+  const ORIENTATION_STYLE: any = {
+    portrait: {
+      fontMultiplier: 1,
+      heightMultiplier: 1,
+      paddingLeftMultiplier: 1,
+    },
+    landscape: {
+      fontMultiplier: 1.2,
+      heightMultiplier: 1,
+      paddingLeftMultiplier: 1.2,
+    },
+  };
+
+  const headerBase = HEADER_STYLE[device];
+  const contentBase = CONTENT_STYLE[device];
+  const orient = ORIENTATION_STYLE[orientation];
+
+  const headerStyle = {
+    font: headerBase.font * orient.fontMultiplier,
+    heightFirst: headerBase.heightFirst * orient.heightMultiplier,
+    heightSecond: headerBase.heightSecond * orient.heightMultiplier,
+    paddingLeft: headerBase.paddingLeft,
+  };
+  
+  const contentStyle = {
+    font: contentBase.font * orient.fontMultiplier,
+  };
+
   return (
     <PublicLayout setMode={setMode}>
       <Container fluid p={0}>
@@ -37,35 +105,52 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
                 }}
               />
                 <Grid style={{position: 'relative', zIndex: 2}}>
-                  <Grid.Col span={{lg: 6, md: 6, sm: 12}} h={{lg: 500, md: 300, sm: 200}} style={{justifyItems: justifyFirstItem, alignContent: 'center'}}>
+                  <Grid.Col 
+                    span={{lg: 6, md: 6, sm: 12}} 
+                    style={{
+                      justifyItems: 'center', 
+                      alignContent: 'center',
+                      height: headerStyle.heightFirst,
+                    }}
+                  >
                     <Box>
-                      <Text style={{color: theme.colors.blue[9], fontSize: fontSizeHeader}}>
+                      <Text style={{color: theme.colors.blue[9], fontSize: headerStyle.font}}>
                         🌈 Belajar 
                       </Text>
                       <Stack>
-                        <Text style={{fontSize: fontSizeContent, fontFamily: 'child-hood'}}>
+                        <Text style={{fontSize: headerStyle.font, fontFamily: 'child-hood'}}>
                           Jadi Petualangan Seru!
                         </Text>
-                        <Button variant='filled' color='pink' onClick={() => {
-                          navigate('/play')
-                        }}>
-                          <Text style={{fontSize: '20px'}}>
+                        <Button variant='filled' color='pink' 
+                          onClick={() => {
+                            navigate('/play')
+                          }}
+                          style={{height: '100%'}}
+                        >
+                          <Text style={{fontSize: headerStyle.font}}>
                             Mainkan
                           </Text>
                         </Button>
                       </Stack>
                     </Box>
                   </Grid.Col>
-                  <Grid.Col span={{lg: 6, md: 6, sm: 12}} h={{lg: 500, md: 300, sm: 200}} style={{justifyItems: justifySecondItem, alignContent: 'center', paddingLeft: 30}}>
-                      <Box p={10}>
-                          <Image src='/no-bg-2.png' style={{width: 200}} />
-                          <Group>
-                            <Text style={{fontSize: fontSizeContent, fontFamily: 'child-hood', color: theme.colors.pink[9]}}>
-                              Yuk jelajahi kegiatan seru <br />
-                              yang bikin imajinasi makin luas.<br /> 
-                            </Text>
-                          </Group>
-                      </Box>
+                  <Grid.Col 
+                    span={{lg: 6, md: 6, sm: 12}} 
+                    style={{
+                      justifyItems: 'center', 
+                      alignContent: 'center',
+                      height: headerStyle.heightSecond,
+                    }}
+                  >
+                    <Box p={10}>
+                        <Image src='/no-bg-2.png' style={{width: 200}} />
+                        <Group>
+                          <Text style={{fontSize: headerStyle.font, fontFamily: 'child-hood', color: theme.colors.pink[9]}}>
+                            Yuk jelajahi kegiatan seru <br />
+                            yang bikin imajinasi makin luas.<br /> 
+                          </Text>
+                        </Group>
+                    </Box>
                   </Grid.Col>
                 </Grid>
             </BackgroundImage>
@@ -89,7 +174,7 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
               />
               <Box style={{ position: 'relative', zIndex: 2 }}>
                 <Center py={40}>
-                  <Text style={{ fontSize: fontSizeContent, color: theme.colors.grape[9]}}>
+                  <Text style={{ fontSize: headerStyle.font, color: theme.colors.grape[9]}}>
                     Fitur
                   </Text>
                 </Center>
@@ -97,45 +182,45 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
                   <Grid.Col span={{ lg: 4, md: 6, sm: 12 }}>
                     <Card shadow="sm" radius="lg" p="md" withBorder>
                       <Card.Section>
-                        <Image src="/no-bg-read.png" alt="Belajar Membaca" height={200} fit='contain' />
+                        <Image src="/no-bg-read.png" alt="Belajar Membaca" height={200} fit='contain' style={{paddingTop: 10}} />
                       </Card.Section>
-                      <Text mt="md" fw={700}>
+                      <Text mt="md" fw={700} style={{fontSize: contentStyle.font}}>
                         📖 Belajar Membaca
                       </Text>
-                      <Text size="sm" mt="xs" c="dimmed">
+                      <Text size="sm" mt="xs" c="dimmed" style={{fontSize: contentStyle.font}}>
                         Ayo kenali huruf-huruf lucu dan bentuk kata sederhana lewat permainan interaktif.
                       </Text>
-                      <Button mt="md" color="blue" variant="light">Mulai</Button>
+                      <Button mt="md" color="blue" variant="light" style={{fontSize: contentStyle.font, height: '100%', padding: 5}}>Mulai</Button>
                     </Card>
                   </Grid.Col>
 
                   <Grid.Col span={{ lg: 4, md: 6, sm: 12 }}>
                     <Card shadow="sm" radius="lg" p="md" withBorder>
                       <Card.Section>
-                        <Image src="/no-bg-write.png" alt="Belajar Menulis" height={200} fit='contain' />
+                        <Image src="/no-bg-write.png" alt="Belajar Menulis" height={200} fit='contain' style={{paddingTop: 10}} />
                       </Card.Section>
-                      <Text mt="md" fw={700}>
+                      <Text mt="md" fw={700} style={{fontSize: contentStyle.font}}>
                         ✍️ Belajar Menulis
                       </Text>
-                      <Text size="sm" mt="xs" c="dimmed">
+                      <Text size="sm" mt="xs" c="dimmed" style={{fontSize: contentStyle.font}}>
                         Tulis huruf dan angka dengan panduan langkah demi langkah yang menyenangkan.
                       </Text>
-                      <Button mt="md" color="pink" variant="light">Mulai</Button>
+                      <Button mt="md" color="pink" variant="light" style={{fontSize: contentStyle.font, height: '100%', padding: 5}}>Mulai</Button>
                     </Card>
                   </Grid.Col>
 
                   <Grid.Col span={{ lg: 4, md: 6, sm: 12 }}>
                     <Card shadow="sm" radius="lg" p="md" withBorder>
                       <Card.Section>
-                        <Image src="/no-bg-counting.png" alt="Belajar Berhitung" height={200} fit='contain' />
+                        <Image src="/no-bg-counting.png" alt="Belajar Berhitung" height={200} fit='contain' style={{paddingTop: 10}} />
                       </Card.Section>
-                      <Text mt="md" fw={700}>
+                      <Text mt="md" fw={700} style={{fontSize: contentStyle.font}}>
                         🔢 Belajar Berhitung
                       </Text>
-                      <Text size="sm" mt="xs" c="dimmed">
+                      <Text size="sm" mt="xs" c="dimmed" style={{fontSize: contentStyle.font}}>
                         Hitung benda, mainkan angka, dan temukan keseruan belajar matematika dasar!
                       </Text>
-                      <Button mt="md" color="teal" variant="light">Mulai</Button>
+                      <Button mt="md" color="teal" variant="light" style={{fontSize: contentStyle.font, height: '100%', padding: 5}}>Mulai</Button>
                     </Card>
                   </Grid.Col>
                 </Grid>
@@ -146,21 +231,21 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
             <Card style={{textAlign: 'center'}}>
               <Card.Section>
                 <Center py={40}>
-                  <Text style={{ fontSize: fontSizeContent, color: theme.colors.orange[9]}}>
+                  <Text style={{ fontSize: headerStyle.font, color: theme.colors.orange[9]}}>
                     Tentang Kami
                   </Text>
                 </Center>
               </Card.Section>
-              <Text mt="md">
+              <Text mt="md" style={{fontSize: contentStyle.font}}>
                 Kami adalah tim kreatif yang percaya belajar bisa jadi petualangan seru.
               </Text>
-              <Text mt="md" c="dimmed">
+              <Text mt="md" c="dimmed" style={{fontSize: contentStyle.font}}>
                 Dengan berbagai fitur interaktif,
               </Text>
-              <Text mt="md">
+              <Text mt="md" style={{fontSize: contentStyle.font}}>
                 kami ingin membuat anak-anak menikmati belajar sambil mengeksplorasi imajinasi mereka.
               </Text>
-              <Text mt="md" c="dimmed">
+              <Text mt="md" c="dimmed" style={{fontSize: contentStyle.font}}>
                 Belajar membaca, menulis, dan berhitung jadi lebih menyenangkan dan penuh warna!
               </Text>
             </Card>
@@ -169,73 +254,22 @@ const PublicHomePage = ({setMode} : PublicHomePageProps) => {
             <Card style={{textAlign: 'center'}}>
               <Card.Section>
                 <Center py={40}>
-                  <Text style={{ fontSize: fontSizeContent, color: theme.colors.green[9]}}>
+                  <Text style={{ fontSize: headerStyle.font, color: theme.colors.green[9]}}>
                     Kontak
                   </Text>
                 </Center>
               </Card.Section>
-              <Text mt="md">
+              <Text mt="md" style={{fontSize: contentStyle.font}}>
                 Email: yokila@gmail.com
               </Text>
-              <Text mt="md" c="dimmed">
+              <Text mt="md" c="dimmed" style={{fontSize: contentStyle.font}}>
                 Whatsapp: 087799749729
               </Text>
-              <Text mt="md">
+              <Text mt="md" style={{fontSize: contentStyle.font}}>
                 Tuliskan Saran dan Kritik Anda Ke Email / Whatsapp Kami
               </Text>
             </Card>
           </Box>
-          {/* <Box>
-            <BackgroundImage
-              src="/savana.jpeg"
-            >
-              
-              <Box style={{ position: 'relative', zIndex: 2 }}>
-                <Center py={40}>
-                  <Text style={{ fontSize: fontSizeHeader, color: theme.colors.red[9]}}>
-                    Sample
-                  </Text>
-                </Center>
-                <Grid justify="center" gutter="xl" px={40} pb={60} style={{textAlign: 'center'}}>
-                  <Grid.Col span={{ lg: 4, md: 6, sm: 12 }}>
-                    <video 
-                      src="/gajah.webm"
-                      autoPlay
-                      muted
-                      loop
-                      style={{
-                        width: 300,
-                        objectPosition: 'center center',
-                      }}
-                      onClick={() => {
-                        speak('gajah')
-                      }}
-                    />
-                    <Text style={{color: theme.colors.blue[9], fontSize: 30}}>
-                      Gajah
-                    </Text>
-                  </Grid.Col>
-                  <Grid.Col span={{ lg: 4, md: 6, sm: 12 }} onClick={() => {
-                    speak('jerapah')
-                  }}>
-                    <video 
-                      src="/jerapah.webm"
-                      autoPlay
-                      muted
-                      loop
-                      style={{
-                        width: 300,
-                        objectPosition: 'center center',
-                      }}
-                    />
-                    <Text style={{color: theme.colors.blue[9], fontSize: 30}}>
-                      jerapah
-                    </Text>
-                  </Grid.Col>
-                </Grid>
-              </Box>
-            </BackgroundImage>
-          </Box> */}
         </Stack>
       </Container>
     </PublicLayout>

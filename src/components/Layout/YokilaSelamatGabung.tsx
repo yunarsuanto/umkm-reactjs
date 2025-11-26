@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/app/hooks";
-import { setPlayVideo } from "@/features/generalSlice";
+import getCachedMediaUrl from "@/constants/get_cache_media";
+import { setPlayVideoGabung } from "@/features/generalSlice";
 import { Box } from "@mantine/core";
 import { useEffect, useRef } from "react";
 
@@ -14,66 +15,73 @@ const YokilaSelamatGabung = ({ play = true }: YokilaSelamatGabungProps) => {
 
   useEffect(() => {
     let isMounted = true;
-    const video = videoRef.current;
-    if (!video) return;
 
-    const cleanup = () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      video.pause();
-      video.currentTime = 0;
-    };
+    (async () => {
+      const video = videoRef.current;
+      if (!video) return;
 
-    if (play) {
-        const audio = new Audio("/selamat-gabung-audio.m4a");
+      const cleanup = () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+        video.pause();
+        video.currentTime = 0;
+      };
+
+      if (play) {
+        // ambil cache video & audio
+        const cachedVideoUrl = await getCachedMediaUrl("/selamat-gabung-video.webm");
+        const cachedAudioUrl = await getCachedMediaUrl("/selamat-gabung-audio.m4a");
+
+        video.src = cachedVideoUrl;
+
+        const audio = new Audio(cachedAudioUrl);
         audioRef.current = audio;
 
         const playMedia = async () => {
-            try {
+          try {
             video.muted = false;
-
             await video.play().catch(() => {});
             if (isMounted) await audio.play().catch(() => {});
-            } catch (err) {
-            console.warn("Autoplay diblokir oleh browser:", err);
-            }
+          } catch (err) {
+            console.warn("Autoplay diblokir:", err);
+          }
         };
 
         const timeout = setTimeout(playMedia, 300);
 
         const handleEnded = () => {
-            cleanup();
-            dispatch(setPlayVideo(false));
+          cleanup();
+          dispatch(setPlayVideoGabung(false));
         };
 
         video.addEventListener("ended", handleEnded);
 
         return () => {
-            isMounted = false;
-            clearTimeout(timeout);
-            video.removeEventListener("ended", handleEnded);
-            cleanup();
+          isMounted = false;
+          clearTimeout(timeout);
+          video.removeEventListener("ended", handleEnded);
+          cleanup();
         };
-    }
+      }
+    })();
   }, [play, dispatch]);
 
   return (
     <Box>
-        <video
-            ref={videoRef}
-            src="/selamat-gabung-video.webm"
-            muted
-            playsInline
-            style={{
-              width: 150,
-              position: "fixed",
-              top: "calc(50% - 150px)",
-              left: "calc(50% - 75px)",
-              zIndex: 2,
-            }}
-        />
+      <video
+        ref={videoRef}
+        muted
+        playsInline
+        style={{
+          width: 150,
+          position: "fixed",
+          top: "calc(50% - 150px)",
+          left: "calc(50% - 75px)",
+          zIndex: 999,
+        }}
+      />
     </Box>
   );
 };

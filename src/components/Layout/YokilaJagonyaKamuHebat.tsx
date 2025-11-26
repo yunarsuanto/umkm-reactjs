@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/app/hooks";
-import { setPlayVideo } from "@/features/generalSlice";
+import getCachedMediaUrl from "@/constants/get_cache_media";
+import { setPlayVideoKamuHebat } from "@/features/generalSlice";
 import { Box } from "@mantine/core";
 import { useEffect, useRef } from "react";
 
@@ -14,66 +15,74 @@ const YokilaJagonyaKamuHebat = ({ play = true }: YokilaJagonyaKamuHebatProps) =>
 
   useEffect(() => {
     let isMounted = true;
-    const video = videoRef.current;
-    if (!video) return;
+    let timeout: number | null = null;
 
-    const cleanup = () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-      video.pause();
-      video.currentTime = 0;
-    };
+    async function run() {
+      const video = videoRef.current;
+      if (!video || !play) return;
 
-    if (play) {
-        const audio = new Audio("/jagonya-kamu-hebat-audio.m4a");
-        audioRef.current = audio;
+      const cleanup = () => {
+        if (audioRef.current) {
+          audioRef.current.pause();
+          audioRef.current.currentTime = 0;
+        }
+        video.pause();
+        video.currentTime = 0;
+      };
 
-        const playMedia = async () => {
-            try {
-            video.muted = false;
+      // ambil audio dari cache
+      const audioUrl = await getCachedMediaUrl("/jagonya-kamu-hebat-audio.m4a");
+      const audio = new Audio(audioUrl);
+      audioRef.current = audio;
 
-            await video.play().catch(() => {});
-            if (isMounted) await audio.play().catch(() => {});
-            } catch (err) {
-            console.warn("Autoplay diblokir oleh browser:", err);
-            }
-        };
+      // ambil video dari cache
+      const videoUrl = await getCachedMediaUrl("/jagonya-kamu-hebat-video.webm");
+      video.src = videoUrl;
 
-        const timeout = setTimeout(playMedia, 300);
+      const playMedia = async () => {
+        try {
+          video.muted = false;
+          await video.play().catch(() => {});
+          if (isMounted) await audio.play().catch(() => {});
+        } catch (err) {
+          console.warn("Autoplay diblokir oleh browser:", err);
+        }
+      };
 
-        const handleEnded = () => {
-            cleanup();
-            dispatch(setPlayVideo(false));
-        };
+      timeout = window.setTimeout(playMedia, 300);
 
-        video.addEventListener("ended", handleEnded);
+      const handleEnded = () => {
+        cleanup();
+        dispatch(setPlayVideoKamuHebat(false));
+      };
 
-        return () => {
-            isMounted = false;
-            clearTimeout(timeout);
-            video.removeEventListener("ended", handleEnded);
-            cleanup();
-        };
+      video.addEventListener("ended", handleEnded);
+
+      return () => {
+        isMounted = false;
+        if (timeout) clearTimeout(timeout);
+        video.removeEventListener("ended", handleEnded);
+        cleanup();
+      };
     }
+
+    run();
   }, [play, dispatch]);
 
   return (
     <Box>
-        <video
-            ref={videoRef}
-            src="/jagonya-kamu-hebat-video.webm"
-            muted
-            playsInline
-            style={{
-              width: 150,
-              position: "fixed",
-              top: "calc(50% - 150px)",
-              left: "calc(50% - 75px)",
-              zIndex: 2,
-            }}
-        />
+      <video
+        ref={videoRef}
+        muted
+        playsInline
+        style={{
+          width: 150,
+          position: "fixed",
+          top: "calc(50% - 150px)",
+          left: "calc(50% - 75px)",
+          zIndex: 999,
+        }}
+      />
     </Box>
   );
 };

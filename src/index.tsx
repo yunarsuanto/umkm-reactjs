@@ -10,6 +10,7 @@ import '@mantine/carousel/styles.css';
 import { BrowserRouter } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import './global.css'
 
 const queryClient = new QueryClient();
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID!;

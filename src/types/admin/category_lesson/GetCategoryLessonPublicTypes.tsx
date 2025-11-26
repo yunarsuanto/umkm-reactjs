@@ -25,6 +25,7 @@ export interface GetCategoryLessonPublicDataLessonResponse {
   description: string
   media: string
   level: number
+  lesson_type: string
   items: GetCategoryLessonPublicDataLessonItemResponse[]
 }
 
@@ -33,4 +34,5 @@ export interface GetCategoryLessonPublicDataLessonItemResponse {
   content: string
   media: string
   order: number
+  isCorrect: boolean
 }

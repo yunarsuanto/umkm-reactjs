@@ -30,10 +30,12 @@ import {
   IconCoin,
   IconChevronDown,
 } from '@tabler/icons-react';
-import classes from './Header.module.css';
+import classes from '@/index.module.css';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { setMode } from '../../features/generalSlice';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDeviceMode } from '@/constants/dimension';
+import { useEffect } from 'react';
 
 const mockdata = [
   {
@@ -79,37 +81,67 @@ export function Header({ setModeHeader } : HeaderProps) {
   const {token, role} = useAppSelector((state) => state.auth)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const links = mockdata.map((item) => (
-    <UnstyledButton className={classes.subLink} key={item.title}>
-      <Group wrap="nowrap" align="flex-start">
-        <ThemeIcon size={34} variant="default" radius="md">
-          <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
-        </ThemeIcon>
-        <div>
-          <Text size="sm" fw={500}>
-            {item.title}
-          </Text>
-          <Text size="xs" c="dimmed">
-            {item.description}
-          </Text>
-        </div>
-      </Group>
-    </UnstyledButton>
-  ));
+  const { device, orientation } = useDeviceMode();
+
+  const HEADER_STYLE: any = {
+    "mobile-small": { font: 15, height: 60, paddingLeft: 0 },
+    "mobile-medium": { font: 16, height: 65, paddingLeft: 0 },
+    "mobile-medium-plus": { font: 17, height: 65, paddingLeft: 10 },
+    "mobile-large": { font: 18, height: 70, paddingLeft: 10 },
+
+    "tablet": { font: 20, height: 70, paddingLeft: 10 },
+    "tablet-large": { font: 20, height: 75, paddingLeft: 15 },
+    "tablet-extra-large": { font: 20, height: 75, paddingLeft: 20 },
+
+    "laptop": { font: 22, height: 80, paddingLeft: 20 },
+    "laptop-standart": { font: 22, height: 80, paddingLeft: 50 },
+    "laptop-large": { font: 22, height: 80, paddingLeft: 100 },
+    "laptop-extra-large": { font: 22, height: 80, paddingLeft: 120 },
+
+    "desktop": { font: 25, height: 120, paddingLeft: 150 },
+    "desktop-large": { font: 25, height: 120, paddingLeft: 180 },
+
+    "4k": { font: 50, height: 150, paddingLeft: 200 },
+  };
+
+  const ORIENTATION_STYLE: any = {
+    portrait: {
+      fontMultiplier: 1,
+      heightMultiplier: 1,
+      paddingLeftMultiplier: 1,
+    },
+    landscape: {
+      fontMultiplier: 1,
+      heightMultiplier: 1,
+      paddingLeftMultiplier: 1,
+    },
+  };
+
+  const headerBase = HEADER_STYLE[device];
+  const orient = ORIENTATION_STYLE[orientation];
+  
+  const headerStyle = {
+    font: headerBase.font * orient.fontMultiplier,
+    height: headerBase.height * orient.heightMultiplier,
+    paddingLeft: headerBase.paddingLeft * orient.paddingLeftMultiplier,
+  };
 
   return (
-    
-    <Box pb={60}>
-      <header className={classes.header} style={{
+    <Box pb={headerStyle.height}>
+      <header style={{
         position: 'fixed',
         top: 0,
         width: '100%',
+        maxWidth: '100%',
         zIndex: 1000,
         backgroundColor: theme.colors.green[0],
+        height: headerStyle.height,
+        padding: 10,
+        boxSizing: 'border-box',
       }}>
         <Group justify="space-between" h="100%">
-          <Box pl={20}>
-            <Button component='a' href={'/#home'} variant="subtle" color='lime' className={classes.link}>
+          <Box style={{height: '100%', paddingLeft: headerStyle.paddingLeft}}>
+            <Button component={Link} to={'/'} variant="subtle" color='lime' p={5} style={{height: '100%'}}>
               <Image
                 src={`/logo.png`}
                 alt={'cecep'}
@@ -119,34 +151,39 @@ export function Header({ setModeHeader } : HeaderProps) {
             </Button>
           </Box>
           <Group h="100%" gap={0} visibleFrom="sm">
-            <Button component='a' href={'/#home'} variant="subtle" color='lime' className={classes.link}>
-              <Text style={{fontSize: '30px'}}>
+            <Button component={Link} to={'/#home'} variant="subtle" color='lime' py={0} px={5} style={{height: '100%'}}>
+              <Text style={{fontSize: headerStyle.font}}>
                 Beranda
               </Text>
             </Button>
-            <Button component='a' href='/#feature' variant="subtle" color='yellow' className={classes.link}>
-              <Text style={{fontSize: '30px'}}>
+            <Button component={Link} to='/#feature' variant="subtle" color='yellow' py={0} px={5} style={{height: '100%'}}>
+              <Text style={{fontSize: headerStyle.font}}>
                 Fitur
               </Text>
             </Button>
-            <Button variant="subtle" component='a' href='/#about' color='blue' className={classes.link}>
-              <Text style={{fontSize: '30px'}}>
+            <Button variant="subtle" component={Link} to='/#about' color='blue' py={0} px={5} style={{height: '100%'}}>
+              <Text style={{fontSize: headerStyle.font}}>
                 Tentang Kami
               </Text>
             </Button>
-            <Button variant="subtle" component='a' href='/#contact' color='pink' className={classes.link}>
-              <Text style={{fontSize: '30px'}}>
+            <Button variant="subtle" component={Link} to='/#contact' color='pink' py={0} px={5} style={{height: '100%'}}>
+              <Text style={{fontSize: headerStyle.font}}>
                 Kontak
               </Text>
             </Button>
           </Group>
-          {token && role === 'admin' && (
+          {token && (role === 'admin' || role === 'superadmin') && (
             <Group visibleFrom="sm">
-              <Button variant="default" onClick={() => {
-                dispatch(setMode('admin'))
-                navigate('/admin')
-              }}>
-                <Text style={{fontSize: '20px'}}>
+              <Button variant="default" 
+                onClick={() => {
+                  closeDrawer();
+                  dispatch(setMode('admin'))
+                  navigate('/admin')
+                }}
+                py={0} pr={5}
+                style={{height: '100%'}}
+              >
+                <Text style={{fontSize: headerStyle.font}}>
                   Admin
                 </Text>
               </Button>
@@ -154,11 +191,16 @@ export function Header({ setModeHeader } : HeaderProps) {
           )}
           {token && role === 'user' && (
             <Group visibleFrom="sm">
-              <Button variant="default" onClick={() => {
-                dispatch(setMode('user'))
-                navigate('/user')
-              }}>
-                <Text style={{fontSize: '20px'}}>
+              <Button variant="default" 
+                onClick={() => {
+                  closeDrawer();
+                  dispatch(setMode('user'))
+                  navigate('/user')
+                }}
+                py={0} pr={5}
+                style={{height: '100%'}}
+              >
+                <Text style={{fontSize: headerStyle.font}}>
                   User
                 </Text>
               </Button>
@@ -166,59 +208,75 @@ export function Header({ setModeHeader } : HeaderProps) {
           )}
           {!token && (
             <Group visibleFrom="sm">
-              <Button variant="subtle" color='cyan' onClick={() => {
-                setModeHeader() 
-                navigate('/login')
-              }}>
-                <Text style={{fontSize: '20px'}}>
+              <Button variant="subtle" color='cyan' 
+                onClick={() => {
+                  closeDrawer();
+                  setModeHeader() 
+                  navigate('/login')
+                }}
+                py={0} pr={5}
+                style={{height: '100%'}}
+              >
+                <Text style={{fontSize: headerStyle.font}}>
                   Log in
                 </Text>
               </Button>
-              <Button variant="filled" color='pink' onClick={() => {
-                setModeHeader()
-                navigate('/register')
-              }}>
-                <Text style={{fontSize: '20px'}}>
+              <Button variant="filled" color='pink' 
+                onClick={() => {
+                  closeDrawer();
+                  setModeHeader()
+                  navigate('/register')
+                }}
+                py={0} pr={5}
+                style={{height: '100%'}}
+              >
+                <Text style={{fontSize: headerStyle.font}}>
                   Register
                 </Text>
               </Button>
             </Group>
           )}
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
+        <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
         </Group>
       </header>
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
         size="100%"
-        padding="md"
-        title="Navigation"
+        title="Yokila"
+        style={{fontFamily: 'howdybun', fontSize: headerStyle.font}}
         hiddenFrom="sm"
         zIndex={1000000}
       >
         <ScrollArea h={`calc(100vh - ${rem(80)})`} mx="-md">
           <Divider my="sm" />
-          <Button variant="subtle" color='lime' className={classes.link}>
-            <Text style={{fontSize: '20px'}}>
-              Home
+          <Button variant="subtle" component={Link} to={'/#home'} color='lime' py={0} px={10}>
+            <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
+              Beranda
             </Text>
           </Button>
-          <Button variant="subtle" color='yellow' className={classes.link}>
-            <Text style={{fontSize: '20px'}}>
-              Learn
+          <Button variant="subtle" component={Link} to={'/#feature'} color='yellow' py={0} px={10}>
+            <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
+              Fitur
             </Text>
           </Button>
-          <Button variant="subtle" color='blue' className={classes.link}>
-            <Text style={{fontSize: '20px'}}>
-              Academy
+          <Button variant="subtle" component={Link} to={'/#about'} color='blue' py={0} px={10}>
+            <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
+              Tentang Kami
             </Text>
           </Button>
+          <Button variant="subtle" component={Link} to={'/#contact'} color='pink' py={0} px={10}>
+            <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
+              Kontak
+            </Text>
+          </Button>
+          <Divider my="sm" />
           {token && role === 'admin' && (
             <Button variant="default" onClick={() => {
               dispatch(setMode('admin'))
               navigate('/admin')
             }}>
-              <Text style={{fontSize: '20px'}}>
+              <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
                 Admin
               </Text>
             </Button>
@@ -228,28 +286,30 @@ export function Header({ setModeHeader } : HeaderProps) {
               dispatch(setMode('user'))
               navigate('/user')
             }}>
-              <Text style={{fontSize: '20px'}}>
+              <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
                 User
               </Text>
             </Button>
           )}
           {!token && (
-            <div style={{float: 'right'}}>
+            <div>
               <Button variant="subtle" color='cyan' style={{margin: 5}}
               onClick={() => {
+                closeDrawer();
                 setModeHeader() 
                 navigate('/login')
               }}>
-                <Text style={{fontSize: '20px'}}>
+                <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
                   Log in
                 </Text>
               </Button>
               <Button variant="filled" color='pink' style={{margin: 5}}
               onClick={() => {
+                closeDrawer();
                 setModeHeader()
                 navigate('/register')
               }}>
-                <Text style={{fontSize: '20px'}}>
+                <Text style={{fontSize: headerStyle.font, fontFamily: 'howdybun'}}>
                   Register
                 </Text>
               </Button>

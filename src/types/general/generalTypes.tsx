@@ -6,15 +6,13 @@ export interface GeneralState {
     open: string
     switchToAddDetail: boolean
     search: string
-    isExtraSmall: boolean
-    isSmall: boolean
-    isMedium: boolean
-    isLarge: boolean
-    isDesktop: boolean
-    isExtraLarge: boolean
     progressBar: number
     errorFileNull: string
-    playVideo: boolean
+    playVideoKamuHebat: boolean
+    playVideoUhSalah: boolean
+    playVideoAyo: boolean
+    playVideoKemon: boolean
+    playVideoGabung: boolean
 }
 
 export interface UploadFileResponse {

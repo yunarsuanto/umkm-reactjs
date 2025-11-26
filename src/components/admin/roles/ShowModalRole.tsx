@@ -100,7 +100,7 @@ const ShowModalRole = ({ open }: ShowModalRoleProps) => {
 
   useEffect(() => {
     dispatch(setPaginationSearch(debouncedSearch));
-  }, [debouncedSearch, pagination, dispatch])
+  }, [debouncedSearch, dispatch])
 
   useEffect(() => {
     dispatch(setDataPagination({
@@ -132,7 +132,7 @@ const ShowModalRole = ({ open }: ShowModalRoleProps) => {
                   rules={{
                     required: "isian ini harus diisi"
                   }}
-                  render={({ field }) => (
+                  render={({ field: {onChange, ...field} }) => (
                     <Select
                       {...field}
                       label="Pilih Permission"
@@ -146,6 +146,7 @@ const ShowModalRole = ({ open }: ShowModalRoleProps) => {
                         return { value: data.id, label: data.name }
                       }) || []}
                       onChange={(val) => {
+                        onChange(val)
                         dispatch(
                           setDataRolePermission({
                             role_id: selectedRolePermission.role_id || '',
@@ -155,6 +156,7 @@ const ShowModalRole = ({ open }: ShowModalRoleProps) => {
                       }}
                       error={errors.permission_id?.message}
                       disabled={permissionIsLoading}
+                      multiple
                     />
                   )}
                 />

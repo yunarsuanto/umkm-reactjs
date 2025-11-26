@@ -111,27 +111,11 @@ const AdminLessonItemCreatePage = () => {
                     required
                   />
                 </Grid.Col>
-                <Grid.Col span={{base: 4, lg: 4, md: 4, xs: 4}} p={20}>
-                  <Controller
-                    name="group"
-                    control={control}
-                    render={({ field }) => (
-                      <TextInput
-                        label="group"
-                        type="number"
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                        error={errors.group?.message}
-                        required
-                      />
-                    )}
-                  />
-                </Grid.Col>
                 <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
                   <Checkbox
                     label="Tahap Akhir"
                     {...register('is_done')}
-                    error={errors.group?.message}
+                    error={errors.is_done?.message}
                   />
                 </Grid.Col>
                 <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>

@@ -8,7 +8,6 @@ export const addLessonItemSchema = z.object({
   content: z.string().min(1, { message: 'Title is required min 1' }),
   order: z.number().int().min(1, { message: 'Level must be at least 1' }),
   media: z.string().optional(),
-  group: z.number().min(1, { message: 'Title is required min 1' }),
   is_done: z.boolean().optional(),
 });
 
