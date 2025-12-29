@@ -1,61 +1,61 @@
-import { Modal, Button, Group, Alert, Text } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { closeDeleteModal } from '../../../features/roleSlice';
 import { useDeleteRoles } from '../../../hooks/useDeleteRoles';
-import { useDebouncedCallback } from '@mantine/hooks';
 
-interface DeleteModalRoleProps {
-  open: boolean;
-}
-
-const DeleteModalRole = ({ open }: DeleteModalRoleProps) => {
+const DeleteModalRole = () => {
   const dispatch = useAppDispatch();
-  const { selectedRole } = useAppSelector((state) => state.role);
+  const { selectedRole, openDelete } = useAppSelector((state) => state.role);
   const { mutate, isPending, isError, error } = useDeleteRoles();
 
   const handleClose = () => {
     dispatch(closeDeleteModal());
   };
 
-  const debouncedSubmit = useDebouncedCallback((id: string) => {
-    mutate({id: id}, {
+  const onSubmit = () => {
+    mutate({ id: selectedRole.id }, {
       onSuccess: () => {
         dispatch(closeDeleteModal());
       },
     });
-  }, 500);
-
-  const onSubmit = () => {
-    debouncedSubmit(selectedRole.id);
   };
 
+  if (!openDelete) return null;
+
   return (
-    <Modal
-      opened={open}
-      onClose={handleClose}
-      title="Hapus Role"
-      centered
-    >
-      {isError && (
-        <Alert color="red" title="Gagal Hapus Data" mb="md">
-          {error.message}
-        </Alert>
-      )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <h2 className="text-lg font-bold mb-4">Hapus Role</h2>
 
-      <Text>
-        Apakah kamu yakin ingin menghapus role{' '}
-        <strong>{selectedRole.name}</strong>?
-      </Text>
+        {isError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-sm font-medium text-red-800">Gagal Hapus Data</p>
+            <p className="text-sm text-red-700 mt-1">{error?.message}</p>
+          </div>
+        )}
 
-      <Group justify="flex-end" mt="xl">
-        <Button variant="default" onClick={handleClose}>
-          Batal
-        </Button>
-        <Button color="red" loading={isPending} onClick={onSubmit}>
-          Hapus
-        </Button>
-      </Group>
-    </Modal>
+        <p className="text-gray-700 mb-6">
+          Apakah kamu yakin ingin menghapus role{' '}
+          <strong>{selectedRole.name}</strong>?
+        </p>
+
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={handleClose}
+            disabled={isPending}
+            className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            Batal
+          </button>
+          <button
+            onClick={onSubmit}
+            disabled={isPending}
+            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+          >
+            {isPending ? 'Hapus...' : 'Hapus'}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

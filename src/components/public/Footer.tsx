@@ -1,86 +1,34 @@
-import { Text, Container, ActionIcon, Group, rem } from '@mantine/core';
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons-react';
-import classes from './Footer.module.css';
-
-const data = [
-  {
-    title: 'About',
-    links: [
-      { label: 'Features', link: '#' },
-      { label: 'Pricing', link: '#' },
-      { label: 'Support', link: '#' },
-      { label: 'Forums', link: '#' },
-    ],
-  },
-  {
-    title: 'Project',
-    links: [
-      { label: 'Contribute', link: '#' },
-      { label: 'Media assets', link: '#' },
-      { label: 'Changelog', link: '#' },
-      { label: 'Releases', link: '#' },
-    ],
-  },
-  {
-    title: 'Community',
-    links: [
-      { label: 'Join Discord', link: '#' },
-      { label: 'Follow on Twitter', link: '#' },
-      { label: 'Email newsletter', link: '#' },
-      { label: 'GitHub discussions', link: '#' },
-    ],
-  },
-];
 
 export function Footer() {
-  const groups = data.map((group) => {
-    const links = group.links.map((link, index) => (
-      <Text<'a'>
-        key={index}
-        className={classes.link}
-        component="a"
-        href={link.link}
-        onClick={(event) => event.preventDefault()}
-      >
-        {link.label}
-      </Text>
-    ));
-
-    return (
-      <div className={classes.wrapper} key={group.title}>
-        <Text className={classes.title}>{group.title}</Text>
-        {links}
-      </div>
-    );
-  });
-
   return (
-    <footer className={classes.footer}>
-      {/* <Container className={classes.inner}>
-        <div className={classes.logo}>
-          <Text>Logo</Text>
-          <Text size="xs" c="dimmed" className={classes.description}>
-            Build fully functional accessible web applications faster than ever
-          </Text>
-        </div>
-        <div className={classes.groups}>{groups}</div>
-      </Container> */}
-      <Container className={classes.afterFooter}>
-        <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
-          <Text c="dimmed" size="sm">
-            © 2024 mantine.dev. All rights reserved.
-          </Text>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-            <IconBrandTwitter style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-            <IconBrandYoutube style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-            <IconBrandInstagram style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-          </ActionIcon>
-        </Group>
-      </Container>
+    <footer className="w-full border-t p-4 bg-white fixed bottom-0">
+      <div className="container mx-auto flex items-center justify-center gap-4">
+        <span className="text-gray-500 text-sm">
+          © 2025 yokila by serenus
+        </span>
+
+        {/* Twitter */}
+        <button className="text-gray-500 hover:text-gray-700">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <IconBrandTwitter style={{ width: 'rem(18)', height: 'rem(18)' }} stroke={1.5} />
+          </svg>
+        </button>
+
+        {/* YouTube */}
+        <button className="text-gray-500 hover:text-gray-700">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <IconBrandYoutube style={{ width: 'rem(18)', height: 'rem(18)' }} stroke={1.5} />
+          </svg>
+        </button>
+
+        {/* Instagram */}
+        <button className="text-gray-500 hover:text-gray-700">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <IconBrandInstagram style={{ width: 'rem(18)', height: 'rem(18)' }} stroke={1.5} />
+          </svg>
+        </button>
+      </div>
     </footer>
   );
 }

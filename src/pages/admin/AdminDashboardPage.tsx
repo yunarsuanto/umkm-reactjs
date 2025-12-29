@@ -1,4 +1,3 @@
-import { Container, Grid } from '@mantine/core';
 import AdminLayout from '@/components/admin/AdminLayout';
 import StatsGrid from '@/components/admin/dashboard/StatsGrid';
 import { StatsRing } from '@/components/admin/dashboard/StatsRing';
@@ -15,7 +14,8 @@ const AdminDashboardPage = () => {
   ];
   return (
     <AdminLayout>
-      <Container fluid p={50}>
+      Admin Dashboard
+      {/* <Container fluid p={50}>
         <Grid>
           <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
             <h2>Dashboard</h2>
@@ -34,7 +34,7 @@ const AdminDashboardPage = () => {
             <TableReviews />
           </Grid.Col>
         </Grid>
-      </Container>
+      </Container> */}
     </AdminLayout>
   );
 };

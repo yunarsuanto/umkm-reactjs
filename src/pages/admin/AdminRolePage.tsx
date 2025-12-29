@@ -1,4 +1,3 @@
-import { Button, Center, Container, Grid, Group, Loader, Text, TextInput } from '@mantine/core';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useRoles } from '../../hooks/useRoles';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +11,6 @@ import DeleteModalRole from '../../components/admin/roles/DeleteModalRole';
 import TableRoles from '../../components/admin/roles/TableRoles';
 import ShowModalRole from '../../components/admin/roles/ShowModalRole';
 import { setSearch } from '../../features/generalSlice';
-import { useDebouncedValue } from '@mantine/hooks';
 
 const AdminRolePage = () => {
   const navigate = useNavigate()
@@ -25,7 +23,7 @@ const AdminRolePage = () => {
   const { data, isLoading, isError, error } = useRoles(pagination, queryOptions)
   const { openShow, openCreate, openUpdate, openDelete } = useAppSelector((state) => state.role);
   const { search } = useAppSelector((state) => state.general);
-  const [debouncedSearch] = useDebouncedValue(search, 500);
+  // const [debouncedSearch] = useDebouncedValue(search, 500);
   
   const handleOpen = () => {
     dispatch(openCreateModal())
@@ -57,20 +55,17 @@ const AdminRolePage = () => {
     }
   }, [data, dispatch, limit])
 
-  useEffect(() => {
-    dispatch(setPaginationSearch(debouncedSearch));
-  }, [debouncedSearch, pagination, dispatch])
+  // useEffect(() => {
+  //   dispatch(setPaginationSearch(debouncedSearch));
+  // }, [debouncedSearch, pagination, dispatch])
 
 
   if (isLoading) {
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Loader size="lg" color="blue" />
-          <Text mt="md" c="dimmed">
-            Memuat data izin...
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-gray-500">
+          Loading roles...
+        </div>
       </AdminLayout>
     );
   }
@@ -80,44 +75,44 @@ const AdminRolePage = () => {
     }
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Text c="red" fw={500}>
-            Gagal memuat data: {error?.message || 'Terjadi kesalahan tak terduga'}
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-red-600">
+          Gagal memuat data
+        </div>
       </AdminLayout>
     );
   }
   return (
     <AdminLayout>
-      <AddModalRole open={openCreate} />
-      <ShowModalRole open={openShow} />
-      <UpdateModalRole open={openUpdate} />
-      <DeleteModalRole open={openDelete} />
-      <Container fluid p={50}>
-        <Grid>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-            <h2>Role</h2>
-          </Grid.Col>
-        </Grid>
-        <Grid p={10}>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <Group justify="space-between">
-                
-                <Button variant="default" onClick={handleOpen}>
-                  + Role
-                </Button>
-                <TextInput
-                  label="Name"
-                  onChange={(ev: React.ChangeEvent<HTMLInputElement>) => dispatch(setSearch(ev.target.value))}
-                />
-            </Group>
-          </Grid.Col>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <TableRoles data={data?.data ?? []} totalPages={pagination.totalPages} />
-          </Grid.Col>
-        </Grid>
-      </Container>
+      {/* Modals */}
+      <AddModalRole />
+      <ShowModalRole />
+      <UpdateModalRole />
+      <DeleteModalRole />
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-semibold">Role</h1>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleOpen}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded text-sm"
+          >
+            + Role
+          </button>
+
+          <input
+            type="text"
+            placeholder="Search role..."
+            value={search}
+            onChange={(e) => dispatch(setSearch(e.target.value))}
+            className="border rounded-md px-3 py-2 text-sm w-64"
+          />
+        </div>
+      </div>
+
+      {/* Table */}
+      <TableRoles data={data?.data ?? []} totalPages={pagination.totalPages} />
     </AdminLayout>
   );
 };

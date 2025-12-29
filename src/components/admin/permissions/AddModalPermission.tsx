@@ -1,18 +1,13 @@
-import { Modal, TextInput, Button, Group, Alert } from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch } from '../../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { addPermissionSchema, AddPermissionSchema } from '../../../schemas/addPermission.schema';
 import { useAddPermissions } from '../../../hooks/useAddPermissions';
 import { closeCreateModal } from '../../../features/permissionSlice';
-import { useDebouncedCallback } from '@mantine/hooks';
 
-interface AddModalPermissionProps {
-  open: boolean;
-}
-
-const AddModalPermission = ({ open }: AddModalPermissionProps) => {
+const AddModalPermission = () => {
   const dispatch = useAppDispatch();
+  const { openCreate } = useAppSelector((state) => state.permission);
   const { mutate, isPending, isError, error } = useAddPermissions();
 
   const {
@@ -29,37 +24,62 @@ const AddModalPermission = ({ open }: AddModalPermissionProps) => {
     dispatch(closeCreateModal());
   };
 
-  const debouncedSubmit = useDebouncedCallback((data: AddPermissionSchema) => {
-    mutate(data, {
-      onSuccess: () => reset(),
-    });
-  }, 500);
-
   const onSubmit = (data: AddPermissionSchema) => {
-    debouncedSubmit(data);
+    mutate(data, {
+      onSuccess: () => {
+        reset();
+        dispatch(closeCreateModal());
+      },
+    });
   };
 
+  if (!openCreate) return null;
+
   return (
-    <>
-      <Modal opened={open} onClose={handleClose} title="Add Permission">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Add Permission</h2>
+        
         {isError && (
-            <Alert color="red" title="Gagal Tambah Data" mb="md">{error.message}</Alert>
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            <p className="text-sm font-semibold">Error</p>
+            <p className="text-sm">{(error as any)?.message || 'Failed to add permission'}</p>
+          </div>
         )}
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextInput
-            label="Name"
-            {...register('name')}
-            error={errors.name?.message}
-            required
-          />
-          <Group justify="flex-end" mt="md">
-            <Button type="submit" loading={isPending}>
-              Add Permission
-            </Button>
-          </Group>
+        
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Permission Name *
+            </label>
+            <input
+              {...register('name')}
+              type="text"
+              placeholder="e.g., users.view"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+          </div>
+
+          <div className="flex gap-3 justify-end pt-4">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              {isPending ? 'Adding...' : 'Add Permission'}
+            </button>
+          </div>
         </form>
-      </Modal>
-    </>
+      </div>
+    </div>
   );
 };
 

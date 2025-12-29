@@ -1,99 +1,74 @@
 import getRandomOptions from "@/constants/random_option";
 import speak from "@/constants/speak";
-import { GetCategoryLessonPublicDataLessonResponse } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
-import { Carousel } from "@mantine/carousel";
-import { Box, Flex, Grid, Group, Text, useMantineTheme } from "@mantine/core";
+import { GetCategoryLessonPublicDataLessonItemResponse, GetCategoryLessonPublicDataLessonResponse } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
 import { useEffect, useRef, useState } from "react";
 import IdentificationSlideTheme from "./IdentificationSlideTheme";
 import { EmblaCarouselType } from "embla-carousel";
-import { setPlayVideoKamuHebat, setProgressBar } from "@/features/generalSlice";
+import { setPlayVideoKamuHebat, setPlayVideoUhSalah, setProgressBar } from "@/features/generalSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useDeviceMode } from "@/constants/dimension";
+import ShowInfo from "./Info";
 
 interface IdentificationThemeProps {
   data: GetCategoryLessonPublicDataLessonResponse;
-  index: number;
 }
 
-const IdentificationTheme = ({ data, index }: IdentificationThemeProps) => {
+const IdentificationTheme = ({ data }: IdentificationThemeProps) => {
   const dispatch = useAppDispatch()
-  const theme = useMantineTheme();
-  
+
   const total = data.items.length;
-  const {progressBar, playVideoKamuHebat} = useAppSelector((state) => state.general);
-  const speakRef = useRef(false);
-  const emblaRef = useRef<EmblaCarouselType | null>(null);
+  const { progressBar } = useAppSelector((state) => state.general);
   const [currentIndex, setCurrentIndex] = useState(0)
-  
+  const prevIndexRef = useRef<number>(0);
+  const [single, setSingle] = useState<GetCategoryLessonPublicDataLessonItemResponse | null>(null)
+
   const handleSpeak = (slideIndex: number) => {
     const r = data.items[slideIndex];
     if (!r) return;
-    speak(`Yang manakah yang dinamakan ${r.content}?`);
+    setTimeout(() => {
+      speak(data.description.replaceAll('{content}', r.content));
+    }, 4200)
   };
 
-  const handleCorrectAnswer = () => {
-    dispatch(setPlayVideoKamuHebat(true));
-  };
+  const onCorrectAnswer = () => {
+    setTimeout(() => {
+      dispatch(setPlayVideoKamuHebat(true));
+    }, 1000);
+
+    if (total === currentIndex + 1) {
+      dispatch(setProgressBar(progressBar + 1))
+    };
+    setCurrentIndex(currentIndex + 1)
+    handleSpeak(currentIndex + 1);
+  }
+
+  const onWrongAnswer = () => {
+    setTimeout(() => {
+      dispatch(setPlayVideoUhSalah(true));
+    }, 1000);
+  }
 
   useEffect(() => {
-    if (!speakRef.current) {
-      speakRef.current = true;
-      if(progressBar !== 1){
-        handleSpeak(0);
-      }
+    const oldIndex = prevIndexRef.current;
+    const newIndex = currentIndex;
+
+    if (oldIndex !== newIndex && data.items) {
+      setSingle(data.items[newIndex])
+    } else {
+      setSingle(data.items[oldIndex])
     }
-  }, []);
-  
-  useEffect(() => {
-    if (playVideoKamuHebat) return;
 
-    if (!playVideoKamuHebat) {
-      const embla = emblaRef.current;
-      if (!embla) return;
+    prevIndexRef.current = currentIndex;
+  }, [currentIndex])
 
-      if (currentIndex === total - 1) {
-        dispatch(setProgressBar(progressBar + 1));
-        return;
-      }
-
-      const next = currentIndex + 1;
-      setCurrentIndex(next);
-      embla.scrollTo(next);
-
-      speak(`Yang manakah yang dinamakan ${data.items[next].content}?`);
-    }
-  }, [playVideoKamuHebat]);
   return (
-    <Box key={`${index}-${data.title}`}>
-      <Carousel
-        slideSize="100%"
-        height={"100%"}
-        emblaOptions={{
-          loop: false,
-          align: "center",
-          dragFree: false,
-          watchDrag: false,
-        }}
-        key={`${index}-${data.title}`}
-        withControls={false}
-        draggable={false}
-        getEmblaApi={(embla) => (emblaRef.current = embla)}
-        p={5}
-      >
-        {data.items?.map((r, i) => {
-          const options = getRandomOptions(data.items, r, 3);
-          return (
-            <IdentificationSlideTheme 
-              key={`${i}-${r.content}`}
-              r={r}
-              options={options}
-              theme={theme}
-              onCorrectAnswer={handleCorrectAnswer}
-            />
-          )
-        })}
-      </Carousel>
-    </Box>
+    <div className='flex flex-col'>
+      <div className={`relative w-full bg-cover bg-no-repeat h-[74dvh] p-2 rounded-lg`} style={{ backgroundImage: `url(${import.meta.env.VITE_API_IMAGE_URL}${data.media})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        {single && (
+          <IdentificationSlideTheme single={single} array={data.items} description={data.description} onCorrectAnswer={onCorrectAnswer} onWrongAnswer={onWrongAnswer} />
+        )}
+      </div>
+    </div>
   );
 };
 

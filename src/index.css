@@ -1,0 +1,22 @@
+/* stylelint-disable at-rule-no-unknown */
+@font-face {
+  font-family: 'howdybun';
+  src:
+    url('/fonts/howdybun.woff2') format('woff2'),
+    url('/fonts/howdybun.woff') format('woff'),
+    url('/fonts/howdybun.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply font-public;
+}
+
+body {
+  font-family: howdybun !important;
+}

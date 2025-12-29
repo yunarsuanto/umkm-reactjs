@@ -1,4 +1,3 @@
-import { Button, Card, Container, Grid, Group, Text, Divider, Image, Tooltip } from '@mantine/core';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
@@ -44,64 +43,74 @@ const AdminLessonDetailPage = () => {
     }, [dispatch, limit])
 
     return (
-        <>
         <AdminLayout>
             <DeleteModalLessonItem open={openDelete} />
-            <Container fluid p={50}>
-                <Grid>
-                    <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-                        <Group justify={'space-between'}>
-                            <h2>{dataDetail?.data.title}</h2>
-                            <Group>
-                                <Tooltip label="Create Lesson Item">    
-                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/item/create`)}>
-                                        <img src={'/add.svg'} alt="add" width={30} height={30} />  
-                                    </Button>
-                                </Tooltip>
-                                <Tooltip label="Create Lesson Group">    
-                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/group/create`)}>
-                                        <img src={'/add.svg'} alt="add" width={30} height={30} />  
-                                    </Button>
-                                </Tooltip>
-                                <Tooltip label="Kembali">
-                                    <Button variant={'white'} style={{padding: 2}} onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}`)}>
-                                        <img src={'/back.svg'} alt="add" width={30} height={30} />  
-                                    </Button>
-                                </Tooltip>
-                            </Group>
-                        </Group>
-                    </Grid.Col>
-                    <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-                        <Card withBorder p="xl" radius="md">
-                            <Grid>
-                                <Grid.Col span={9}>
-                                    <Text size="sm" c="dimmed">{dataDetail?.data.description} wadawd</Text>
-                                    <Divider my="sm" />
-                                </Grid.Col>
-                                <Grid.Col span={3} style={{textAlign: 'center'}}>
-                                    {dataDetail && dataDetail.data.media && (
-                                        <Image src={`${import.meta.env.VITE_API_IMAGE_URL}${dataDetail.data.media}`} fit='contain' radius={'md'} p={5} />
-                                    )}
-                                </Grid.Col>
-                            </Grid>
-                            <Grid>
-                                <CardLessonGroups data={dataLessonGroups?.data ?? []} totalPages={0} category_lesson_id={category_lesson_id!} lesson_id={lesson_id!} />
-                                <Grid.Col span={12}>
-                                    <Divider my="xl" label="Lesson Item" />
-                                </Grid.Col>
-                            </Grid>
-                            <Grid>
-                                <CardLessonItems data={dataLessonItems?.data ?? []} totalPages={0} category_lesson_id={category_lesson_id!} lesson_id={lesson_id!} />
-                                <Grid.Col span={12}>
-                                    <Divider my="xl" label="Lesson Item" />
-                                </Grid.Col>
-                            </Grid>
-                        </Card>
-                    </Grid.Col>
-                </Grid>
-            </Container>
+            <div className="p-8">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900">{dataDetail?.data.title}</h2>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/item/create`)}
+                            className="p-2 hover:bg-gray-100 rounded-lg transition"
+                            title="Create Lesson Item"
+                        >
+                            <img src={'/add.svg'} alt="add" width={30} height={30} />
+                        </button>
+                        <button
+                            onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}/lesson/detail/${lesson_id}/group/create`)}
+                            className="p-2 hover:bg-gray-100 rounded-lg transition"
+                            title="Create Lesson Group"
+                        >
+                            <img src={'/add.svg'} alt="add" width={30} height={30} />
+                        </button>
+                        <button
+                            onClick={() => navigate(`/admin/category-lessons/detail/${category_lesson_id}`)}
+                            className="p-2 hover:bg-gray-100 rounded-lg transition"
+                            title="Back"
+                        >
+                            <img src={'/back.svg'} alt="back" width={30} height={30} />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content Card */}
+                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    {/* Description and Image */}
+                    <div className="grid grid-cols-3 gap-6 mb-8">
+                        {/* Description */}
+                        <div className="col-span-2">
+                            <p className="text-gray-600 text-sm">{dataDetail?.data.description}</p>
+                            <hr className="my-4 border-gray-300" />
+                        </div>
+                        {/* Image */}
+                        <div className="flex items-center justify-center">
+                            {dataDetail && dataDetail.data.media && (
+                                <img
+                                    src={`${import.meta.env.VITE_API_IMAGE_URL}${dataDetail.data.media}`}
+                                    alt="Lesson"
+                                    className="max-w-full h-auto rounded-lg p-2"
+                                />
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Lesson Groups Section */}
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Lesson Groups</h3>
+                        <hr className="mb-6 border-gray-300" />
+                        <CardLessonGroups data={dataLessonGroups?.data ?? []} totalPages={0} category_lesson_id={category_lesson_id!} lesson_id={lesson_id!} />
+                    </div>
+
+                    {/* Lesson Items Section */}
+                    <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Lesson Items</h3>
+                        <hr className="mb-6 border-gray-300" />
+                        <CardLessonItems data={dataLessonItems?.data ?? []} totalPages={0} category_lesson_id={category_lesson_id!} lesson_id={lesson_id!} lessonType={dataDetail?.data?.lesson_type!} />
+                    </div>
+                </div>
+            </div>
         </AdminLayout>
-        </>
     );
 };
 

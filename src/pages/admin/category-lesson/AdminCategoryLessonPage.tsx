@@ -1,11 +1,9 @@
-import { Button, Center, Container, Grid, Group, Loader, Text, TextInput } from '@mantine/core';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { setDataPagination, setPaginationSearch } from '../../../features/paginationSlice';
 import { useEffect, useMemo } from 'react';
 import { setSearch } from '../../../features/generalSlice';
-import { useDebouncedValue } from '@mantine/hooks';
 import { useCategoryLessons } from '../../../hooks/useCategoryLessons';
 import CardCategoryLessons from '@/components/admin/lessons/CardCategoryLessons';
 import DeleteModalCategoryLesson from '@/components/admin/lessons/DeleteModalCategoryLesson';
@@ -21,7 +19,7 @@ const AdminCategoryLessonPage = () => {
   const { data, isLoading, isError, error } = useCategoryLessons(pagination, {}, queryOptions)
   const { openDelete } = useAppSelector((state) => state.categoryLesson);
   const { search } = useAppSelector((state) => state.general);
-  const [debouncedSearch] = useDebouncedValue(search, 500);
+  // const [debouncedSearch] = useDebouncedValue(search, 500);
 
   const handleOpen = () => {
     navigate('/admin/category-lessons/create')
@@ -53,19 +51,16 @@ const AdminCategoryLessonPage = () => {
     }
   }, [data, dispatch, limit])
   
-  useEffect(() => {
-    dispatch(setPaginationSearch(debouncedSearch));
-  }, [debouncedSearch, pagination, dispatch]);
+  // useEffect(() => {
+  //   dispatch(setPaginationSearch(debouncedSearch));
+  // }, [debouncedSearch, pagination, dispatch]);
   
   if (isLoading) {
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Loader size="lg" color="blue" />
-          <Text mt="md" c="dimmed">
-            Memuat data izin...
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-gray-500">
+          Loading category lessons...
+        </div>
       </AdminLayout>
     );
   }
@@ -75,41 +70,40 @@ const AdminCategoryLessonPage = () => {
     }
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Text c="red" fw={500}>
-            Gagal memuat data: {error?.message || 'Terjadi kesalahan tak terduga'}
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-red-600">
+          Gagal memuat data
+        </div>
       </AdminLayout>
     );
   }
   return (
     <AdminLayout>
-      <DeleteModalCategoryLesson open={openDelete} />
-      <Container fluid p={50}>
-        <Grid>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-            <h2>Category Lesson</h2>
-          </Grid.Col>
-        </Grid>
-        <Grid p={10}>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <Group justify="space-between">
-                <Button variant="default" onClick={handleOpen}>
-                  <img src={'/add.svg'} alt="add" width={20} height={20} style={{marginRight: 10}} />
-                  <Text>Category Lesson</Text>
-                </Button>
-                <TextInput
-                  label="Name"
-                  onChange={(ev: React.ChangeEvent<HTMLInputElement>) => dispatch(setSearch(ev.target.value))}
-                />
-            </Group>
-          </Grid.Col>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <CardCategoryLessons data={data?.data ?? []} totalPages={pagination.totalPages} />
-          </Grid.Col>
-        </Grid>
-      </Container>
+      <DeleteModalCategoryLesson />
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-semibold">Category Lesson</h1>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleOpen}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded text-sm flex items-center gap-2"
+          >
+            <span>+ Category Lesson</span>
+          </button>
+
+          <input
+            type="text"
+            placeholder="Search category..."
+            value={search}
+            onChange={(e) => dispatch(setSearch(e.target.value))}
+            className="border rounded-md px-3 py-2 text-sm w-64"
+          />
+        </div>
+      </div>
+
+      {/* Cards Grid */}
+      <CardCategoryLessons data={data?.data ?? []} totalPages={pagination.totalPages} />
     </AdminLayout>
   );
 };

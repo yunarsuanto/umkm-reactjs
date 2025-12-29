@@ -49,3 +49,29 @@ export const uploadFile = async (data: UploadFileSchema): Promise<UploadFileResp
     throw error;
   }
 };
+
+export const uploadFileLottie = async (data: UploadFileSchema): Promise<UploadFileResponse> => {
+  const formData = new FormData();
+  formData.append('file', data.file);
+  try {
+    const response = await apiClient.post(
+      '/general/upload-file-lottie',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new ApiErrorClass(
+        error.message,
+        error.response?.status,
+        error.response?.data
+      );
+    }
+    throw error;
+  }
+};

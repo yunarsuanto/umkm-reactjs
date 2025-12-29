@@ -1,4 +1,3 @@
-import { Button, Card, Group, Image, Text, Grid, List, ThemeIcon } from "@mantine/core";
 import { useAppDispatch } from "../../../app/hooks";
 import { openDeleteModal } from "@/features/lessonItemSlice";
 import { useNavigate } from "react-router-dom";
@@ -25,41 +24,35 @@ const CardLessonGroups = ({data, totalPages, category_lesson_id, lesson_id}: Car
   }
 
   return (
-    <>
-      {data && data.map((row, index) => {
-        return (
-          <Grid.Col span={3} key={`${index}-${row.id}`}>
-            <Card shadow="sm" padding="lg" radius="md" withBorder>
-              <Card.Section style={{padding: 5, textAlign: 'center'}}>
-                <Text fw={1000}>
-                  group {row.group}
-                </Text>
-                <Text fw={500}>
-                  {row.description}
-                </Text>
-              </Card.Section>
-              <Group justify="space-between" mt="md" mb="xs">
-                <List>
-                  {row.lesson_items.length > 0 && row.lesson_items.map((item, indx) => {
-                    return (
-                      <List.Item
-                        icon={
-                          <ThemeIcon color="blue" size={24} radius="xl">
-                            <IconCircleDashed size={16} />
-                          </ThemeIcon>
-                        } key={indx}
-                      >
-                        {item.content}
-                      </List.Item>
-                    )
-                  })}
-                </List>
-              </Group>
-            </Card>
-          </Grid.Col>
-        )
-      })}
-    </>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
+      {Array.isArray(data) && data.map((row, index) => (
+        <div key={`${index}-${row.id}`} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+          {/* Header Section */}
+          <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+            <h3 className="font-bold text-lg text-center text-gray-900 mb-2">Group {row.group}</h3>
+            <p className="text-gray-600 text-center text-sm">{row.description}</p>
+          </div>
+
+          {/* Items List Section */}
+          <div className="p-4">
+            {row.lesson_items && row.lesson_items.length > 0 ? (
+              <ul className="space-y-2">
+                {row.lesson_items.map((item, indx) => (
+                  <li key={indx} className="flex items-start gap-3">
+                    <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                      <IconCircleDashed size={16} />
+                    </span>
+                    <span className="text-gray-700 text-sm">{item.content}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-500 text-sm text-center py-4">No items in this group</p>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 

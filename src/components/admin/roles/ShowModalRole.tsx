@@ -1,4 +1,3 @@
-import { Modal, Button, Group, Card, Table, Badge, Text, Select } from '@mantine/core';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
 import { closeShowModal } from '../../../features/roleSlice';
 import { useShowRole } from '../../../hooks/useShowRole';
@@ -12,20 +11,16 @@ import { addRolePermissionSchema, AddRolePermissionSchema } from '../../../schem
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAddRolePermission, useDeleteRolePermission } from '../../../hooks/useAddRolePermission';
 import { usePermissions } from '../../../hooks/usePermissions';
-import { clearPagination, setDataPagination, setPaginationSearch } from '../../../features/paginationSlice';
-import { useDebouncedValue } from '@mantine/hooks';
+import { clearPagination, setDataPagination } from '../../../features/paginationSlice';
+import MultiSelect from '../MultiSelect';
 
-interface ShowModalRoleProps {
-  open: boolean;
-}
-
-const ShowModalRole = ({ open }: ShowModalRoleProps) => {
+const ShowModalRole = () => {
   const dispatch = useAppDispatch();
-  const { selectedRole } = useAppSelector((state) => state.role);
+  const { selectedRole, openShow } = useAppSelector((state) => state.role);
   const { search } = useAppSelector((state) => state.general);
-  const [debouncedSearch] = useDebouncedValue(search, 500);
+  // const [debouncedSearch] = useDebouncedValue(search, 500);
   const { data: roleData, isLoading: roleIsLoading } = useShowRole(selectedRole.id, {
-    enabled: open && selectedRole.id !== '',
+    enabled: openShow && selectedRole.id !== '',
   });
   const limit = 20
   const pagination = useAppSelector((state) => state.pagination);
@@ -98,9 +93,9 @@ const ShowModalRole = ({ open }: ShowModalRoleProps) => {
     }
   }, [selectedRolePermission, reset]);
 
-  useEffect(() => {
-    dispatch(setPaginationSearch(debouncedSearch));
-  }, [debouncedSearch, dispatch])
+  // useEffect(() => {
+  //   dispatch(setPaginationSearch(debouncedSearch));
+  // }, [debouncedSearch, dispatch])
 
   useEffect(() => {
     dispatch(setDataPagination({
@@ -113,104 +108,132 @@ const ShowModalRole = ({ open }: ShowModalRoleProps) => {
       totalRecords: 0,
     }))
   }, [dispatch, limit])
+
+  if (!openShow) return null;
+
   return (
-    <>
-      <Modal opened={open} onClose={handleClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[80vh] p-6 overflow-y-auto">
         {roleIsLoading ? (
-          <Card>Memuat Data</Card>
-        ) : (
-          switchToAddDetail ? (
-            <Card>
-              <Group justify="space-between" mt="md" mb="xs">
-                <Text fw={500}>Role: {roleData?.data.name}</Text>
-                <Badge color="blue" onClick={() => handleCreate({ role_id: roleData?.data?.id!, permission_id: '' })}>tambah</Badge>
-              </Group>
-              <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex items-center justify-center h-40">
+            <p className="text-gray-500">Memuat Data...</p>
+          </div>
+        ) : switchToAddDetail ? (
+          // Add Permission View
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold">Role: {roleData?.data.name}</h2>
+              <button
+                onClick={() => handleCreate({ role_id: roleData?.data?.id!, permission_id: '' })}
+                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                Kembali
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Pilih Permission
+                </label>
                 <Controller
                   name="permission_id"
                   control={control}
                   rules={{
                     required: "isian ini harus diisi"
                   }}
-                  render={({ field: {onChange, ...field} }) => (
-                    <Select
-                      {...field}
-                      label="Pilih Permission"
-                      placeholder="Cari permission..."
-                      searchable
-                      onSearchChange={(value) => {
-                        dispatch(setSearch(value))
-                      }}
-                      nothingFoundMessage="Tidak ditemukan"
-                      data={permissionData?.data.map((data) => {
-                        return { value: data.id, label: data.name }
-                      }) || []}
-                      onChange={(val) => {
-                        onChange(val)
+                  render={({ field: { onChange, value } }) => (
+                    <MultiSelect
+                      options={permissionData?.data.map((data) => ({
+                        value: data.id,
+                        label: data.name,
+                      })) || []}
+                      value={value ? [value] : []}
+                      onChange={(values) => {
+                        const newValue = values[0] || '';
+                        onChange(newValue);
                         dispatch(
                           setDataRolePermission({
                             role_id: selectedRolePermission.role_id || '',
-                            permission_id: val || '',
+                            permission_id: newValue,
                           })
                         );
                       }}
-                      error={errors.permission_id?.message}
+                      placeholder="Pilih permission..."
+                      searchPlaceholder="Cari permission..."
                       disabled={permissionIsLoading}
-                      multiple
+                      error={errors.permission_id?.message}
                     />
                   )}
                 />
-                <Group justify="flex-end" mt="md">
-                  <Button type="submit" loading={isPending} disabled={
-                    !isValid
-                    // selectedRolePermission.role_id === '' || selectedRolePermission.permission_id === '' 
-                  }>
-                    Add Role
-                  </Button>
-                </Group>
-              </form>
+              </div>
 
-            </Card>
-          ) : (
-            <Card>
-              <Group justify="space-between" mt="md" mb="xs">
-                <Text fw={500}>Role: {roleData?.data.name}</Text>
-                <Badge color="blue" onClick={() => handleCreate({ role_id: roleData?.data?.id!, permission_id: '' })}>tambah</Badge>
-              </Group>
-              <Table striped highlightOnHover withTableBorder>
-                <Table.Thead>
-                  <Table.Tr>
-                    <Table.Th>No</Table.Th>
-                    <Table.Th>Permission</Table.Th>
-                    <Table.Th>Aksi</Table.Th>
-                  </Table.Tr>
-                </Table.Thead>
-                <Table.Tbody>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={!isValid || isPending}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                >
+                  {isPending ? 'Menambah...' : 'Tambah Permission'}
+                </button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          // List Permissions View
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold">Role: {roleData?.data.name}</h2>
+              <button
+                onClick={() => handleCreate({ role_id: roleData?.data?.id!, permission_id: '' })}
+                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+              >
+                Tambah
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-100 text-gray-600">
+                  <tr>
+                    <th className="px-4 py-3 text-left">No</th>
+                    <th className="px-4 py-3 text-left">Permission</th>
+                    <th className="px-4 py-3 text-left">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
                   {roleData?.data?.permissions.map((row, i) => (
-                    <Table.Tr key={row.id}>
-                      <Table.Td>{i + 1}</Table.Td>
-                      <Table.Td>{row.name}</Table.Td>
-                      <Table.Td>
-                        <Button
-                          loading={inPendingDelete}
-                          variant="light"
-                          color="red"
-                          size="xs"
-                          leftSection={<IconTrash size={14} />}
+                    <tr key={row.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3">{i + 1}</td>
+                      <td className="px-4 py-3">{row.name}</td>
+                      <td className="px-4 py-3">
+                        <button
+                          disabled={inPendingDelete}
                           onClick={() => handleDelete({ role_id: roleData?.data?.id, permission_id: row.id })}
+                          className="flex items-center gap-1 px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
+                          <IconTrash size={14} />
                           Delete
-                        </Button>
-                      </Table.Td>
-                    </Table.Tr>
+                        </button>
+                      </td>
+                    </tr>
                   ))}
-                </Table.Tbody>
-              </Table>
-            </Card>
-          )
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={handleClose}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
         )}
-      </Modal>
-    </>
+      </div>
+    </div>
   );
 };
 

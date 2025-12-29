@@ -1,121 +1,167 @@
-import { Button, Center, Container, Grid, Group, Loader, Text, TextInput } from '@mantine/core';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { usePermissions } from '../../hooks/usePermissions';
 import TablePermissions from '../../components/admin/permissions/TablePermissions';
 import { useNavigate } from 'react-router-dom';
 import AddModalPermission from '../../components/admin/permissions/AddModalPermission';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import UpdateModalPermission from '../../components/admin/permissions/UpdateModalPermission';
-import { openCreateModal } from '../../features/permissionSlice';
 import DeleteModalPermission from '../../components/admin/permissions/DeleteModalPermission';
+
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { openCreateModal } from '../../features/permissionSlice';
 import { setDataPagination, setPaginationSearch } from '../../features/paginationSlice';
-import { useEffect, useMemo } from 'react';
 import { setSearch } from '../../features/generalSlice';
-import { useDebouncedValue } from '@mantine/hooks';
+
+import { useEffect, useMemo } from 'react';
+import debounce from 'lodash.debounce';
 
 const AdminPermissionPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const limit = 20
+
+  const limit = 20;
   const pagination = useAppSelector((state) => state.pagination);
-  const queryOptions = useMemo(() => ({
-    enabled: pagination.page !== 0,
-  }), [pagination.page]);
-  const { data, isLoading, isError, error } = usePermissions(pagination, queryOptions)
-  const { openCreate, openUpdate, openDelete } = useAppSelector((state) => state.permission);
   const { search } = useAppSelector((state) => state.general);
-  const [debouncedSearch] = useDebouncedValue(search, 500)
+  const { openCreate, openUpdate, openDelete } = useAppSelector(
+    (state) => state.permission
+  );
 
-  const handleOpen = () => {
-    dispatch(openCreateModal())
-  }
+  /* ======================
+     React Query
+  ====================== */
+  const queryOptions = useMemo(
+    () => ({ enabled: pagination.page !== 0 }),
+    [pagination.page]
+  );
 
+  const { data, isLoading, isError, error } = usePermissions(
+    pagination,
+    queryOptions
+  );
+
+  /* ======================
+     Init Pagination
+  ====================== */
   useEffect(() => {
-    dispatch(setDataPagination({
-      search: '',
-      page: 1,
-      limit: limit,
-      prev: 0,
-      next: 0,
-      totalPages: 0,
-      totalRecords: 0,
-    }))
-  }, [dispatch, limit])
+    dispatch(
+      setDataPagination({
+        search: '',
+        page: 1,
+        limit,
+        prev: 0,
+        next: 0,
+        totalPages: 0,
+        totalRecords: 0,
+      })
+    );
+  }, [dispatch, limit]);
 
+  /* ======================
+     Update Pagination From API
+  ====================== */
   useEffect(() => {
-    if(data){
-      dispatch(setDataPagination({
-        search: data.pagination.search,
-        page: data.pagination.page,
-        limit: limit,
-        prev: data.pagination.prev,
-        next: data.pagination.next,
-        totalPages: data.pagination.totalPages,
-        totalRecords: data.pagination.totalRecords,
-      }))
+    if (data) {
+      dispatch(
+        setDataPagination({
+          search: data.pagination.search,
+          page: data.pagination.page,
+          limit,
+          prev: data.pagination.prev,
+          next: data.pagination.next,
+          totalPages: data.pagination.totalPages,
+          totalRecords: data.pagination.totalRecords,
+        })
+      );
     }
-  }, [data, dispatch, limit])
-  
+  }, [data, dispatch, limit]);
+
+  /* ======================
+     Debounced Search (lodash)
+  ====================== */
+  const debouncedSetSearch = useMemo(
+    () =>
+      debounce((value: string) => {
+        dispatch(setPaginationSearch(value));
+      }, 500),
+    [dispatch]
+  );
+
   useEffect(() => {
-    dispatch(setPaginationSearch(debouncedSearch));
-  }, [debouncedSearch, pagination, dispatch])
+    debouncedSetSearch(search);
+    return () => {
+      debouncedSetSearch.cancel();
+    };
+  }, [search, debouncedSetSearch]);
 
+  /* ======================
+     Handlers
+  ====================== */
+  const handleOpenCreate = () => {
+    dispatch(openCreateModal());
+  };
 
+  /* ======================
+     Loading & Error
+  ====================== */
   if (isLoading) {
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Loader size="lg" color="blue" />
-          <Text mt="md" c="dimmed">
-            Memuat data izin...
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-gray-500">
+          Loading permissions...
+        </div>
       </AdminLayout>
     );
   }
+
   if (isError) {
-    if(error.status === 401){
-      navigate('/login')
+    if (error?.status === 401) {
+      navigate('/login');
     }
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Text c="red" fw={500}>
-            Gagal memuat data: {error?.message || 'Terjadi kesalahan tak terduga'}
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-red-600">
+          Gagal memuat data
+        </div>
       </AdminLayout>
     );
   }
+
+  /* ======================
+     Render
+  ====================== */
   return (
     <AdminLayout>
-      <AddModalPermission open={openCreate} />
-      <UpdateModalPermission open={openUpdate} />
-      <DeleteModalPermission open={openDelete} />
-      <Container fluid p={50}>
-        <Grid>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-            <h2>Permission</h2>
-          </Grid.Col>
-        </Grid>
-        <Grid p={10}>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <Group justify="space-between">
-                
-                <Button variant="default" onClick={handleOpen}>
-                  + Permission
-                </Button>
-                <TextInput
-                  label="Name"
-                  onChange={(ev: React.ChangeEvent<HTMLInputElement>) => dispatch(setSearch(ev.target.value))}
-                />
-            </Group>
-          </Grid.Col>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <TablePermissions data={data?.data ?? []} totalPages={pagination.totalPages} />
-          </Grid.Col>
-        </Grid>
-      </Container>
+      {/* Modals */}
+      <AddModalPermission />
+      <UpdateModalPermission />
+      <DeleteModalPermission />
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-semibold">Permission</h1>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleOpenCreate}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded text-sm"
+          >
+            + Permission
+          </button>
+
+          <input
+            type="text"
+            placeholder="Search permission..."
+            value={search}
+            onChange={(e) => dispatch(setSearch(e.target.value))}
+            className="border rounded-md px-3 py-2 text-sm w-64"
+          />
+        </div>
+      </div>
+
+      {/* Table */}
+      <TablePermissions
+        data={data?.data ?? []}
+        totalPages={pagination.totalPages}
+      />
     </AdminLayout>
   );
 };

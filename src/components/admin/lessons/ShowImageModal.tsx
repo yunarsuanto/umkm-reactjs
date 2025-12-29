@@ -1,8 +1,5 @@
-import { Card, Modal, Image, Group, Text, Badge, Button } from "@mantine/core";
 import { setShowMediaModal } from "../../../features/categoryLessonSlice";
-import { useEffect } from "react";
 import { useAppDispatch } from "../../../app/hooks";
-import MapPicker from "../../map/MapPicker";
 
 interface ShowImageModalProps {
   open: boolean;
@@ -18,26 +15,40 @@ const ShowImageModal = ({open, source, title, content, latitude, longitude} : Sh
     const handleClose = () => {
         dispatch(setShowMediaModal(false));
     };
+
+    if (!open) return null;
+
     return (
-        <Modal opened={open} onClose={handleClose} title={title}>
-            <Card shadow="sm" padding="lg" radius="md">
-                <Card.Section>
-                    <Image
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6">
+                {/* Header */}
+                <h2 className="text-xl font-bold text-gray-900 mb-4">{title}</h2>
+
+                {/* Image Section */}
+                <div className="bg-gray-100 rounded-lg overflow-hidden mb-4">
+                    <img
                         src={source}
-                        height={'400'}
-                        fit="contain"
-                        radius={'md'}
-                        p={10}
+                        alt={title}
+                        className="w-full h-auto max-h-96 object-contain"
                     />
-                </Card.Section>
-            </Card>
-            <Group justify="space-between" mt="md" mb="xs">
-                <Badge color="pink">{content}</Badge>
-            </Group>
-            <Button color="blue" fullWidth mt="md" radius="md" onClick={() => handleClose()}>
-                close
-            </Button>
-        </Modal>
+                </div>
+
+                {/* Content Badge */}
+                <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-pink-100 text-pink-700 text-sm font-medium rounded-full">
+                        {content}
+                    </span>
+                </div>
+
+                {/* Close Button */}
+                <button
+                    onClick={handleClose}
+                    className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
     )
 }
 

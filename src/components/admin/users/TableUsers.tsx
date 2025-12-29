@@ -1,10 +1,7 @@
-import { Anchor, Button, Group, Table } from "@mantine/core";
-import classes from '../../../index.module.css';
 import { IconEye, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useAppDispatch } from "../../../app/hooks";
-import { openDeleteModal, openUpdateModal, setDataUser } from "../../../features/userSlice";
+import { openDeleteModal, openUpdateModal, setDataUser, openShowModal } from "../../../features/userSlice";
 import PaginationControl from "../Pagination";
-import { openShowModal } from "../../../features/userSlice";
 import { GeneralUserDataState } from "../../../types/admin/user/GeneralUserTypes";
 import { GetUserDataResponse } from "../../../types/admin/user/GetUserTypes";
 
@@ -15,84 +12,74 @@ interface TableUsersProps {
 
 const TableUsers = ({data, totalPages}: TableUsersProps) => {
   const dispatch = useAppDispatch()
+  
   const handleShow = (data: GeneralUserDataState) => {
     dispatch(openShowModal())
     dispatch(setDataUser({id: data.id, username: data.username}))
   }
+  
   const handleEdit = (data: GeneralUserDataState) => {
     dispatch(openUpdateModal())
     dispatch(setDataUser({id: data.id, username: data.username}))
   }
+  
   const handleDelete = (data: GeneralUserDataState) => {
     dispatch(openDeleteModal())
     dispatch(setDataUser({id: data.id, username: data.username}))
   }
-  const rows = data.map((row, index) => {
-    return(
-      <Table.Tr key={row.username} className={classes.root}>
-        <Table.Td>
-          {index + 1}
-        </Table.Td>
-        <Table.Td>
-          <Anchor component="button" fz="sm">
-            {row.username}
-          </Anchor>
-        </Table.Td>
-        <Table.Td>
-          <Group gap="xs">
-            <Button
-              variant="light"
-              color="blue"
-              size="xs"
-              leftSection={<IconEye size={14} />}
-              onClick={() => handleShow({id: row.id, username: row.username})}
-            >
-              Show
-            </Button>
-            <Button
-              variant="light"
-              color="blue"
-              size="xs"
-              leftSection={<IconPencil size={14} />}
-              onClick={() => handleEdit({id: row.id, username: row.username})}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="light"
-              color="red"
-              size="xs"
-              leftSection={<IconTrash size={14} />}
-              onClick={() => handleDelete({id: row.id, username: row.username})}
-            >
-              Delete
-            </Button>
-          </Group>
-        </Table.Td>
-      </Table.Tr>
-    )
-  })
 
   return (
-    <Table.ScrollContainer minWidth={800}>
-      <Table verticalSpacing="xs">
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>No</Table.Th>
-            <Table.Th>Username</Table.Th>
-            <Table.Th>Aksi</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>{rows}</Table.Tbody>
-        <Table.Tfoot>
-          <Table.Tr>
-            <Table.Td colSpan={4}>
-              <PaginationControl total={totalPages} align="left" />
-            </Table.Td>
-          </Table.Tr>
-        </Table.Tfoot>
-      </Table>
-    </Table.ScrollContainer>
+    <div className="overflow-x-auto bg-white rounded-lg shadow">
+      <table className="min-w-full text-sm">
+        <thead className="bg-gray-100 text-gray-600">
+          <tr>
+            <th className="px-4 py-3 text-left">No</th>
+            <th className="px-4 py-3 text-left">Username</th>
+            <th className="px-4 py-3 text-left">Aksi</th>
+          </tr>
+        </thead>
+
+        <tbody className="divide-y">
+          {data.map((row, index) => (
+            <tr key={row.id} className="hover:bg-gray-50">
+              <td className="px-4 py-3">{index + 1}</td>
+              <td className="px-4 py-3 font-medium">{row.username}</td>
+              <td className="px-4 py-3">
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleShow({id: row.id, username: row.username})}
+                    className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                  >
+                    <IconEye size={14} />
+                    Show
+                  </button>
+
+                  <button
+                    onClick={() => handleEdit({id: row.id, username: row.username})}
+                    className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-600 rounded hover:bg-blue-200"
+                  >
+                    <IconPencil size={14} />
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => handleDelete({id: row.id, username: row.username})}
+                    className="flex items-center gap-1 px-3 py-1 text-xs bg-red-100 text-red-600 rounded hover:bg-red-200"
+                  >
+                    <IconTrash size={14} />
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <div className="p-4">
+        <PaginationControl total={totalPages} align="left" />
+      </div>
+    </div>
   );
 }
 

@@ -6,7 +6,7 @@ export interface GetCategoryLessonPublicRequest {
 
 export interface GetCategoryLessonPublicResponse {
   meta: Meta
-  data: GetCategoryLessonPublicDataResponse
+  data: GetCategoryLessonPublicDataResponse[]
   pagination: Pagination
 }
 
@@ -15,6 +15,7 @@ export interface GetCategoryLessonPublicDataResponse {
   title: string
   description: string
   media: string
+  mediaShow: string
   category_lesson_id: string
   lessons: GetCategoryLessonPublicDataLessonResponse[]
 }
@@ -33,6 +34,8 @@ export interface GetCategoryLessonPublicDataLessonItemResponse {
   id: string
   content: string
   media: string
+  thumbnail: string
   order: number
   isCorrect: boolean
+  is_done: boolean
 }

@@ -11,9 +11,7 @@ const initialState: GeneralState = {
     errorFileNull: '',
     playVideoKamuHebat: false,
     playVideoUhSalah: false,
-    playVideoAyo: false,
-    playVideoKemon: false,
-    playVideoGabung: false,
+    loadedImages: [],
 };
 
 const generalSlice = createSlice({
@@ -47,14 +45,8 @@ const generalSlice = createSlice({
         setPlayVideoUhSalah: (state, action: PayloadAction<boolean>) => {
             state.playVideoUhSalah = action.payload
         },
-        setPlayVideoAyo: (state, action: PayloadAction<boolean>) => {
-            state.playVideoAyo = action.payload
-        },
-        setPlayVideoKemon: (state, action: PayloadAction<boolean>) => {
-            state.playVideoKemon = action.payload
-        },
-        setPlayVideoGabung: (state, action: PayloadAction<boolean>) => {
-            state.playVideoGabung = action.payload
+        setLoadedImages: (state, action: PayloadAction<boolean[]>) => {
+            state.loadedImages = action.payload
         },
     },
 })
@@ -69,8 +61,6 @@ export const {
         setErrorFileNull,
         setPlayVideoKamuHebat,
         setPlayVideoUhSalah,
-        setPlayVideoAyo,
-        setPlayVideoKemon,
-        setPlayVideoGabung,
+        setLoadedImages,
     } = generalSlice.actions;
 export default generalSlice.reducer;

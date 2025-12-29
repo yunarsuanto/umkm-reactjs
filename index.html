@@ -3,12 +3,65 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin-allow-popups" />
     <link rel="icon" type="image/png" href="/star.png" />
     <title>React Integrated</title>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self';
+        
+        script-src
+          'self'
+          'unsafe-inline'
+          'unsafe-eval'
+          blob:
+          https://accounts.google.com
+          https://apis.google.com
+          https://www.gstatic.com;
+
+        frame-src
+          https://accounts.google.com
+          https://accounts.googleusercontent.com;
+
+        connect-src
+          'self'
+          http://localhost:9000
+          https://yokila-api.serenus.id
+          https://www.googleapis.com
+          https://accounts.google.com
+          https://accounts.googleusercontent.com
+          https://assets.lottiefiles.com
+          https://lottie.host;
+
+        img-src
+          'self'
+          data:
+          blob:
+          http://localhost:9000
+          https://yokila-api.serenus.id
+          https://tailwindcss.com;
+
+        media-src
+          'self'
+          data:
+          blob:
+          http://localhost:9000
+          https://yokila-api.serenus.id;
+
+        worker-src
+          'self'
+          blob:;
+
+        style-src
+          'self'
+          'unsafe-inline';
+      "
+    />
+
   </head>
   <body>
     <div id="root"></div>
-    <!-- arahkan ke src/index.tsx -->
     <script type="module" src="/src/index.tsx"></script>
   </body>
 </html>

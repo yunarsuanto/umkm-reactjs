@@ -12,5 +12,6 @@ export interface DetailLessonItemDataResponse {
   content: string
   order: number
   media: string
+  thumbnail: string
   is_done: boolean
 }

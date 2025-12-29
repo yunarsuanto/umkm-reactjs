@@ -6,8 +6,8 @@ import UserHomePage from './pages/user/UserHomePage';
 import AdminPermissionPage from './pages/admin/AdminPermissionPage';
 import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from './app/hooks';
-import { rehydrateAuth } from './features/authSlice';
 import { setMode } from './features/generalSlice';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 import AdminRolePage from './pages/admin/AdminRolePage';
 import AdminUserPage from './pages/admin/AdminUserPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -20,12 +20,12 @@ import AdminLessonUpdatePage from './pages/admin/lesson/AdminLessonUpdatePage';
 import AdminLessonDetailPage from './pages/admin/lesson/AdminLessonDetailPage';
 import AdminLessonItemCreatePage from './pages/admin/lesson/AdminLessonItemCreatePage';
 import AdminLessonItemUpdatePage from './pages/admin/lesson/AdminLessonItemUpdatePage';
-import { useMediaQuery } from '@mantine/hooks';
 import PlayPage from './pages/public/PlayPage';
 import { useDeviceMode } from './constants/dimension';
 import AdminLessonGroupCreatePage from './pages/admin/lesson/AdminLessonGroupCreatePage';
 import AdminLessonGroupAssignItemPage from './pages/admin/lesson/AdminLessonGroupAssignItemPage';
 import getCachedMediaUrl from './constants/get_cache_media';
+import PlayDetailPlay from './pages/public/PlayDetailPage';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -34,69 +34,54 @@ function App() {
 
   const { token, loading } = useAppSelector((s) => s.auth);
   const { mode } = useAppSelector((s) => s.general);
-  const { device, orientation } = useDeviceMode();
+  // const { device, orientation } = useDeviceMode();
 
-  useEffect(() => {
-    dispatch(rehydrateAuth());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(rehydrateAuth());
+  // }, [dispatch]);
 
-  useEffect(() => {
-    const path = location.pathname;
+  // useEffect(() => {
+  //   const path = location.pathname;
 
-    if (path.startsWith("/admin")) {
-      dispatch(setMode("admin"));
-    } else if (["/login", "/register"].includes(path)) {
-      dispatch(setMode("auth"));
-    } else if (path.startsWith("/user")) {
-      dispatch(setMode("user"));
-    } else if (["/", "/play"].includes(path)) {
-      dispatch(setMode("public"));
-    } else {
-      dispatch(setMode("public"));
-    }
-  }, [location.pathname, dispatch]);
+  //   if (path.startsWith("/admin")) {
+  //     dispatch(setMode("admin"));
+  //   } else if (["/login", "/register"].includes(path)) {
+  //     dispatch(setMode("auth"));
+  //   } else if (path.startsWith("/user")) {
+  //     dispatch(setMode("user"));
+  //   } else if (["/", "/play"].includes(path)) {
+  //     dispatch(setMode("public"));
+  //   } else {
+  //     dispatch(setMode("public"));
+  //   }
+  // }, [location.pathname, dispatch]);
 
-  useEffect(() => {
-    if (loading === "pending") return;
-    if (location.pathname === "/play") return;
-    if (!token && mode !== "auth") {
-      navigate("/");
-      return;
-    }
-  }, [loading, token, mode, location.pathname, navigate]);
+  // useEffect(() => {
+  //   if (loading === "pending") return;
+  //   if (location.pathname === "/play") return;
+  //   if (!token && mode !== "auth") {
+  //     navigate("/");
+  //     return;
+  //   }
+  // }, [loading, token, mode, location.pathname, navigate]);
 
   const handleSetMode = useCallback(() => {
     dispatch(setMode("auth"));
   }, [dispatch]);
 
-  const AUDIO_FILES = [
-    `${import.meta.env.VITE_BASE_URL}/ayo-audio.m4a`,
-    `${import.meta.env.VITE_BASE_URL}/jagonya-kamu-hebat-audio.m4a`,
-    `${import.meta.env.VITE_BASE_URL}/kemon-ayolah-audio.m4a`,
-    `${import.meta.env.VITE_BASE_URL}/selamat-gabung-audio.m4a`,
-    `${import.meta.env.VITE_BASE_URL}/uh-salah-audio.m4a`,
-
-    `${import.meta.env.VITE_BASE_URL}/ayo-video.webm`,
-    `${import.meta.env.VITE_BASE_URL}/jagonya-kamu-hebat-video.webm`,
-    `${import.meta.env.VITE_BASE_URL}/kemon-ayolah-video.webm`,
-    `${import.meta.env.VITE_BASE_URL}/uh-salah-video.webm`,
-    `${import.meta.env.VITE_BASE_URL}/selamat-gabung-video.webm`,
-  ];
   useEffect(() => {
-    async function preloadMedias() {
-      for (const url of AUDIO_FILES) {
-        try {
-          await getCachedMediaUrl(url);
-        } catch (e) {
-          console.warn("Gagal cache audio:", url);
-        }
-      }
-    }
-    preloadMedias();
-  }, []);
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
+    console.log(location.pathname)
+  }, [location.pathname]);
+
   return (
-    <Routes>
-      {mode === "admin" && (
+    <>
+      <Routes>
+        {/* {mode === "admin" && ( */}
         <>
           <Route path="/admin" element={<AdminDashboardPage />} />
           <Route path="/admin/permissions" element={<AdminPermissionPage />} />
@@ -118,26 +103,31 @@ function App() {
           <Route path="/admin/category-lessons/detail/:category_lesson_id/lesson/detail/:lesson_id/item/edit/:lesson_item_id" element={<AdminLessonItemUpdatePage />} />
           <Route path="/admin/category-lessons/detail/:category_lesson_id/lesson/detail/:lesson_id/item/assign-group/:lesson_item_id" element={<AdminLessonGroupAssignItemPage />} />
         </>
-      )}
+        {/* )} */}
 
-      {mode === "auth" && (
+        {/* {mode === "auth" && ( */}
         <>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
         </>
-      )}
+        {/* )} */}
 
-      {mode === "user" && (
+        {/* {mode === "user" && ( */}
         <Route path="/user" element={<UserHomePage setMode={handleSetMode} />} />
-      )}
+        {/* )} */}
 
-      {mode === "public" && (
+        {/* {mode === "public" && ( */}
         <>
           <Route path="/" element={<PublicHomePage setMode={handleSetMode} />} />
           <Route path="/play" element={<PlayPage setMode={handleSetMode} />} />
+          <Route path="/play/:category_lesson_id" element={<PlayDetailPlay setMode={handleSetMode} />} />
         </>
-      )}
-    </Routes>
+        {/* )} */}
+      </Routes>
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
+    </>
   );
 }
 

@@ -1,85 +1,109 @@
-import { useAppDispatch } from "@/app/hooks";
-import { setPlayVideoKamuHebat, setPlayVideoUhSalah } from "@/features/generalSlice";
-import { BackgroundImage, Box, Grid, Image } from "@mantine/core";
+import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import { setLoadedImages, setLoading } from "@/features/generalSlice";
 import {
   DndContext,
   useDraggable,
   useDroppable,
-  closestCenter,
-  PointerSensor,
+  pointerWithin,
   useSensor,
   useSensors,
   DragOverlay,
   MouseSensor,
   TouchSensor,
 } from "@dnd-kit/core";
-import { useDeviceMode } from "@/constants/dimension";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { GetCategoryLessonPublicDataLessonItemResponse } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
+import getRandomOptions from "@/constants/random_option";
+import ShowInfo from "./Info";
+import speak from "@/constants/speak";
+import "@lottiefiles/lottie-player";
 
 interface MatchingSlideThemeProps {
-  r: any;
-  options: any[]; 
+  single: GetCategoryLessonPublicDataLessonItemResponse;
+  array: GetCategoryLessonPublicDataLessonItemResponse[];
+  description: string;
   onCorrectAnswer: () => void;
-  onDragStart: () => void;
-  onDragEnd: () => void;
+  onWrongAnswer: () => void;
+  isCorrect: boolean;
 }
 
-const MatchingSlideTheme = ({ r, options, onCorrectAnswer, onDragStart: onDragStartParent, onDragEnd: onDragEndParent }: MatchingSlideThemeProps) => {
-  const dispatch = useAppDispatch();
-  const { device, orientation } = useDeviceMode();
-  const [activeItem, setActiveItem] = useState<any>(null);
+const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWrongAnswer, isCorrect }: MatchingSlideThemeProps) => {
+  const dispatch = useAppDispatch()
+  const { loadedImages } = useAppSelector((state) => state.general)
+  const [options, setOptions] = useState<GetCategoryLessonPublicDataLessonItemResponse[]>()
+  const playerRef = useRef<(HTMLElement | null)[]>([]);
+  const [activeItem, setActiveItem] = useState<GetCategoryLessonPublicDataLessonItemResponse>()
 
   useEffect(() => {
-    setActiveItem(null);
-  }, [r]);
+    if (single) {
+      setOptions(
+        getRandomOptions(array, single, 4) as GetCategoryLessonPublicDataLessonItemResponse[]
+      )
+    }
+  }, [single, array])
 
-  const HEADER_STYLE: any = {
-    "mobile-small": { font: 15, height: 180 },
-    "mobile-medium": { font: 16, height: 200 },
-    "mobile-medium-plus": { font: 17, height: 250 },
-    "mobile-large": { font: 18, height: 250 },
 
-    "tablet": { font: 20, height: 350 },
-    "tablet-large": { font: 20, height: 400 },
-    "tablet-extra-large": { font: 20, height: 450 },
+  useEffect(() => {
+    if (options && options.length > 0) {
+      dispatch(setLoading(true));
+      dispatch(setLoadedImages(new Array(options.length + 1).fill(false)));
+    }
+  }, [])
 
-    "laptop": { font: 22, height: 500 },
-    "laptop-standart": { font: 22, height: 500 },
-    "laptop-large": { font: 22, height: 500 },
-    "laptop-extra-large": { font: 22, height: 500 },
+  useEffect(() => {
+    if (!options) return;
 
-    "desktop": { font: 80, height: 1000 },
-    "desktop-large": { font: 80, height: 500 },
+    dispatch(setLoadedImages(new Array(options.length + 1).fill(false)));
+    playerRef.current.forEach((player, index) => {
+      if (!player) return;
 
-    "4k": { font: 100, height: 1000 },
-  };
+      const onLoad = () => {
+        const newLoaded = [...loadedImages];
+        newLoaded[index] = true;
 
-  const ORIENTATION_STYLE: any = {
-    portrait: { fontMultiplier: 1, heightMultiplier: 1 },
-    landscape: { fontMultiplier: 1.1, heightMultiplier: 0.9 },
-  };
+        dispatch(setLoadedImages(newLoaded));
 
-  const headerBase = HEADER_STYLE[device];
-  const orient = ORIENTATION_STYLE[orientation];
+        const allLoaded = newLoaded.every(Boolean);
+        if (allLoaded) dispatch(setLoading(false));
+      };
 
-  const headerStyle = {
-    font: headerBase.font * orient.fontMultiplier,
-    height: headerBase.height * orient.heightMultiplier,
-  };
+      player.addEventListener("load", onLoad);
+
+      return () => player.removeEventListener("load", onLoad);
+    });
+
+  }, [options]);
+
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 15,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 100,
-        tolerance: 8,
+        delay: 150,
+        tolerance: 5,
       },
     })
   );
+
+  const DragOverlayItem = ({ media }: { media: string }) => {
+    return (
+      <lottie-player
+        autoplay
+        loop
+        mode="normal"
+        src={`${import.meta.env.VITE_API_IMAGE_URL}${media}`}
+        style={{
+          width: '100%',
+          pointerEvents: 'none',
+          touchAction: 'none'
+        }}
+      />
+    );
+  };
 
   const DraggableItem = ({ id, children, isDragging }: any) => {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
@@ -89,17 +113,8 @@ const MatchingSlideTheme = ({ r, options, onCorrectAnswer, onDragStart: onDragSt
         {...attributes}
         {...listeners}
         style={{
-          border: isDragging ? '2px solid #1976d2' : '2px solid #4caf50',
-          background: isDragging ? '#e3f2fd' : '#f1f8e9',
           touchAction: "none",
-          cursor: "grab",
-          pointerEvents: "auto",
-          opacity: isDragging ? 0 : 1,
-          borderRadius: 12,
-          width: '100%',
-          maxWidth: 220,
-          margin: '0 auto',
-          boxSizing: 'border-box',
+          // opacity: isDragging ? 0.5 : 1,
           transform: transform
             ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
             : undefined,
@@ -117,13 +132,6 @@ const MatchingSlideTheme = ({ r, options, onCorrectAnswer, onDragStart: onDragSt
         ref={setNodeRef}
         style={{
           border: isOver ? '2px dashed #1976d2' : '2px dashed #aaa',
-          background: isOver ? '#e3f2fd' : '#fff',
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: 120,
-          borderRadius: 12,
-          marginBottom: 8,
         }}
       >
         {children}
@@ -132,137 +140,94 @@ const MatchingSlideTheme = ({ r, options, onCorrectAnswer, onDragStart: onDragSt
   };
 
   const handleDragStart = (event: any) => {
-    if (event.active.id === r.id) {
-      setActiveItem(r);
-      onDragStartParent?.();
+    const { active } = event;
+    if (!active) return;
+    const found = options?.find((opt) => opt.id === active.id);
+    if (found) {
+      setActiveItem(found);
     }
   };
 
   const handleDragEnd = ({ active, over }: any) => {
-    setActiveItem(null);
-    onDragEndParent?.();
     if (!over) return;
     if (active.id === over.id) {
-      // dispatch(setPlayVideoKamuHebat(true));
       onCorrectAnswer()
-      // setTimeout(onCorrectAnswer, 2000);
     } else {
-      dispatch(setPlayVideoUhSalah(true));
+      onWrongAnswer()
     }
   };
 
-  if (!r || !options || options.length === 0) {
-    return (
-      <div style={{ width: '100%', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 200 }}>
-        <p style={{ color: '#888', fontSize: 18, marginTop: 40 }}>Data tidak ditemukan</p>
-      </div>
-    );
-  }
-
   return (
-    <Grid justify={'center'} align={'center'} style={{textAlign: 'center'}}>
-      <DndContext
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        modifiers={[]}
-      >
-        {options.map((opt: any, idx: number) => (
-          <Grid.Col span={orientation === 'portrait' ? 6 : 3} key={idx} style={{display: 'flex', justifyContent: 'center'}}>
-            <div
-              style={{
-                maxHeight: headerStyle.height + 60,
-                maxWidth: "100%",
-              }}
-            >
-              <DroppableItem id={opt.id}>
-                <BackgroundImage
-                  src={'./gradient-14.jpeg'}
-                  style={{
-                    border: '0px',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    backgroundRepeat: 'no-repeat',
-                  }}
-                >
-                  <video
-                    src={`${import.meta.env.VITE_API_IMAGE_URL}${opt.media}`}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    style={{
-                      maxHeight: headerStyle.height,
-                      filter: "brightness(0)",
-                      pointerEvents: "none",
-                      width: '100%',
-                      borderRadius: 12,
-                    }}
-                    onError={() => {
-                      console.error('VIDEO ERROR:', opt.media);
-                    }}
-                  />
-                </BackgroundImage>
-              </DroppableItem>
-            </div>
-          </Grid.Col>
-        ))}
-        <Grid.Col span={orientation === 'portrait' ? 6 : 3} key={options.length+1} style={{display: 'flex', justifyContent: 'center'}}>
-            <div
-              style={{
-                maxHeight: headerStyle.height + 60,
-                maxWidth: "100%",
-              }}
-            >
-              <DraggableItem
-                id={r.id}
-                isDragging={activeItem?.id === r.id}
-              >
-                <video
-                  src={`${import.meta.env.VITE_API_IMAGE_URL}${r.media}`}
-                  autoPlay
-                  muted
+    <DndContext
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      sensors={sensors}
+      collisionDetection={pointerWithin}
+      modifiers={[]}
+    >
+      <div>
+        {single && (
+          <ShowInfo description={description.replaceAll('{content}', single.content)} />
+        )}
+        <div className="h-[72dvh] w-full flex flex-col">
+          <div className="h-[27dvh]">
+            {single && (
+              <DroppableItem id={single.id}>
+                <lottie-player
+                  ref={(el: any) => (playerRef.current[0] = el)}
+                  autoplay
                   loop
-                  playsInline
-                  style={{
-                    maxHeight: headerStyle.height,
-                    touchAction: "none",
-                    pointerEvents: "none",
-                    width: '100%',
-                    borderRadius: 12,
+                  mode="normal"
+                  src={`${import.meta.env.VITE_API_IMAGE_URL}${single.media}`}
+                  onLoad={() => {
+                    const newLoaded = [...loadedImages];
+                    newLoaded[0] = true;
+                    dispatch(setLoadedImages(newLoaded));
                   }}
-                  onError={() => {
-                    console.error('VIDEO ERROR:', r.media);
+                  style={{
+                    filter: isCorrect ? 'brightness(1)' : 'brightness(0)',
+                    height: '27dvh',
                   }}
                 />
-              </DraggableItem>
-            </div>
-          </Grid.Col>
+              </DroppableItem>
+            )}
+          </div>
+          <div className="h-[45dvh] grid grid-cols-2 gap-0">
+            {options && options.map((item, index) => {
+              return (
+                <DraggableItem
+                  key={index}
+                  id={item.id}
+                  isDragging={activeItem?.id === item.id}
+                >
+                  <lottie-player
+                    ref={(el: any) => (playerRef.current[index + 1] = el)}
+                    autoplay
+                    loop
+                    mode="normal"
+                    src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+                    onLoad={() => {
+                      const newLoaded = [...loadedImages];
+                      newLoaded[index + 1] = true;
+                      dispatch(setLoadedImages(newLoaded));
+                    }}
+                    style={{
+                      pointerEvents: 'none',
+                      touchAction: 'none'
+                    }}
+                  />
+                </DraggableItem>
+              )
+            })}
+          </div>
+        </div>
         <DragOverlay>
           {activeItem ? (
-            <div style={{ maxHeight: headerStyle.height + 60, maxWidth: "100%", margin: '0 auto', pointerEvents: 'none' }}>
-              <video
-                src={`${import.meta.env.VITE_API_IMAGE_URL}${activeItem.media}`}
-                autoPlay
-                muted
-                loop
-                playsInline
-                style={{
-                  maxHeight: headerStyle.height,
-                  width: '100%',
-                  borderRadius: 12,
-                  boxShadow: '0 4px 24px rgba(0,0,0,0.15)',
-                }}
-                onError={() => {
-                  console.error('VIDEO ERROR:', activeItem.media);
-                }}
-              />
-            </div>
+            <DragOverlayItem media={activeItem.media} />
           ) : null}
         </DragOverlay>
-      </DndContext>
-    </Grid>
+      </div>
+    </DndContext>
   );
 };
 

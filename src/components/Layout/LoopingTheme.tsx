@@ -4,14 +4,6 @@ import {
   GetCategoryLessonPublicDataLessonItemResponse,
   GetCategoryLessonPublicDataLessonResponse,
 } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
-import {
-  BackgroundImage,
-  Box,
-  Grid,
-  SimpleGrid,
-  Text,
-  useMantineTheme,
-} from "@mantine/core";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   setPlayVideoKamuHebat,
@@ -45,39 +37,7 @@ const LoopingTheme = ({ data, index }: LoopingThemeProps) => {
   const { progressBar, playVideoKamuHebat } = useAppSelector(
     (state) => state.general
   );
-  const theme = useMantineTheme();
-  const { device, orientation } = useDeviceMode();
-
-  const HEADER_STYLE: any = {
-    "mobile-small": { font: 15, height: 50 },
-    "mobile-medium": { font: 16, height: 200 },
-    "mobile-medium-plus": { font: 17, height: 250 },
-    "mobile-large": { font: 18, height: 250 },
-    tablet: { font: 20, height: 350 },
-    "tablet-large": { font: 20, height: 400 },
-    "tablet-extra-large": { font: 20, height: 450 },
-    laptop: { font: 22, height: 500 },
-    "laptop-standart": { font: 22, height: 500 },
-    "laptop-large": { font: 22, height: 500 },
-    "laptop-extra-large": { font: 22, height: 500 },
-    desktop: { font: 80, height: 1000 },
-    "desktop-large": { font: 80, height: 500 },
-    "4k": { font: 100, height: 1000 },
-  };
-
-  const ORIENTATION_STYLE: any = {
-    portrait: { fontMultiplier: 1, heightMultiplier: 1 },
-    landscape: { fontMultiplier: 1.1, heightMultiplier: 0.9 },
-  };
-
-  const headerBase = HEADER_STYLE[device];
-  const orient = ORIENTATION_STYLE[orientation];
-
-  const headerStyle = {
-    font: headerBase.font * orient.fontMultiplier,
-    height: headerBase.height * orient.heightMultiplier,
-  };
-
+  
   const [options, setOptions] = useState<
     GetCategoryLessonPublicDataLessonItemResponse[]
   >([]);
@@ -183,157 +143,160 @@ const LoopingTheme = ({ data, index }: LoopingThemeProps) => {
     shuffledGroup3Ref.current = shuffle([...options]);
   }
 
-  const group0 = options.map((item) => (
-    <BackgroundImage
-      key={`0-${item.id}`}
-      src={"./gradient-14.jpeg"}
-      style={{
-        border: "0px",
-        borderRadius: "10px",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        textAlign: "center",
-        padding: 20,
-        height: "100%",
-      }}
-    >
-      <div style={{ transform: "scale(1.7)", width: "100%", minHeight: headerStyle.height }}>
-        <video
-          src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ maxHeight: headerStyle.height, pointerEvents: "none", width: "100%" }}
-        />
-      </div>
-    </BackgroundImage>
-  ));
+  // const group0 = options.map((item) => (
+  //   <BackgroundImage
+  //     key={`0-${item.id}`}
+  //     src={"./gradient-14.jpeg"}
+  //     style={{
+  //       border: "0px",
+  //       borderRadius: "10px",
+  //       backgroundSize: "cover",
+  //       backgroundPosition: "center",
+  //       backgroundRepeat: "no-repeat",
+  //       textAlign: "center",
+  //       padding: 20,
+  //       height: "100%",
+  //     }}
+  //   >
+  //     <div style={{ transform: "scale(1.7)", width: "100%", minHeight: headerStyle.height }}>
+  //       <video
+  //         src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+  //         autoPlay
+  //         muted
+  //         loop
+  //         playsInline
+  //         style={{ maxHeight: headerStyle.height, pointerEvents: "none", width: "100%" }}
+  //       />
+  //     </div>
+  //   </BackgroundImage>
+  // ));
 
-  const group1 = options.map((item) => (
-    <BackgroundImage
-      key={`1-${item.id}`}
-      src={"./gradient-14.jpeg"}
-      style={{
-        border: "0px",
-        borderRadius: "10px",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        textAlign: "center",
-        padding: 20,
-        height: "100%",
-      }}
-    >
-      <div style={{ transform: "scale(1.7)", width: "100%", minHeight: headerStyle.height }}>
-        <video
-          src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-          autoPlay
-          muted
-          loop
-          playsInline
-          style={{ maxHeight: headerStyle.height, pointerEvents: "none", width: "100%" }}
-        />
-      </div>
-    </BackgroundImage>
-  ));
+  // const group1 = options.map((item) => (
+  //   <BackgroundImage
+  //     key={`1-${item.id}`}
+  //     src={"./gradient-14.jpeg"}
+  //     style={{
+  //       border: "0px",
+  //       borderRadius: "10px",
+  //       backgroundSize: "cover",
+  //       backgroundPosition: "center",
+  //       backgroundRepeat: "no-repeat",
+  //       textAlign: "center",
+  //       padding: 20,
+  //       height: "100%",
+  //     }}
+  //   >
+  //     <div style={{ transform: "scale(1.7)", width: "100%", minHeight: headerStyle.height }}>
+  //       <video
+  //         src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+  //         autoPlay
+  //         muted
+  //         loop
+  //         playsInline
+  //         style={{ maxHeight: headerStyle.height, pointerEvents: "none", width: "100%" }}
+  //       />
+  //     </div>
+  //   </BackgroundImage>
+  // ));
 
-  const group2 = options.map((item) => {
-    const isVisible = item.isCorrect;
+  // const group2 = options.map((item) => {
+  //   const isVisible = item.isCorrect;
 
-    return (
-      <DroppableItem key={`2-drop-${item.id}`} id={`drop-${item.id}`}>
-        <BackgroundImage
-          src={"./gradient-14.jpeg"}
-          style={{
-            pointerEvents: "none",
-            width: "100%",
-            transition: "0.3s",
-            opacity: isVisible ? 1 : 0,      
-            visibility: isVisible ? "visible" : "hidden",
-            border: "0px",
-            borderRadius: "10px",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            textAlign: "center",
-            padding: 20,
-            height: "100%",
-          }}
-        >
-          <div
-            style={{
-              transform: "scale(1.7)",
-              width: "100%",
-              minHeight: headerStyle.height,
-            }}
-          >
-            <video
-              src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-              autoPlay
-              muted
-              loop
-              playsInline
-              style={{
-                maxHeight: headerStyle.height,
-                pointerEvents: "none",
-                width: "100%",
-                transition: "0.3s",
-                opacity: isVisible ? 1 : 0,
-                filter: isVisible ? "none" : "brightness(0)",
-              }}
-            />
-          </div>
-        </BackgroundImage>
-      </DroppableItem>
-    );
-  });
+  //   return (
+  //     <DroppableItem key={`2-drop-${item.id}`} id={`drop-${item.id}`}>
+  //       <BackgroundImage
+  //         src={"./gradient-14.jpeg"}
+  //         style={{
+  //           pointerEvents: "none",
+  //           width: "100%",
+  //           transition: "0.3s",
+  //           opacity: isVisible ? 1 : 0,      
+  //           visibility: isVisible ? "visible" : "hidden",
+  //           border: "0px",
+  //           borderRadius: "10px",
+  //           backgroundSize: "cover",
+  //           backgroundPosition: "center",
+  //           backgroundRepeat: "no-repeat",
+  //           textAlign: "center",
+  //           padding: 20,
+  //           height: "100%",
+  //         }}
+  //       >
+  //         <div
+  //           style={{
+  //             transform: "scale(1.7)",
+  //             width: "100%",
+  //             minHeight: headerStyle.height,
+  //           }}
+  //         >
+  //           <video
+  //             src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+  //             autoPlay
+  //             muted
+  //             loop
+  //             playsInline
+  //             style={{
+  //               maxHeight: headerStyle.height,
+  //               pointerEvents: "none",
+  //               width: "100%",
+  //               transition: "0.3s",
+  //               opacity: isVisible ? 1 : 0,
+  //               filter: isVisible ? "none" : "brightness(0)",
+  //             }}
+  //           />
+  //         </div>
+  //       </BackgroundImage>
+  //     </DroppableItem>
+  //   );
+  // });
 
-  const group3Items = shuffledGroup3Ref.current ?? options;
-  const group3 = group3Items.map((item) => (
-    <DraggableItem key={`3-drag-${item.id}`} id={`drag-${item.id}`}>
-      <BackgroundImage
-        src={"./gradient-14.jpeg"}
-        style={{
-          border: "0px",
-          borderRadius: "10px",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          textAlign: "center",
-          padding: 20,
-          height: "100%",
-        }}
-      >
-        <div style={{ transform: "scale(1.7)", width: "100%", minHeight: headerStyle.height }}>
-          <video
-            src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-            autoPlay
-            muted
-            loop
-            playsInline
-            style={{ maxHeight: headerStyle.height, pointerEvents: "none", width: "100%" }}
-          />
-        </div>
-      </BackgroundImage>
-    </DraggableItem>
-  ));
+  // const group3Items = shuffledGroup3Ref.current ?? options;
+  // const group3 = group3Items.map((item) => (
+  //   <DraggableItem key={`3-drag-${item.id}`} id={`drag-${item.id}`}>
+  //     <BackgroundImage
+  //       src={"./gradient-14.jpeg"}
+  //       style={{
+  //         border: "0px",
+  //         borderRadius: "10px",
+  //         backgroundSize: "cover",
+  //         backgroundPosition: "center",
+  //         backgroundRepeat: "no-repeat",
+  //         textAlign: "center",
+  //         padding: 20,
+  //         height: "100%",
+  //       }}
+  //     >
+  //       <div style={{ transform: "scale(1.7)", width: "100%", minHeight: headerStyle.height }}>
+  //         <video
+  //           src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+  //           autoPlay
+  //           muted
+  //           loop
+  //           playsInline
+  //           style={{ maxHeight: headerStyle.height, pointerEvents: "none", width: "100%" }}
+  //         />
+  //       </div>
+  //     </BackgroundImage>
+  //   </DraggableItem>
+  // ));
 
-  const finalRepeated = [...group0, ...group1, ...group2, ...group3];
+  // const finalRepeated = [...group0, ...group1, ...group2, ...group3];
 
   return (
-    <Box key={`${index}-${data.title}`}>
-      <DndContext
-        onDragEnd={handleDragEnd}
-        sensors={sensors}
-        collisionDetection={closestCenter}
-      >
-        <SimpleGrid cols={orientation === "portrait" ? 4 : 8} p={2} spacing={2}>
-          {finalRepeated}
-        </SimpleGrid>
-      </DndContext>
-    </Box>
+    <>
+      asdasd
+    </>
+    // <Box key={`${index}-${data.title}`}>
+    //   <DndContext
+    //     onDragEnd={handleDragEnd}
+    //     sensors={sensors}
+    //     collisionDetection={closestCenter}
+    //   >
+    //     <SimpleGrid cols={orientation === "portrait" ? 4 : 8} p={2} spacing={2}>
+    //       {finalRepeated}
+    //     </SimpleGrid>
+    //   </DndContext>
+    // </Box>
   );
 };
 

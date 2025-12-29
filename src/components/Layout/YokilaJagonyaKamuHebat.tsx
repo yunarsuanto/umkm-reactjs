@@ -1,90 +1,68 @@
+// YokilaJagonyaKamuHebat.tsx
 import { useAppDispatch } from "@/app/hooks";
 import getCachedMediaUrl from "@/constants/get_cache_media";
 import { setPlayVideoKamuHebat } from "@/features/generalSlice";
-import { Box } from "@mantine/core";
+import { Player } from "@lottiefiles/react-lottie-player";
 import { useEffect, useRef } from "react";
+import isIOS from "@/constants/isIos";
+import UseAudioUnlock from "@/constants/UseAudioUnlock";
 
-interface YokilaJagonyaKamuHebatProps {
-  play: boolean;
-}
-
-const YokilaJagonyaKamuHebat = ({ play = true }: YokilaJagonyaKamuHebatProps) => {
+export default function YokilaJagonyaKamuHebat({ play }: any) {
   const dispatch = useAppDispatch();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { unlocked, unlock } = UseAudioUnlock();
 
   useEffect(() => {
-    let isMounted = true;
-    let timeout: number | null = null;
+    if (!play) return;
+    if (isIOS && !unlocked) return;
 
     async function run() {
-      const video = videoRef.current;
-      if (!video || !play) return;
+      const url = isIOS
+        ? "/jagonya-kamu-hebat-audio-fixed.mp3"
+        : await getCachedMediaUrl("/jagonya-kamu-hebat-audio-fixed.mp3");
 
-      const cleanup = () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-        }
-        video.pause();
-        video.currentTime = 0;
-      };
+      if (audioRef.current instanceof HTMLAudioElement) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
 
-      // ambil audio dari cache
-      const audioUrl = await getCachedMediaUrl("/jagonya-kamu-hebat-audio.m4a");
-      const audio = new Audio(audioUrl);
+      const audio = new Audio(url);
       audioRef.current = audio;
 
-      // ambil video dari cache
-      const videoUrl = await getCachedMediaUrl("/jagonya-kamu-hebat-video.webm");
-      video.src = videoUrl;
+      audio.onended = () => dispatch(setPlayVideoKamuHebat(false));
 
-      const playMedia = async () => {
-        try {
-          video.muted = false;
-          await video.play().catch(() => {});
-          if (isMounted) await audio.play().catch(() => {});
-        } catch (err) {
-          console.warn("Autoplay diblokir oleh browser:", err);
-        }
-      };
-
-      timeout = window.setTimeout(playMedia, 300);
-
-      const handleEnded = () => {
-        cleanup();
-        dispatch(setPlayVideoKamuHebat(false));
-      };
-
-      video.addEventListener("ended", handleEnded);
-
-      return () => {
-        isMounted = false;
-        if (timeout) clearTimeout(timeout);
-        video.removeEventListener("ended", handleEnded);
-        cleanup();
-      };
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        await audio.play();
+      } catch (e) {
+        console.warn("play blocked", e);
+      }
     }
 
     run();
-  }, [play, dispatch]);
+  }, [play, unlocked]);
+
+  if (isIOS && !unlocked)
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <button
+          className="bg-white px-6 py-3 rounded shadow text-lg font-bold"
+          onClick={() => unlock(() => dispatch(setPlayVideoKamuHebat(true)))}
+        >
+          Aktifkan Suara 🔊
+        </button>
+      </div>
+    );
 
   return (
-    <Box>
-      <video
-        ref={videoRef}
-        muted
-        playsInline
-        style={{
-          width: 150,
-          position: "fixed",
-          top: "calc(50% - 150px)",
-          left: "calc(50% - 75px)",
-          zIndex: 999,
-        }}
-      />
-    </Box>
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+      {play && (
+        <Player src="/jagonya-kamu-hebat.json" autoplay loop={false} style={{ width: "100%", height: 300 }} onEvent={(e) => {
+          if(e === 'complete'){
+            dispatch(setPlayVideoKamuHebat(false))
+          }
+        }} />
+      )}
+    </div>
   );
-};
-
-export default YokilaJagonyaKamuHebat;
+}

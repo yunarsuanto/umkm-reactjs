@@ -1,33 +1,37 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Header } from './Header';
 import { Footer } from './Footer';
-import { Box, useMantineTheme } from '@mantine/core';
-import { useLocation } from 'react-router-dom';
+import { useAppSelector } from '@/app/hooks';
+import { Player } from '@lottiefiles/react-lottie-player';
 
 interface PublicLayoutProps {
   children: ReactNode;
   setMode: () => void;
 }
 
-
 const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
-  const theme = useMantineTheme();
   const location = useLocation();
+  const { loading } = useAppSelector((state) => state.general)
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    setTimeout(() => setReady(true), 50);
+  }, []);
   return (
-    <Box style={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', fontFamily: 'howdybun'}}>
-      {location.pathname === '/' && (
-        <Header setModeHeader={setMode} />
+    <div className="bg-gray-100">
+      <Header setModeHeader={setMode} />
+      {loading && ready && (
+        <div style={{ height: '100dvh' }} className="fixed inset-0 flex justify-center items-center z-50 bg-black/50">
+          <Player src="/loading.json" autoplay loop style={{ width: 100, height: 100 }} />
+        </div>
       )}
-        <Box component="main" style={{
-          flex: 1,
-          overflowY: 'auto',
-        }}>
-          {children}
-        </Box>
-      {location.pathname !== '/play' && (
+      <main>
+        {children}
+      </main>
+      {(location.pathname === '/' || location.pathname === '/play') && (
         <Footer />
       )}
-    </Box>
+    </div>
   );
 };
 

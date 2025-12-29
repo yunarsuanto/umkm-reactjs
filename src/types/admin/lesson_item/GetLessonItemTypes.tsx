@@ -16,6 +16,8 @@ export interface GetLessonItemDataResponse {
   lesson_id: string
   content: string
   media: string
+  thumbnail: string
   order: number
   level: number
+  is_done: boolean
 }

@@ -1,92 +1,77 @@
+// YokilaUhSalah.tsx
 import { useAppDispatch } from "@/app/hooks";
 import getCachedMediaUrl from "@/constants/get_cache_media";
 import { setPlayVideoUhSalah } from "@/features/generalSlice";
-import { Box } from "@mantine/core";
+import { Player } from "@lottiefiles/react-lottie-player";
 import { useEffect, useRef } from "react";
+import isIOS from "@/constants/isIos";
+import { unlockAudioContext } from "@/constants/audioContext";
+import UseAudioUnlock from "@/constants/UseAudioUnlock";
 
-interface YokilaUhSalahProps {
-  play: boolean;
-}
-
-const YokilaUhSalah = ({ play = true }: YokilaUhSalahProps) => {
+export default function YokilaUhSalah({ play }: any) {
   const dispatch = useAppDispatch();
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const { unlocked, unlock } = UseAudioUnlock();
 
   useEffect(() => {
-    let isMounted = true;
+    if (!play) return;
+    if (isIOS && !unlocked) return;
 
     async function run() {
-      const video = videoRef.current;
-      if (!video) return;
+      const url = isIOS
+        ? "/uh-salah-audio-fixed.mp3"
+        : await getCachedMediaUrl("/uh-salah-audio-fixed.mp3");
 
-      const cleanup = () => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-          audioRef.current.currentTime = 0;
-        }
-        video.pause();
-        video.currentTime = 0;
-      };
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
 
-      if (play) {
-        // ↓ cache video
-        const videoUrl = await getCachedMediaUrl("/uh-salah-video.webm");
-        video.src = videoUrl;
+      const audio = new Audio(url);
+      audioRef.current = audio;
 
-        // ↓ cache audio
-        const audioUrl = await getCachedMediaUrl("/uh-salah-audio.m4a");
-        const audio = new Audio(audioUrl);
-        audioRef.current = audio;
+      audio.onended = () => dispatch(setPlayVideoUhSalah(false));
 
-        const playMedia = async () => {
-          try {
-            video.muted = false;
-            await video.play().catch(() => {});
-            if (isMounted) await audio.play().catch(() => {});
-          } catch (err) {
-            console.warn("Autoplay diblokir:", err);
-          }
-        };
-
-        const timeout = setTimeout(playMedia, 300);
-
-        const handleEnded = () => {
-          cleanup();
-          dispatch(setPlayVideoUhSalah(false));
-        };
-
-        video.addEventListener("ended", handleEnded);
-
-        return () => {
-          isMounted = false;
-          clearTimeout(timeout);
-          video.removeEventListener("ended", handleEnded);
-          cleanup();
-        };
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        await audio.play();
+      } catch (e) {
+        console.warn("play blocked", e);
       }
     }
 
     run();
-  }, [play, dispatch]);
+  }, [play, unlocked]);
+
+  if (isIOS && !unlocked)
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <button
+          className="bg-white px-6 py-3 rounded shadow text-lg font-bold"
+          onClick={async () => {
+            await unlock();               // 🔓 penting!
+            await unlockAudioContext();   // optional (lebih cepat respons)
+            dispatch(setPlayVideoUhSalah(true));
+          }}
+        >
+          Salah 🔊
+        </button>
+      </div>
+    );
 
   return (
-    <Box>
-      <video
-        ref={videoRef}
-        muted
-        playsInline
-        style={{
-          width: 150,
-          objectPosition: "center center",
-          position: "fixed",
-          right: 100,
-          top: 100,
-          zIndex: 999,
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
+      <Player
+        src="/uh-salah.json"
+        autoplay
+        loop={false}
+        style={{ width: "100%", height: 300 }}
+        onEvent={(e) => {
+          if(e === 'complete'){
+            dispatch(setPlayVideoUhSalah(false));
+          }
         }}
       />
-    </Box>
+    </div>
   );
-};
-
-export default YokilaUhSalah;
+}

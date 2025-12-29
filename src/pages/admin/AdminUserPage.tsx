@@ -1,4 +1,3 @@
-import { Button, Center, Container, Grid, Group, Loader, Text, TextInput } from '@mantine/core';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -12,7 +11,6 @@ import ShowModalUser from '../../components/admin/users/ShowModalUser';
 import UpdateModalUser from '../../components/admin/users/UpdateModalUser';
 import DeleteModalUser from '../../components/admin/users/DeleteModalUser';
 import { setSearch } from '../../features/generalSlice';
-import { useDebouncedValue } from '@mantine/hooks';
 
 const AdminUserPage = () => {
   const navigate = useNavigate()
@@ -25,7 +23,7 @@ const AdminUserPage = () => {
   const { data, isLoading, isError, error } = useUsers(pagination, queryOptions)
   const { openShow, openCreate, openUpdate, openDelete } = useAppSelector((state) => state.user);
   const { search } = useAppSelector((state) => state.general);
-  const [debouncedSearch] = useDebouncedValue(search, 500);
+  // const [debouncedSearch] = useDebouncedValue(search, 500);
   
   const handleOpen = () => {
     dispatch(openCreateModal())
@@ -57,20 +55,17 @@ const AdminUserPage = () => {
     }
   }, [data, dispatch, limit])
   
-  useEffect(() => {
-    dispatch(setPaginationSearch(debouncedSearch));
-  }, [debouncedSearch, pagination, dispatch])
+  // useEffect(() => {
+  //   dispatch(setPaginationSearch(debouncedSearch));
+  // }, [debouncedSearch, pagination, dispatch])
 
 
   if (isLoading) {
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Loader size="lg" color="blue" />
-          <Text mt="md" c="dimmed">
-            Memuat data izin...
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-gray-500">
+          Loading users...
+        </div>
       </AdminLayout>
     );
   }
@@ -80,43 +75,44 @@ const AdminUserPage = () => {
     }
     return (
       <AdminLayout>
-        <Center style={{ height: '80vh', flexDirection: 'column' }}>
-          <Text c="red" fw={500}>
-            Gagal memuat data: {error?.message || 'Terjadi kesalahan tak terduga'}
-          </Text>
-        </Center>
+        <div className="flex items-center justify-center h-[60vh] text-red-600">
+          Gagal memuat data
+        </div>
       </AdminLayout>
     );
   }
   return (
     <AdminLayout>
-      <AddModalUser open={openCreate} />
-      <ShowModalUser open={openShow} />
-      <UpdateModalUser open={openUpdate} />
-      <DeleteModalUser open={openDelete} />
-      <Container fluid p={50}>
-        <Grid>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}} p={20}>
-            <h2>User</h2>
-          </Grid.Col>
-        </Grid>
-        <Grid p={10}>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <Group justify="space-between">
-                <Button variant="default" onClick={handleOpen}>
-                  + User
-                </Button>
-                <TextInput
-                  label="Name"
-                  onChange={(ev: React.ChangeEvent<HTMLInputElement>) => dispatch(setSearch(ev.target.value))}
-                />
-            </Group>
-          </Grid.Col>
-          <Grid.Col span={{base: 12, lg: 12, md: 12, xs: 12}}>
-            <TableUsers data={data?.data ?? []} totalPages={pagination.totalPages} />
-          </Grid.Col>
-        </Grid>
-      </Container>
+      {/* Modals */}
+      <AddModalUser />
+      <ShowModalUser />
+      <UpdateModalUser />
+      <DeleteModalUser />
+
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-xl font-semibold">User</h1>
+
+        <div className="flex gap-3">
+          <button
+            onClick={handleOpen}
+            className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded text-sm"
+          >
+            + User
+          </button>
+
+          <input
+            type="text"
+            placeholder="Search user..."
+            value={search}
+            onChange={(e) => dispatch(setSearch(e.target.value))}
+            className="border rounded-md px-3 py-2 text-sm w-64"
+          />
+        </div>
+      </div>
+
+      {/* Table */}
+      <TableUsers data={data?.data ?? []} totalPages={pagination.totalPages} />
     </AdminLayout>
   );
 };

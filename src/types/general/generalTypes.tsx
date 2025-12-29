@@ -10,9 +10,7 @@ export interface GeneralState {
     errorFileNull: string
     playVideoKamuHebat: boolean
     playVideoUhSalah: boolean
-    playVideoAyo: boolean
-    playVideoKemon: boolean
-    playVideoGabung: boolean
+    loadedImages: boolean[]
 }
 
 export interface UploadFileResponse {
