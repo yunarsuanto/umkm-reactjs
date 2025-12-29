@@ -6,22 +6,22 @@ import { setLoadedImages, setLoading } from "@/features/generalSlice";
 import speak from "@/constants/speak";
 
 interface SequenceFirstThemeProps {
-  array: GetCategoryLessonPublicDataLessonItemResponse[];
-  description: string;
+    array: GetCategoryLessonPublicDataLessonItemResponse[];
+    description: string;
 }
 
-const SequenceFirstTheme = ({array, description } : SequenceFirstThemeProps) => {
+const SequenceFirstTheme = ({ array, description }: SequenceFirstThemeProps) => {
     const dispatch = useAppDispatch()
     const { loadedImages } = useAppSelector((state) => state.general)
     const playerRef = useRef<(HTMLElement | null)[]>([]);
-    return(
+    return (
         <div>
             {array && array.length > 0 && (
-              <ShowInfo description={description} />
+                <ShowInfo description={description} />
             )}
             <div className="h-[100%] grid grid-cols-2 gap-y-3 gap-x-5 ">
                 {array && array.length > 0 && array.map((item, index) => {
-                    return(
+                    return (
                         <div onClick={() => speak(item.content)}>
                             <lottie-player
                                 key={index}
@@ -32,7 +32,7 @@ const SequenceFirstTheme = ({array, description } : SequenceFirstThemeProps) => 
                                 src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
                                 onLoad={() => {
                                     const newLoaded = [...loadedImages];
-                                    newLoaded[index + 1] = true;
+                                    newLoaded[index] = true;
                                     dispatch(setLoadedImages(newLoaded));
                                 }}
                                 style={{
