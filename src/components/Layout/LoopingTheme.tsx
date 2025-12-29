@@ -29,15 +29,14 @@ import shuffle from "@/constants/suffle";
 
 interface LoopingThemeProps {
   data: GetCategoryLessonPublicDataLessonResponse;
-  index: number;
 }
 
-const LoopingTheme = ({ data, index }: LoopingThemeProps) => {
+const LoopingTheme = ({ data }: LoopingThemeProps) => {
   const dispatch = useAppDispatch();
   const { progressBar, playVideoKamuHebat } = useAppSelector(
     (state) => state.general
   );
-  
+
   const [options, setOptions] = useState<
     GetCategoryLessonPublicDataLessonItemResponse[]
   >([]);

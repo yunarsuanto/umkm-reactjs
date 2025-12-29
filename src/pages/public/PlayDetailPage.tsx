@@ -1,6 +1,9 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
+import ClasificationTheme from "@/components/Layout/ClasificationTheme";
 import IdentificationTheme from "@/components/Layout/IdentificationTheme";
+import LoopingTheme from "@/components/Layout/LoopingTheme";
 import MatchingTheme from "@/components/Layout/MatchingTheme";
+import PuzzleTheme from "@/components/Layout/PuzzleTheme";
 import RecognitionTheme from "@/components/Layout/RecognitionTheme";
 import SequenceTheme from "@/components/Layout/SequenceTheme";
 import YokilaJagonyaKamuHebat from "@/components/Layout/YokilaJagonyaKamuHebat";
@@ -62,6 +65,9 @@ const PlayDetailPlay = ({ setMode }: PlayPageProps) => {
                         {lesson.lesson_type === 'identification' && (<IdentificationTheme data={lesson} />)}
                         {lesson.lesson_type === 'matching' && (<MatchingTheme data={lesson} />)}
                         {lesson.lesson_type === 'sequence' && (<SequenceTheme data={lesson} />)}
+                        {lesson.lesson_type === 'looping' && (<LoopingTheme data={lesson} />)}
+                        {lesson.lesson_type === 'classification' && (<ClasificationTheme data={lesson} />)}
+                        {lesson.lesson_type === 'puzzle' && (<PuzzleTheme data={lesson} />)}
                     </>
                 ) : (
                     <>belum ada materi</>

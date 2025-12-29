@@ -10,10 +10,9 @@ import arrayCheck from "@/constants/arrayCheck";
 
 interface ClasificationThemeProps {
   data: GetCategoryLessonPublicDataLessonResponse;
-  index: number;
 }
 
-const ClasificationTheme = ({ data, index }: ClasificationThemeProps) => {
+const ClasificationTheme = ({ data }: ClasificationThemeProps) => {
   const [sliderLocal, setSliderLocal] = useState<number>(1)
   const dispatch = useAppDispatch()
   const { progressBar, playVideoKamuHebat } = useAppSelector((state) => state.general);

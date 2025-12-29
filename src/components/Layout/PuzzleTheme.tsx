@@ -30,10 +30,9 @@ import shuffle from "@/constants/suffle";
 
 interface PuzzleThemeProps {
   data: GetCategoryLessonPublicDataLessonResponse;
-  index: number;
 }
 
-const PuzzleTheme = ({ data, index }: PuzzleThemeProps) => {
+const PuzzleTheme = ({ data }: PuzzleThemeProps) => {
   const dispatch = useAppDispatch();
   const { progressBar, playVideoKamuHebat } = useAppSelector(
     (state) => state.general
@@ -61,14 +60,14 @@ const PuzzleTheme = ({ data, index }: PuzzleThemeProps) => {
         setItems(updatedItems);
       }
       // setItems(updatedItems);
-      
+
       // dispatch(setPlayVideoKamuHebat(true));
       // setShowedVideo(true);
-      
+
       // const timer = setTimeout(() => {
       //   dispatch(setProgressBar(progressBar + 1));
       // }, 3000);
-      
+
       // return () => clearTimeout(timer);
     }
   }, [items, progressBar, dispatch]);
@@ -96,7 +95,7 @@ const PuzzleTheme = ({ data, index }: PuzzleThemeProps) => {
 
   const isCenterAligned = (dragRect: any, dropRect: any) => {
     if (!dragRect || !dropRect) return false;
-    
+
     const dragCenterX = dragRect.left + dragRect.width / 2;
     const dragCenterY = dragRect.top + dragRect.height / 2;
 
@@ -106,7 +105,7 @@ const PuzzleTheme = ({ data, index }: PuzzleThemeProps) => {
     const toleranceX = 35;
     const toleranceY = 40;
 
-    const isMatched =  Math.abs(dragCenterX - dropCenterX) <= toleranceX && Math.abs(dragCenterY - dropCenterY) <= toleranceY;
+    const isMatched = Math.abs(dragCenterX - dropCenterX) <= toleranceX && Math.abs(dragCenterY - dropCenterY) <= toleranceY;
     return isMatched;
   };
 
@@ -139,7 +138,7 @@ const PuzzleTheme = ({ data, index }: PuzzleThemeProps) => {
   const DraggableItem = ({ id, children, isDragging }: any) => {
     const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
     const localRef = useRef<HTMLDivElement>(null);
-    
+
     return (
       <div
         ref={(node) => {
