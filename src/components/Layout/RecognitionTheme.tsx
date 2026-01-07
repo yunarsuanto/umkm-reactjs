@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from "react";
 import ShowInfo from "./Info";
 import { Player } from "@lottiefiles/react-lottie-player";
 import { setLoadedImages, setLoading } from "@/features/generalSlice";
+import { DetailLessonDataResponse } from "@/types/admin/lesson/DetailLessonTypes";
 
 interface RecognitionThemeType {
-  data: GetCategoryLessonPublicDataLessonResponse;
+  data: GetCategoryLessonPublicDataLessonResponse | DetailLessonDataResponse;
 }
 
 const RecognitionTheme = ({ data }: RecognitionThemeType) => {
@@ -52,9 +53,14 @@ const RecognitionTheme = ({ data }: RecognitionThemeType) => {
 
   return (
     <div className='flex flex-col'>
+      <div className={'rounded-lg bg-pink-200 p-1 flex flex-col mb-2'}>
+        <span className={'text-blue-800 w-full text-center text-md'}>{data.title}</span>
+        <span className={'text-orange-800 w-full text-center text-sm'}>{data.description}</span>
+      </div>
       <div className={`relative w-full bg-cover bg-no-repeat h-[74dvh] p-2 rounded-lg`} style={{ backgroundImage: `url(${import.meta.env.VITE_API_IMAGE_URL}${data.media})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-black/50 pointer-events-none z-0" />
         <ShowInfo description={data.description} />
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-8 relative z-1">
           {data && data.items && data.items.map((item, index) => {
             return (
               <div
@@ -74,8 +80,8 @@ const RecognitionTheme = ({ data }: RecognitionThemeType) => {
                     }
                   }}
                 />
-                <div className="text-center text-white">
-                  <p className="font-bold" style={{ textShadow: '0px 0px 3px black' }}>
+                <div className="text-center">
+                  <p className="font-bold text-white" style={{ textShadow: '0px 0px 3px black' }}>
                     {item.content}
                   </p>
                 </div>

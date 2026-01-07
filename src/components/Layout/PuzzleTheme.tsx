@@ -9,6 +9,9 @@ import {
   setPlayVideoKamuHebat,
   setPlayVideoUhSalah,
   setProgressBar,
+  setLoadedImages,
+  setLoading,
+  setLoadedImagesByIndex
 } from "@/features/generalSlice";
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
 import { useDeviceMode } from "@/constants/dimension";
@@ -24,25 +27,53 @@ import {
   DragOverlay,
   rectIntersection,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import shuffle from "@/constants/suffle";
+import ShowInfo from "./Info";
+import { Player } from "@lottiefiles/react-lottie-player";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { DetailLessonDataResponse } from "@/types/admin/lesson/DetailLessonTypes";
 
 interface PuzzleThemeProps {
-  data: GetCategoryLessonPublicDataLessonResponse;
+  data: GetCategoryLessonPublicDataLessonResponse | DetailLessonDataResponse;
 }
 
 const PuzzleTheme = ({ data }: PuzzleThemeProps) => {
   const dispatch = useAppDispatch();
-  const { progressBar, playVideoKamuHebat } = useAppSelector(
+  const { progressBar, playVideoKamuHebat, loadedImages } = useAppSelector(
     (state) => state.general
   );
   const [activeId, setActiveId] = useState('')
   const [dragStartRect, setDragStartRect] = useState<any>(null);
   const [items, setItems] = useState<GetCategoryLessonPublicDataLessonItemResponse[]>(data.items);
+  // Refs to measure elements
   const draggableRefs = useRef<{ [key: string]: HTMLDivElement }>({});
-  const droppableRefs = useRef<{ [key: string]: HTMLDivElement }>({});
+  const droppableRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (items && items.length > 0) {
+      dispatch(setLoading(true));
+      dispatch(setLoadedImages(new Array(items.length).fill(false)));
+
+      timeoutId = setTimeout(() => {
+        dispatch(setLoading(false));
+      }, 500);
+    }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      dispatch(setLoading(false));
+      dispatch(setLoadedImages([]));
+    };
+  }, []);
+
+  useEffect(() => {
+    if (loadedImages.length > 0 && loadedImages.every(Boolean)) {
+      dispatch(setLoading(false));
+      dispatch(setLoadedImages([]));
+    }
+  }, [loadedImages]);
 
   useEffect(() => {
     const normalItems = items.filter(item => !item.is_done);
@@ -59,294 +90,212 @@ const PuzzleTheme = ({ data }: PuzzleThemeProps) => {
       if (!isSame) {
         setItems(updatedItems);
       }
-      // setItems(updatedItems);
-
-      // dispatch(setPlayVideoKamuHebat(true));
-      // setShowedVideo(true);
-
-      // const timer = setTimeout(() => {
-      //   dispatch(setProgressBar(progressBar + 1));
-      // }, 3000);
-
-      // return () => clearTimeout(timer);
+      if (!playVideoKamuHebat) {
+        setTimeout(() => {
+          dispatch(setPlayVideoKamuHebat(true));
+        }, 2000)
+        setTimeout(() => {
+          dispatch(setProgressBar(progressBar + 1));
+        }, 4000);
+      }
     }
   }, [items, progressBar, dispatch]);
 
+  const handleDragEnd = ({ active }: any) => {
+    const draggableRect = active.rect.current.translated;
+    if (!draggableRect) return;
 
-  const handleDragEnd = ({ active, over }: any) => {
-    if (!over) return;
+    const dropZone = droppableRefs.current["drop-zone-1"];
+    if (!dropZone) return;
 
-    const overlayMediaRect = overlayRef.current?.getBoundingClientRect();
-    if (!overlayMediaRect) {
-      return;
-    }
+    const dropRect = dropZone.getBoundingClientRect();
 
-    const dropZoneRect = droppableRefs.current[over.id]?.getBoundingClientRect();
+    const centerX = draggableRect.left + draggableRect.width / 2;
+    const centerY = draggableRect.top + draggableRect.height / 2;
 
-    if (dropZoneRect && isCenterAligned(overlayMediaRect, dropZoneRect)) {
-      const updatedItems = items.map((item) =>
-        item.id === active.id ? { ...item, isCorrect: true } : item
+    const centerBox = {
+      left: dropRect.left + dropRect.width * 0.2,
+      right: dropRect.left + dropRect.width * 0.8,
+      top: dropRect.top + dropRect.height * 0.2,
+      bottom: dropRect.top + dropRect.height * 0.8,
+    };
+
+    const isInsideCenter =
+      centerX > centerBox.left &&
+      centerX < centerBox.right &&
+      centerY > centerBox.top &&
+      centerY < centerBox.bottom;
+
+    if (isInsideCenter) {
+      setItems(prev =>
+        prev.map((item) =>
+          item.id === active.id ? { ...item, isCorrect: true } : item
+        )
       );
-      setItems(updatedItems);
-    } else {
-      console.log("NOT MATCH");
     }
+
+    setActiveId('');
   };
 
-  const isCenterAligned = (dragRect: any, dropRect: any) => {
-    if (!dragRect || !dropRect) return false;
-
-    const dragCenterX = dragRect.left + dragRect.width / 2;
-    const dragCenterY = dragRect.top + dragRect.height / 2;
-
-    const dropCenterX = dropRect.left + dropRect.width / 2;
-    const dropCenterY = dropRect.top + dropRect.height / 2;
-
-    const toleranceX = 35;
-    const toleranceY = 40;
-
-    const isMatched = Math.abs(dragCenterX - dropCenterX) <= toleranceX && Math.abs(dragCenterY - dropCenterY) <= toleranceY;
-    return isMatched;
-  };
-
+  useEffect(() => {
+    setItems(data.items);
+  }, [data]);
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 100,
-        tolerance: 8,
+        distance: 3,
+        // delay: 100,
+        // tolerance: 8,
       },
     })
   );
 
   const handleDragStart = ({ active }: any) => {
     setActiveId(active.id);
-    // Capture rect manual dari ref
-    const ref = draggableRefs.current[active.id];
-    let rect = null;
-    if (ref) {
-      rect = ref.getBoundingClientRect();
-    }
-    setDragStartRect(rect);
   };
 
-  const DraggableItem = ({ id, children, isDragging }: any) => {
-    const { attributes, listeners, setNodeRef, transform } = useDraggable({ id });
-    const localRef = useRef<HTMLDivElement>(null);
-
+  const DraggableItem = ({ id, children }: any) => {
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id });
     return (
       <div
-        ref={(node) => {
-          setNodeRef(node);
-          localRef.current = node as HTMLDivElement;
-          if (node) {
-            draggableRefs.current[id] = node;
-          }
-        }}
+        ref={setNodeRef}
         {...attributes}
         {...listeners}
+        className={`${activeId === id ? 'opacity-0' : 'opacity-100'} touch-none cursor-grab active:cursor-grabbing`}
         style={{
-          cursor: "grab",
-          pointerEvents: "auto",
-          opacity: isDragging ? 0 : 1,
-          transform: transform
-            ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-            : undefined,
+          transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
         }}
       >
         {children}
       </div>
     );
   };
-  // const DroppableItem = ({ id, children }: any) => {
-  //   const { setNodeRef, isOver } = useDroppable({ id });
-  //   return (
-  //     <div
-  //       style={{
-  //         width: '100%',
-  //         height: `${headerStyle.height}px`,
-  //         // border: '1px solid red',
-  //         display: 'flex',
-  //         justifyContent: 'center',
-  //         alignItems: "center",
-  //       }}
-  //     >
-  //       <div 
-  //         ref={(node) => {
-  //           setNodeRef(node);
-  //           if (node) {
-  //             droppableRefs.current[id] = node;
-  //           }
-  //         }}
-  //         style={{
-  //           border: '2px dashed rgb(60 60 60)',
-  //           width: `${headerStyle.width}px`,
-  //           height: `${headerStyle.height}px`,
-  //           background: 'rgba(192, 247, 214, 0.5)',
-  //           borderRadius: 10,
-  //         }}
-  //       >
-  //         {children}
-  //       </div>
-  //     </div>
-  //   );
-  // };
 
-  // const YourDraggablePreview = ({ itemId } : any) => {
-  //   const item = items.find((x) => x.id === itemId);
-  //   if (!item) return
-  //   return (
-  //     <img
-  //       src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-  //       style={{
-  //         width: `${headerStyle.width}px`,
-  //         height: `${headerStyle.height}px`,
-  //         borderRadius: 10,
-  //       }}
-  //     />
-  //   );
-  // };
+  const DroppableItem = ({ id, children }: any) => {
+    const { setNodeRef, isOver } = useDroppable({ id });
+    return (
+      <div
+        ref={(el) => {
+          setNodeRef(el);
+          droppableRefs.current[id] = el;
+        }}
+        className={`relative w-full md:h-[70%] border-2 rounded-xl transition-colors ${isOver ? 'border-sky-400 bg-sky-50/20' : 'border-dashed border-white/50 bg-black/10'}`}
+      >
+        {children}
+      </div>
+    );
+  };
+
+  const [dropSize, setDropSize] = useState({ width: 0, height: 0 });
+
+  const YourDraggablePreview = ({ itemId }: any) => {
+    const item = items.find((x) => x.id === itemId);
+    if (!item) return null;
+
+    return (
+      <div
+        style={{
+          width: dropSize.width,
+          height: dropSize.height,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        className="p-2"
+      >
+        <img
+          src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+          alt=""
+          style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        />
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    const dropZone = droppableRefs.current["drop-zone-1"];
+    if (dropZone) {
+      const rect = dropZone.getBoundingClientRect();
+      setDropSize({ width: rect.width, height: rect.height });
+    }
+  }, [items]);
+
 
   return (
-    <>
-      asdasd
-    </>
-    // <Box key={`${index}-${data.title}`}>
-    //   <DndContext
-    //     onDragEnd={handleDragEnd}
-    //     sensors={sensors}
-    //     collisionDetection={rectIntersection}
-    //     onDragStart={handleDragStart}
-    //   >
-    //     <Stack
-    //       w="100vw"
-    //     >
-    //       <Box
-    //         style={{
-    //           // background: 'white',
-    //           flex: 1,
-    //           width: "100%",
-    //           position: "relative",
-    //           overflow: "hidden",
-    //         }}
-    //         px={0}
-    //       >
-    //         <DroppableItem id={`drop-zone-1`}>
-    //           {items.map((item, index) => {
-    //             if(item.is_done && item.isCorrect){
-    //               return (
-    //                 <Box
-    //                   key={index}
-    //                   style={{
-    //                     position: "absolute",
-    //                     inset: 0,
-    //                     display: "flex",
-    //                     alignItems: "center",
-    //                     justifyContent: "center",
-    //                   }}
-    //                 >
-    //                   <video
-    //                     src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-    //                     autoPlay
-    //                     muted
-    //                     loop
-    //                     playsInline
-    //                     style={{
-    //                       height: "100%",
-    //                       objectFit: "cover",
-    //                       pointerEvents: "none",
-    //                     }}
-    //                   />
-    //                 </Box>
-    //               )
-    //             }
-    //             if(!item.is_done && item.isCorrect){
-    //               return (
-    //                 <Box
-    //                   key={index}
-    //                   style={{
-    //                     position: "absolute",
-    //                     inset: 0,
-    //                     display: "flex",
-    //                     alignItems: "center",
-    //                     justifyContent: "center",
-    //                   }}
-    //                 >
-    //                   <img
-    //                     src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-    //                     style={{
-    //                       height: "100%",
-    //                       objectFit: "cover",
-    //                     }}
-    //                   />
-    //                 </Box>
-    //               )
-    //             }
-    //             return null;
-    //           })}
-    //         </DroppableItem>
-    //       </Box>
-    //       <Box
-    //         style={{
-    //           overflowX: "auto",
-    //         }}
-    //       >
-    //         <Box style={{
-    //           display: "flex",
-    //           gap: 10,
-    //           padding: "10px 10px 10px 10px",
-    //           minWidth: "fit-content",
-    //           height: '35vh',
-    //         }}>
-    //           {items && items.length > 0 && items.map((item, index) => {
-    //             if(!item.is_done && !item.isCorrect){
-    //               return(
-    //                 <DraggableItem id={item.id} key={index} isDragging={activeId === item.id}>
-    //                   <BackgroundImage
-    //                     src={'./gradient-14.jpeg'}
-    //                     style={{
-    //                       border: '0px',
-    //                       borderRadius: '10px',
-    //                       backgroundPosition: 'center',
-    //                       backgroundRepeat: 'no-repeat',
-    //                       textAlign: 'center',
-    //                       float: 'left',
-    //                       height: '100%',
-    //                       padding: 10,
-    //                     }}
-    //                     onClick={() => {
-    //                       speak(item.content)
-    //                     }}
-    //                   >
-    //                     <img
-    //                       src={`${import.meta.env.VITE_API_IMAGE_URL}${item.thumbnail}`}
-    //                       style={{
-    //                         height: "100%",
-    //                         objectFit: "cover",
-    //                       }}
-    //                     />
-    //                   </BackgroundImage>
-    //                 </DraggableItem>
-    //               )
-    //             }
-    //           })}
-    //         </Box>
-    //       </Box>
-    //     </Stack>
-    //     <DragOverlay>
-    //       {activeId ? (
-    //         <div ref={overlayRef}>
-    //           <YourDraggablePreview itemId={activeId} />
-    //         </div>
-    //       ) : null}
-    //     </DragOverlay>
-    //   </DndContext>
-    // </Box>
+    <div className='flex flex-col'>
+      <div className={'rounded-lg bg-pink-200 p-1 flex flex-col mb-2'}>
+        <span className={'text-blue-800 w-full text-center text-md'}>{data.title}</span>
+        <span className={'text-orange-800 w-full text-center text-sm'}>{data.description}</span>
+      </div>
+      <div className={`relative w-full bg-cover bg-no-repeat h-[74dvh] p-2 rounded-lg flex flex-col`} style={{ backgroundImage: `url(${import.meta.env.VITE_API_IMAGE_URL}${data.media})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+        <ShowInfo description={data.description} />
+        <DndContext
+          onDragEnd={handleDragEnd}
+          sensors={sensors}
+          collisionDetection={rectIntersection}
+          onDragStart={handleDragStart}
+          modifiers={[restrictToWindowEdges]}
+        >
+          <div className="h-[44dvh] w-full flex justify-center p-4">
+            <DroppableItem id="drop-zone-1">
+              {items.map((item, index) => {
+                if (item.isCorrect) {
+                  return (
+                    <div key={index} className="absolute inset-0 flex items-center justify-center pointer-events-none animate-fade-in">
+                      <img src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`} alt="" style={{ height: '100%', padding: 10 }} />
+                    </div>
+                  )
+                }
+                return null;
+              })}
+              {items.every(item => item.isCorrect) && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {items.filter(item => item.is_done).map((item, idx) => (
+                    <Player
+                      key={`done-${idx}`}
+                      src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
+                      autoplay={true}
+                      loop={false}
+                      style={{ width: '300px', height: '300px' }}
+                    />
+                  ))}
+                </div>
+              )}
+            </DroppableItem>
+          </div>
+          <div className="flex-1 overflow-x-auto">
+            <div className="absolute left-0 right-0 bottom-10 z-10 text-center text-white/80 pointer-events-none select-none animate-pulse text-2xl drop-shadow-lg">
+              ← geser →
+            </div>
+            <div className="flex gap-4 p-2 h-full min-w-max items-center">
+              {items.filter(item => !item.isCorrect && !item.is_done).map((item, index) => (
+                <div key={item.id} className="h-[80%] aspect-square">
+                  <DraggableItem id={item.id}>
+                    <div onClick={() => {
+                      speak(item.content)
+                    }} className="w-full h-full p-1 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30 shadow-sm hover:scale-105 transition-transform flex justify-center items-center">
+                      <img src={`${import.meta.env.VITE_API_IMAGE_URL}${item.thumbnail}`} alt="" style={{ height: 100 }} />
+                    </div>
+                  </DraggableItem>
+                </div>
+              ))}
+            </div>
+          </div>
+          <DragOverlay>
+            {activeId ? (
+              <YourDraggablePreview itemId={activeId} />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      </div>
+    </div>
   );
 };
 

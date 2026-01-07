@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const addLessonSchema = z.object({
-  title: z.string().min(6, { message: 'Title is required min 6' }),
+  title: z.string().min(1, { message: 'Title is required min 1' }),
   description: z.string().min(6, { message: 'Description is required min 6' }),
   lesson_type: z.string().min(1, { message: 'Lesson Type is required min 1' }),
   media: z.string().optional(),

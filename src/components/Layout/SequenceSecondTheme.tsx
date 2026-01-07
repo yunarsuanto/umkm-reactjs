@@ -14,10 +14,12 @@ import {
 import { SortableContext, arrayMove, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import SequenceSortableItem from "./SequenceShortableItem";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { GetLessonItemDataResponse } from "@/types/admin/lesson_item/GetLessonItemTypes";
 
 interface Props {
-  data: GetCategoryLessonPublicDataLessonItemResponse[]; // urutan benar
-  array: GetCategoryLessonPublicDataLessonItemResponse[]; // random
+  data: GetCategoryLessonPublicDataLessonItemResponse[] | GetLessonItemDataResponse[];
+  array: GetCategoryLessonPublicDataLessonItemResponse[] | GetLessonItemDataResponse[];
   description: string;
   onCorrectAnswer: () => void;
   onWrongAnswer: () => void;
@@ -25,13 +27,21 @@ interface Props {
 
 const SequenceSecondTheme = ({ data, array, description, onCorrectAnswer, onWrongAnswer }: Props) => {
   const playerRef = useRef<(HTMLElement | null)[]>([]);
-  const [items, setItems] = useState(array);       // untuk sortable
-  const [isCorrect, setIsCorrect] = useState(false); // brightness check
+  const [items, setItems] = useState(array);
   const [correctIndexes, setCorrectIndexes] = useState<boolean[]>([]);
-  
+
   const sensors = useSensors(
-    useSensor(MouseSensor, { activationConstraint: { distance: 15 }}),
-    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 }})
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 3,
+      }
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 3,
+        // delay: 150, tolerance: 5 
+      }
+    })
   );
 
   const checkCorrectOrder = (arr: GetCategoryLessonPublicDataLessonItemResponse[]) => {
@@ -58,16 +68,17 @@ const SequenceSecondTheme = ({ data, array, description, onCorrectAnswer, onWron
     checkCorrectOrder(items);
   }, [items]);
   return (
-    <div>
+    <div className="relative z-1">
       {items.length > 0 && <ShowInfo description={description} />}
-
+      <div className="absolute bg-white p-[5px] rounded-tl-lg rounded-br-lg left-0 top-0 text-sky-600">Halaman 2</div>
       <DndContext
         onDragEnd={handleDragEnd}
         sensors={sensors}
         collisionDetection={closestCenter}
+        modifiers={[restrictToWindowEdges]}
       >
         <SortableContext items={items.map(i => i.id)}>
-          <div className="h-[100%] grid grid-cols-2 gap-y-3 gap-x-5">
+          <div className="grid grid-cols-2 h-[72dvh] justify-center items-center">
             {items.map((item, index) => (
               <SequenceSortableItem key={item.id} item={item}>
                 <div onClick={() => speak(item.content)}>
@@ -80,7 +91,7 @@ const SequenceSecondTheme = ({ data, array, description, onCorrectAnswer, onWron
                     style={{
                       pointerEvents: "none",
                       touchAction: "none",
-                      height: "80%",
+                      height: '18dvh',
                       filter: `brightness(${correctIndexes[index] ? "1" : "0"})`,
                       transition: "filter .3s ease"
                     }}

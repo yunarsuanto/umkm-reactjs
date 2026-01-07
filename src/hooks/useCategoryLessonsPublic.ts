@@ -7,7 +7,7 @@ import { GetCategoryLessonPublicRequest, GetCategoryLessonPublicResponse } from 
 
 export const useCategoryLessonsPublic = (pagination: Pagination, req: GetCategoryLessonPublicRequest, options: {enabled: boolean}) => {
   return useQuery<GetCategoryLessonPublicResponse, ApiErrorType>({
-    queryKey: ['category-lessons', pagination.page, pagination.limit, pagination.search],
+    queryKey: ['category-lessons-public', pagination.page, pagination.limit, pagination.search],
     queryFn: () => getCategoryLessonPublic(pagination, req),
     staleTime: 5 * 60 * 1000,
     gcTime: 1000 * 60 * 10,

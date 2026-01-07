@@ -2,6 +2,7 @@ import { Meta } from "../../Meta";
 import { Pagination } from "../../Pagination";
 
 export interface GetCategoryLessonRequest {
+  category_lesson_type: string
 }
 
 export interface GetCategoryLessonResponse {
@@ -16,6 +17,7 @@ export interface GetCategoryLessonDataResponse {
   description: string
   category_lesson_type: string
   media: string
+  mediaShow: string
   lessons: GetCategoryLessonDataLessonResponse[]
 }
 

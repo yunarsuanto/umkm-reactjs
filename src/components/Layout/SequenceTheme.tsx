@@ -15,9 +15,10 @@ import ShowInfo from "./Info";
 import SequenceFirstTheme from "./SequenceFirstTheme";
 import SequenceSecondTheme from "./SequenceSecondTheme";
 import suffle from "@/constants/suffle";
+import { DetailLessonDataResponse } from "@/types/admin/lesson/DetailLessonTypes";
 
 interface SequenceThemeProps {
-  data: GetCategoryLessonPublicDataLessonResponse;
+  data: GetCategoryLessonPublicDataLessonResponse | DetailLessonDataResponse;
 }
 
 const SequenceTheme = ({ data }: SequenceThemeProps) => {
@@ -29,17 +30,9 @@ const SequenceTheme = ({ data }: SequenceThemeProps) => {
   const total = data.items.length;
   const [options, setOptions] = useState<GetCategoryLessonPublicDataLessonItemResponse[]>([])
 
-  const handleSpeak = (slideIndex: number) => {
-    const r = data.items[slideIndex];
-    if (!r) return;
-    setTimeout(() => {
-      speak(data.description.replaceAll('{content}', r.content));
-    }, 4200)
-  };
-
   const onCorrectAnswer = () => {
+    setIsCorrect(true);
     setTimeout(() => {
-      setIsCorrect(true);
       dispatch(setPlayVideoKamuHebat(true));
     }, 1000);
   }
@@ -47,51 +40,59 @@ const SequenceTheme = ({ data }: SequenceThemeProps) => {
   const onWrongAnswer = () => {
     setTimeout(() => {
       dispatch(setPlayVideoUhSalah(true));
-    }, 1000);
+    }, 500);
   }
 
   useEffect(() => {
     if (!playVideoKamuHebat && isCorrect) {
       if (currentIndex === 1) {
         dispatch(setProgressBar(progressBar + 1));
-        handleSpeak(currentIndex + 1);
       }
     }
   }, [playVideoKamuHebat]);
 
   useEffect(() => {
-    if(data && data.items && data.items.length > 0){
+    if (data && data.items && data.items.length > 0) {
       setOptions(
         suffle(data.items)
       );
     }
   }, [data])
 
-  const cacheKey = `loaded-${currentIndex}`;
-
   useEffect(() => {
-      const cached = sessionStorage.getItem(cacheKey);
-      if (!cached) {
-          dispatch(setLoading(true));
-          dispatch(setLoadedImages(new Array(data.items.length).fill(false)));
-      } else {
-          dispatch(setLoading(false));
-      }
+    let timeoutId: NodeJS.Timeout;
+    dispatch(setLoading(true));
+    dispatch(setLoadedImages(new Array(data.items.length).fill(false)));
+
+    timeoutId = setTimeout(() => {
+      dispatch(setLoading(false));
+    }, 1000);
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      dispatch(setLoading(false));
+      dispatch(setLoadedImages([]));
+    };
   }, []);
 
   useEffect(() => {
-      if (loadedImages.length > 0 && loadedImages.every(Boolean)) {
-          dispatch(setLoading(false));
-          sessionStorage.setItem(cacheKey, "done");
-      }
+    if (loadedImages.length > 0 && loadedImages.every(Boolean)) {
+      dispatch(setLoading(false));
+      dispatch(setLoadedImages([]));
+    }
   }, [loadedImages]);
 
   return (
     <div className='flex flex-col'>
+      <div className={'rounded-lg bg-pink-200 p-1 flex flex-col mb-2'}>
+        <span className={'text-blue-800 w-full text-center text-md'}>{data.title}</span>
+        <span className={'text-orange-800 w-full text-center text-sm'}>{data.description}</span>
+      </div>
       <div className={`relative w-full bg-cover bg-no-repeat h-[74dvh] p-2 rounded-lg`} style={{ backgroundImage: `url(${import.meta.env.VITE_API_IMAGE_URL}${data.media})`, backgroundSize: 'cover', backgroundPosition: 'center' }}>
+        <div className="absolute inset-0 bg-black/50 pointer-events-none z-0" />
         {currentIndex === 0 && (
-          <div className="fixed top-[50dvh] right-3" onClick={() => setCurrentIndex(1)}>
-            <img src={'/arrow-right.svg'} alt="add" width={30} height={30} className="drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]" />  
+          <div className="absolute top-[35dvh] right-3 z-50" onClick={() => setCurrentIndex(1)}>
+            <img src={'/arrow-right.svg'} alt="add" width={30} height={30} className="drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]" />
           </div>
         )}
         {data && data.items && data.items.length > 0 && currentIndex === 0 && (
@@ -101,176 +102,12 @@ const SequenceTheme = ({ data }: SequenceThemeProps) => {
           <SequenceSecondTheme data={data.items} array={options} description={data.description} onCorrectAnswer={onCorrectAnswer} onWrongAnswer={onWrongAnswer} />
         )}
         {currentIndex === 1 && (
-          <div className="fixed top-[50dvh] left-3" onClick={() => setCurrentIndex(0)}>
-            <img src={'/arrow-left.svg'} alt="add" width={30} height={30} className="drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]" />  
+          <div className="absolute top-[35dvh] left-3 z-50" onClick={() => setCurrentIndex(0)}>
+            <img src={'/arrow-left.svg'} alt="add" width={30} height={30} className="drop-shadow-[0_4px_6px_rgba(0,0,0,0.5)]" />
           </div>
         )}
       </div>
     </div>
-    // <Box key={`${index}-${data.title}`}>
-    //   {sliderLocal === 2 && (
-    //     <div style={{position: 'absolute', top: '50vh', left: 10, border: '2px solid white', borderRadius: 100, width: 35, height: 35, background: 'white', alignItems: 'center', justifyItems: 'center', zIndex: 2}}
-    //       onClick={() => {
-    //         setSliderLocal(sliderLocal - 1)
-    //       }}  
-    //     >
-    //       <div>
-    //         <img src={'/back.svg'} alt="add" width={30} height={30} />  
-    //       </div>
-    //     </div>
-    //   )}
-    //   {sliderLocal === 1 && (
-    //     <div style={{position: 'absolute', top: '50vh', right: 10, border: '2px solid white', borderRadius: 100, width: 35, height: 35, background: 'white', alignItems: 'center', justifyItems: 'center', zIndex: 2}}
-    //       onClick={() => {
-    //         setSliderLocal(sliderLocal + 1)
-    //       }}  
-    //     >
-    //       <div>
-    //         <img src={'/forward.png'} alt="add" width={30} height={30} />  
-    //       </div>
-    //     </div>
-    //   )}
-    //   {sliderLocal === 1 ? (
-    //     <SimpleGrid cols={orientation === 'portrait' ? 3 : 6} p={5}>
-    //     {data && data.items && data.items.map((item, indx) => {
-    //       return (
-    //         <BackgroundImage
-    //           src={'./gradient-14.jpeg'}
-    //           style={{
-    //             border: '0px',
-    //             borderRadius: '10px',
-    //             backgroundSize: 'cover',
-    //             backgroundPosition: 'center',
-    //             backgroundRepeat: 'no-repeat',
-    //             textAlign: 'center',
-    //             padding: 20,
-    //             height: '100%',
-    //           }}
-    //           key={indx}
-    //           onClick={() => {
-    //             speak(item.content)
-    //           }}
-    //         >
-    //           <Text style={{
-    //             fontSize: headerStyle.font+5,
-    //             color: theme.colors.red[9],
-    //             textShadow: '1px 1px 0px white, -1px 1px 0px white, 1px -1px 0px white, -1px -1px 0px white',
-    //           }}>{item.order}</Text>
-    //           <div
-    //             style={{
-    //               transform: "scale(1.7)",
-    //               transformOrigin: "center center",
-    //               width: "100%",
-    //             }}
-    //           >
-    //             <video
-    //               src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-    //               autoPlay
-    //               muted
-    //               loop
-    //               playsInline
-    //               style={{
-    //                 maxHeight: headerStyle.height,
-    //                 touchAction: "none",
-    //                 pointerEvents: "none",
-    //                 width: '100%',
-    //               }}
-    //               onError={() => {
-    //                 console.error('VIDEO ERROR:', item.media);
-    //               }}
-    //             />
-    //           </div>
-    //           <Text
-    //             style={{
-    //               fontSize: headerStyle.font,
-    //               color: theme.colors.blue[9],
-    //               textShadow: '1px 1px 0px white, -1px 1px 0px white, 1px -1px 0px white, -1px -1px 0px white',
-    //             }}
-    //           >
-    //             {item.content}
-    //           </Text>
-    //         </BackgroundImage>
-    //       )
-    //     })}
-    //     </SimpleGrid>
-    //   ) : (
-    //     <DndContext
-    //       onDragEnd={handleDragEnd}
-    //       sensors={sensors}
-    //       collisionDetection={closestCenter}
-    //       modifiers={[]}
-    //       key={index}
-    //     >
-    //         <SimpleGrid cols={orientation === 'portrait' ? 3 : 6} p={5}>
-    //           <SortableContext items={options.map(o => o.id)} key={'wadaw'}>
-    //             {options && options.map((item, indx) => {
-    //               return (
-    //                 <SortableItem id={item.id} key={item.id}>
-    //                   <BackgroundImage
-    //                     src={'./gradient-14.jpeg'}
-    //                     style={{
-    //                       border: '0px',
-    //                       borderRadius: '10px',
-    //                       backgroundSize: 'cover',
-    //                       backgroundPosition: 'center',
-    //                       backgroundRepeat: 'no-repeat',
-    //                       textAlign: 'center',
-    //                       padding: 20,
-    //                       height: '100%',
-    //                     }}
-    //                     key={indx}
-    //                     onClick={() => {
-    //                       speak(item.content)
-    //                     }}
-    //                   >
-    //                     <Text style={{
-    //                       fontSize: headerStyle.font+5,
-    //                       color: theme.colors.red[9],
-    //                       textShadow: '1px 1px 0px white, -1px 1px 0px white, 1px -1px 0px white, -1px -1px 0px white',
-    //                     }}>{item.order}</Text>
-    //                     <div
-    //                       style={{
-    //                         transform: "scale(1.7)",
-    //                         transformOrigin: "center center",
-    //                         width: "100%",
-    //                       }}
-    //                     >
-    //                       <video
-    //                         src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-    //                         autoPlay
-    //                         muted
-    //                         loop
-    //                         playsInline
-    //                         style={{
-    //                           maxHeight: headerStyle.height,
-    //                           touchAction: "none",
-    //                           pointerEvents: "none",
-    //                           width: '100%',
-    //                           filter: isCorrect(item, indx) ? "brightness(1)" : "brightness(0)",
-    //                         }}
-    //                         onError={() => {
-    //                           console.error('VIDEO ERROR:', item.media);
-    //                         }}
-    //                       />
-    //                     </div>
-    //                     <Text
-    //                       style={{
-    //                         fontSize: headerStyle.font,
-    //                         color: theme.colors.blue[9],
-    //                         textShadow: '1px 1px 0px white, -1px 1px 0px white, 1px -1px 0px white, -1px -1px 0px white',
-    //                       }}
-    //                     >
-    //                       {item.content}
-    //                     </Text>
-    //                   </BackgroundImage>
-    //                 </SortableItem>
-    //               )
-    //             })}
-    //           </SortableContext>
-    //         </SimpleGrid>
-    //       </DndContext>
-    //   )}
-    // </Box>
   );
 };
 

@@ -1,4 +1,5 @@
 import { Meta } from "../../Meta";
+import { GetLessonItemDataResponse } from "../lesson_item/GetLessonItemTypes";
 import { GetLessonDataResponse } from "./GetLessonTypes";
 
 export interface DetailLessonResponse {
@@ -14,4 +15,5 @@ export interface DetailLessonDataResponse {
   category_lesson_id: string
   lesson_type: string
   level: number
+  items: GetLessonItemDataResponse[]
 }

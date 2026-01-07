@@ -1,79 +1,27 @@
-import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons-react';
-import classes from '@/components/user/FooterUser.module.css';
-
-const data = [
-  {
-    title: 'About',
-    links: [
-      { label: 'Features', link: '#' },
-      { label: 'Pricing', link: '#' },
-      { label: 'Support', link: '#' },
-      { label: 'Forums', link: '#' },
-    ],
-  },
-  {
-    title: 'Project',
-    links: [
-      { label: 'Contribute', link: '#' },
-      { label: 'Media assets', link: '#' },
-      { label: 'Changelog', link: '#' },
-      { label: 'Releases', link: '#' },
-    ],
-  },
-  {
-    title: 'Community',
-    links: [
-      { label: 'Join Discord', link: '#' },
-      { label: 'Follow on Twitter', link: '#' },
-      { label: 'Email newsletter', link: '#' },
-      { label: 'GitHub discussions', link: '#' },
-    ],
-  },
-];
+import { useNavigate } from "react-router-dom";
 
 export function FooterUser() {
-  const groups = data.map((group) => {
-    const links = group.links.map((link, index) => (
-      <>
-        asdasd
-      </>
-      // <Text<'a'>
-      //   key={index}
-      //   className={classes.link}
-      //   component="a"
-      //   href={link.link}
-      //   onClick={(event) => event.preventDefault()}
-      // >
-      //   {link.label}
-      // </Text>
-    ));
-
-    return (
-      <div className={classes.wrapper} key={group.title}>
-        {/* <Text className={classes.title}>{group.title}</Text> */}
-        {links}
-      </div>
-    );
-  });
-
+  const navigate = useNavigate()
   return (
-    <footer className={classes.footer}>
-      {/* <Container className={classes.afterFooter}>
-        <Group gap={0} className={classes.social} justify="flex-end" wrap="nowrap">
-          <Text c="dimmed" size="sm">
-            © 2024 mantine.dev. All rights reserved.
-          </Text>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-            <IconBrandTwitter style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-            <IconBrandYoutube style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-          </ActionIcon>
-          <ActionIcon size="lg" color="gray" variant="subtle">
-            <IconBrandInstagram style={{ width: rem(18), height: rem(18) }} stroke={1.5} />
-          </ActionIcon>
-        </Group>
-      </Container> */}
+    <footer className="w-full border-t p-2 bg-green-100 fixed bottom-0">
+      <div className="flex justify-center gap-x-10">
+        <div onClick={() => navigate('/user/lesson')}>
+          <img src="/lesson.svg" alt="" width={40} />
+        </div>
+        <div onClick={() => navigate('/acievement')}>
+          <img src="/acievement.svg" alt="" width={40} />
+        </div>
+        <div onClick={() => navigate('/user')} className="absolute left-1/2 -translate-x-1/2 bottom-[3dvh] bg-white p-1 rounded-full">
+          <img src="/home.svg" alt="" width={50} />
+        </div>
+        <div></div>
+        <div onClick={() => navigate('/article')}>
+          <img src="/article.svg" alt="" width={40} />
+        </div>
+        <div onClick={() => navigate('/profile')}>
+          <img src="/profile.svg" alt="" width={40} />
+        </div>
+      </div>
     </footer>
   );
 }

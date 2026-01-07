@@ -26,44 +26,36 @@ import AdminLessonGroupCreatePage from './pages/admin/lesson/AdminLessonGroupCre
 import AdminLessonGroupAssignItemPage from './pages/admin/lesson/AdminLessonGroupAssignItemPage';
 import getCachedMediaUrl from './constants/get_cache_media';
 import PlayDetailPlay from './pages/public/PlayDetailPage';
+import { setRole, setToken } from './features/authSlice';
+import UserLessonPage from './pages/user/UserLessonPage';
+import UserLessonDetailPage from './pages/user/UserLessonDetailPage';
 
 function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { token, loading } = useAppSelector((s) => s.auth);
+  const { token, role } = useAppSelector((s) => s.auth);
   const { mode } = useAppSelector((s) => s.general);
-  // const { device, orientation } = useDeviceMode();
 
-  // useEffect(() => {
-  //   dispatch(rehydrateAuth());
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   const path = location.pathname;
-
-  //   if (path.startsWith("/admin")) {
-  //     dispatch(setMode("admin"));
-  //   } else if (["/login", "/register"].includes(path)) {
-  //     dispatch(setMode("auth"));
-  //   } else if (path.startsWith("/user")) {
-  //     dispatch(setMode("user"));
-  //   } else if (["/", "/play"].includes(path)) {
-  //     dispatch(setMode("public"));
-  //   } else {
-  //     dispatch(setMode("public"));
-  //   }
-  // }, [location.pathname, dispatch]);
-
-  // useEffect(() => {
-  //   if (loading === "pending") return;
-  //   if (location.pathname === "/play") return;
-  //   if (!token && mode !== "auth") {
-  //     navigate("/");
-  //     return;
-  //   }
-  // }, [loading, token, mode, location.pathname, navigate]);
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token')
+    const storedRole = localStorage.getItem('role')
+    let dataToken = {
+      token: '',
+      expiry: 0,
+    };
+    if (storedToken && storedRole) {
+      dataToken = JSON.parse(storedToken);
+      if(dataToken && dataToken.token){
+        dispatch(setToken(localStorage.getItem('token')!))
+      }
+      
+      if(storedRole){
+        dispatch(setRole(storedRole))
+      }
+    }
+  }, [token, role])
 
   const handleSetMode = useCallback(() => {
     dispatch(setMode("auth"));
@@ -75,9 +67,21 @@ function App() {
       left: 0,
       behavior: 'smooth',
     });
-    console.log(location.pathname)
   }, [location.pathname]);
 
+  useEffect(() => {
+    switch (mode) {
+      case 'auth':
+        navigate('/login')
+        break;
+      case 'user':
+        navigate('/user')
+        break;
+      default:
+        navigate('/')
+        break;
+    }
+  }, [mode])
   return (
     <>
       <Routes>
@@ -113,7 +117,9 @@ function App() {
         {/* )} */}
 
         {/* {mode === "user" && ( */}
-        <Route path="/user" element={<UserHomePage setMode={handleSetMode} />} />
+        <Route path="/user" element={<UserHomePage />} />
+        <Route path="/user/lesson" element={<UserLessonPage />} />
+        <Route path="/user/lesson/:category_lesson_id/:type" element={<UserLessonDetailPage />} />
         {/* )} */}
 
         {/* {mode === "public" && ( */}

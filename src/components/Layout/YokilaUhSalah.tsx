@@ -12,13 +12,14 @@ export default function YokilaUhSalah({ play }: any) {
   const dispatch = useAppDispatch();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { unlocked, unlock } = UseAudioUnlock();
+  const isiOS = isIOS()
 
   useEffect(() => {
     if (!play) return;
-    if (isIOS && !unlocked) return;
+    if (isiOS && !unlocked) return;
 
     async function run() {
-      const url = isIOS
+      const url = isiOS
         ? "/uh-salah-audio-fixed.mp3"
         : await getCachedMediaUrl("/uh-salah-audio-fixed.mp3");
 
@@ -33,7 +34,11 @@ export default function YokilaUhSalah({ play }: any) {
       audio.onended = () => dispatch(setPlayVideoUhSalah(false));
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        if(isiOS){
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        }else{
+          await new Promise((resolve) => setTimeout(resolve, 300));
+        }
         await audio.play();
       } catch (e) {
         console.warn("play blocked", e);
@@ -43,7 +48,7 @@ export default function YokilaUhSalah({ play }: any) {
     run();
   }, [play, unlocked]);
 
-  if (isIOS && !unlocked)
+  if (isiOS && !unlocked)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
         <button
@@ -54,7 +59,8 @@ export default function YokilaUhSalah({ play }: any) {
             dispatch(setPlayVideoUhSalah(true));
           }}
         >
-          Salah 🔊
+          <p className="text-sky-600">Yah Salah</p>
+          <p className="text-pink-600">Ayo Coba Lagi ....</p>
         </button>
       </div>
     );
@@ -65,7 +71,7 @@ export default function YokilaUhSalah({ play }: any) {
         src="/uh-salah.json"
         autoplay
         loop={false}
-        style={{ width: "100%", height: 300 }}
+        style={{ height: '250px' }}
         onEvent={(e) => {
           if(e === 'complete'){
             dispatch(setPlayVideoUhSalah(false));

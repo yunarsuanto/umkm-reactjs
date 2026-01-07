@@ -1,10 +1,11 @@
 import { GetCategoryLessonPublicDataLessonItemResponse } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
 import shuffle from "./suffle";
+import { GetLessonItemDataResponse } from "@/types/admin/lesson_item/GetLessonItemTypes";
 
 
 const getRandomOptions = (
-  items: GetCategoryLessonPublicDataLessonItemResponse[],
-  correct: GetCategoryLessonPublicDataLessonItemResponse,
+  items: GetCategoryLessonPublicDataLessonItemResponse[] | GetLessonItemDataResponse[],
+  correct: GetCategoryLessonPublicDataLessonItemResponse | GetLessonItemDataResponse,
   length: number
 ) => {
   if (!items || !correct) return [correct];

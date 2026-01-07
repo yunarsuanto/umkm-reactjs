@@ -28,6 +28,20 @@ export const getUser = async (pagination: Pagination): Promise<GetUserResponse> 
     if (axios.isAxiosError(error)) {
       if(error.status === 401){
         localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
         setMode('public');
       }
       throw new ApiErrorClass(
@@ -50,6 +64,20 @@ export const detailUser = async (id: string): Promise<DetailUserResponse> => {
     if (axios.isAxiosError(error)) {
       if(error.status === 401){
         localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
         setMode('public');
       }
       throw new ApiErrorClass(
@@ -71,6 +99,24 @@ export const addUser = async (data: AddUserSchema): Promise<AddUserResponse> => 
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,
@@ -90,6 +136,24 @@ export const updateUser = async (data: UpdateUserSchema): Promise<UpdateUserResp
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,
@@ -109,6 +173,24 @@ export const deleteUser = async (data: DeleteUserSchema): Promise<DeleteUserResp
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,

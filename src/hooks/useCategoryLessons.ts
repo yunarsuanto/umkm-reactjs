@@ -6,7 +6,7 @@ import { getCategoryLesson } from '../api/category_lessons.api';
 
 export const useCategoryLessons = (pagination: Pagination, req: GetCategoryLessonRequest, options: {enabled: boolean}) => {
   return useQuery<GetCategoryLessonResponse, ApiErrorType>({
-    queryKey: ['category-lessons', pagination.page, pagination.limit, pagination.search],
+    queryKey: ['category-lessons', pagination.page, pagination.limit, pagination.search, req.category_lesson_type],
     queryFn: () => getCategoryLesson(pagination, req),
     staleTime: 5 * 60 * 1000,
     gcTime: 1000 * 60 * 10,

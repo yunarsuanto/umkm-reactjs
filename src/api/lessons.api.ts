@@ -32,6 +32,20 @@ export const getLesson = async (pagination: Pagination, req: GetLessonRequest): 
     if (axios.isAxiosError(error)) {
       if(error.status === 401){
         localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
         setMode('public');
       }
       throw new ApiErrorClass(
@@ -54,6 +68,20 @@ export const detailLesson = async (id: string): Promise<DetailLessonResponse> =>
     if (axios.isAxiosError(error)) {
       if(error.status === 401){
         localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
         setMode('public');
       }
       throw new ApiErrorClass(
@@ -75,6 +103,24 @@ export const addLesson = async (data: AddLessonSchema): Promise<AddLessonRespons
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,
@@ -94,6 +140,24 @@ export const updateLesson = async (data: UpdateLessonSchema): Promise<UpdateLess
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,
@@ -113,6 +177,24 @@ export const deleteLesson = async (data: DeleteLessonSchema): Promise<DeleteLess
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,
@@ -132,6 +214,24 @@ export const copyLesson = async (data: CopyLessonSchema): Promise<CopyLessonResp
     return response.data;
   } catch (error) {
     if (axios.isAxiosError(error)) {
+      if(error.status === 401){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 500){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
+      if(error.status === 403){
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('role');
+        setMode('public');
+      }
       throw new ApiErrorClass(
         error.message,
         error.response?.status,

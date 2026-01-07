@@ -1,5 +1,7 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SidebarItem from "./SidebarItem";
+import { useAppDispatch } from "@/app/hooks";
+import { setMode } from "@/features/generalSlice";
 
 interface SidebarProps {
   currentLocation: string
@@ -27,6 +29,8 @@ const menu = [
 ];
 
 const Sidebar = ({currentLocation} : SidebarProps) => {
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   return (
     <aside className="fixed left-0 top-0 h-screen w-[250px] bg-pink-900 text-white">
       <Link to={'/'}>
@@ -38,6 +42,23 @@ const Sidebar = ({currentLocation} : SidebarProps) => {
         {menu.map((item) => (
           <SidebarItem key={item.label} item={item} />
         ))}
+      </nav>
+      <nav className="mt-4 space-y-1 px-3">
+        <div>
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.removeItem('refresh_token')
+              localStorage.removeItem('token')
+              localStorage.removeItem('role')
+              dispatch(setMode('public'))
+              navigate('/')
+            }}
+            className={`flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition`}
+          >
+            Logout
+          </button>
+        </div>
       </nav>
     </aside>
   );

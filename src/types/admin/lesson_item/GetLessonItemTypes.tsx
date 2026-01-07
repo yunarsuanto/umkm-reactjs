@@ -13,11 +13,10 @@ export interface GetLessonItemResponse {
 
 export interface GetLessonItemDataResponse {
   id: string
-  lesson_id: string
   content: string
   media: string
   thumbnail: string
   order: number
-  level: number
   is_done: boolean
+  isCorrect: boolean
 }

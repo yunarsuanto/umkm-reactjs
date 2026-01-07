@@ -7,10 +7,11 @@ import { GetCategoryLessonPublicDataLessonItemResponse } from "@/types/admin/cat
 import { useEffect, useState } from "react";
 import ShowInfo from "./Info";
 import { Player } from "@lottiefiles/react-lottie-player";
+import { GetLessonItemDataResponse } from "@/types/admin/lesson_item/GetLessonItemTypes";
 
 interface IdentificationSlideThemeProps {
-  single: GetCategoryLessonPublicDataLessonItemResponse;
-  array: GetCategoryLessonPublicDataLessonItemResponse[];
+  single: GetCategoryLessonPublicDataLessonItemResponse | GetLessonItemDataResponse;
+  array: GetCategoryLessonPublicDataLessonItemResponse[] | GetLessonItemDataResponse[];
   description: string;
   onCorrectAnswer: () => void;
   onWrongAnswer: () => void;
@@ -32,7 +33,7 @@ const IdentificationSlideTheme = ({ single, array, description, onCorrectAnswer,
   useEffect(() => {
     if (single) {
       setOptions(
-        getRandomOptions(array, single, 4) as GetCategoryLessonPublicDataLessonItemResponse[]
+        getRandomOptions(array, single, 4)
       )
     }
   }, [single, array])
@@ -57,7 +58,7 @@ const IdentificationSlideTheme = ({ single, array, description, onCorrectAnswer,
       {single && (
         <ShowInfo description={description.replaceAll('{content}', single.content)} />
       )}
-      <div className="grid grid-cols-2 gap-4 h-[72dvh]">
+      <div className="grid grid-cols-2 gap-4 h-[72dvh] justify-center items-center relative z-1">
         {options && options.map((item, index) => {
           return (
             <div
@@ -89,41 +90,6 @@ const IdentificationSlideTheme = ({ single, array, description, onCorrectAnswer,
         })}
       </div>
     </div>
-    // <Carousel.Slide style={{ display:"flex", justifyContent: 'space-around' }}>
-    //   <Grid justify={'center'} align={'center'} style={{textAlign: 'center'}}>
-    //     {options.map((opt, idx) => (
-    //       <Grid.Col span={orientation === 'portrait' ? 6 : 4} key={idx} style={{display: 'flex', justifyContent: 'center'}}>
-    //         <div
-    //           style={{
-    //             maxHeight: headerStyle.height + 60,
-    //             maxWidth: "100%",
-    //           }}
-    //         >  
-    //           <video
-    //             src={`${import.meta.env.VITE_API_IMAGE_URL}${opt.media}`}
-    //             autoPlay
-    //             muted
-    //             loop
-    //             playsInline
-    //             style={{ maxHeight: headerStyle.height }}
-    //             onClick={() => {
-    //               CheckItem(r.content, opt.content)
-    //             }}
-    //           />
-    //           <Text
-    //             style={{
-    //               fontSize: headerStyle.font,
-    //               color: theme.colors.blue[9],
-    //               textShadow: '1px 1px 0px white, -1px 1px 0px white, 1px -1px 0px white, -1px -1px 0px white'
-    //             }}
-    //           >
-    //             {opt.content}
-    //           </Text>
-    //         </div>
-    //       </Grid.Col>
-    //     ))}
-    //   </Grid>
-    // </Carousel.Slide>
   )
 };
 

@@ -48,19 +48,25 @@ const generalSlice = createSlice({
         setLoadedImages: (state, action: PayloadAction<boolean[]>) => {
             state.loadedImages = action.payload
         },
+        setLoadedImagesByIndex: (state, action: PayloadAction<number>) => {
+            if (state.loadedImages[action.payload] !== undefined) {
+                state.loadedImages[action.payload] = true
+            }
+        },
     },
 })
 
-export const { 
-        setMode,
-        setLoading,
-        setOpen,
-        changeSwitchToAddDetail,
-        setSearch,
-        setProgressBar,
-        setErrorFileNull,
-        setPlayVideoKamuHebat,
-        setPlayVideoUhSalah,
-        setLoadedImages,
-    } = generalSlice.actions;
+export const {
+    setMode,
+    setLoading,
+    setOpen,
+    changeSwitchToAddDetail,
+    setSearch,
+    setProgressBar,
+    setErrorFileNull,
+    setPlayVideoKamuHebat,
+    setPlayVideoUhSalah,
+    setLoadedImages,
+    setLoadedImagesByIndex,
+} = generalSlice.actions;
 export default generalSlice.reducer;

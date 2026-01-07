@@ -11,13 +11,13 @@ export default function YokilaJagonyaKamuHebat({ play }: any) {
   const dispatch = useAppDispatch();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { unlocked, unlock } = UseAudioUnlock();
-
+  const isiOS = isIOS()
   useEffect(() => {
     if (!play) return;
-    if (isIOS && !unlocked) return;
+    if (isiOS && !unlocked) return;
 
     async function run() {
-      const url = isIOS
+      const url = isiOS
         ? "/jagonya-kamu-hebat-audio-fixed.mp3"
         : await getCachedMediaUrl("/jagonya-kamu-hebat-audio-fixed.mp3");
 
@@ -32,7 +32,11 @@ export default function YokilaJagonyaKamuHebat({ play }: any) {
       audio.onended = () => dispatch(setPlayVideoKamuHebat(false));
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 200));
+        if(isiOS){
+          await new Promise((resolve) => setTimeout(resolve, 800));
+        }else{
+          await new Promise((resolve) => setTimeout(resolve, 300));
+        }
         await audio.play();
       } catch (e) {
         console.warn("play blocked", e);
@@ -42,14 +46,15 @@ export default function YokilaJagonyaKamuHebat({ play }: any) {
     run();
   }, [play, unlocked]);
 
-  if (isIOS && !unlocked)
+  if (isiOS && !unlocked)
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
         <button
           className="bg-white px-6 py-3 rounded shadow text-lg font-bold"
           onClick={() => unlock(() => dispatch(setPlayVideoKamuHebat(true)))}
         >
-          Aktifkan Suara 🔊
+          <p className="text-sky-600">Kamu Hebat</p>
+          <p className="text-pink-600">Ayo Kita Lanjut ....</p>
         </button>
       </div>
     );
@@ -57,7 +62,7 @@ export default function YokilaJagonyaKamuHebat({ play }: any) {
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
       {play && (
-        <Player src="/jagonya-kamu-hebat.json" autoplay loop={false} style={{ width: "100%", height: 300 }} onEvent={(e) => {
+        <Player src="/jagonya-kamu-hebat.json" autoplay loop={false} style={{ height: '250px' }} onEvent={(e) => {
           if(e === 'complete'){
             dispatch(setPlayVideoKamuHebat(false))
           }

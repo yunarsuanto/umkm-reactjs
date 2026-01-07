@@ -94,6 +94,9 @@ const authSlice = createSlice({
     },
     setGooglePayload: (state, action: PayloadAction<any>) => {
       state.googlePayload = action.payload;
+    },
+    setToken: (state, action: PayloadAction<string>) => {
+      state.token = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -128,5 +131,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearToken } = authSlice.actions;
+export const { setRole, clearToken, setToken } = authSlice.actions;
 export default authSlice.reducer;

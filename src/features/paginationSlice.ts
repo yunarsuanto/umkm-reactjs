@@ -15,13 +15,11 @@ const paginationSlice = createSlice({
     name: "pagination",
     initialState,
     reducers: {
-        setDataPagination: (state, action: PayloadAction<Pagination>) => {
-            state.page = action.payload.page;
-            state.limit = action.payload.limit;
-            state.prev = action.payload.prev;
-            state.next = action.payload.next;
-            state.totalPages = action.payload.totalPages;
-            state.totalRecords = action.payload.totalRecords;
+        setDataPagination: (state, action: PayloadAction<Partial<Pagination>>) => {
+            return {
+                ...state,
+                ...action.payload,
+            };
         },
         setPaginationSearch: (state, action: PayloadAction<string>) => {
             state.search = action.payload

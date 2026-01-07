@@ -1,7 +1,7 @@
 // constants/get_cache_media.ts
 const getCachedMediaUrl = async function (url: string) {
   if (typeof window === "undefined" || !("caches" in window)) {
-    return url; // cache tidak tersedia → fallback ke URL asli
+    return url;
   }
 
   try {
@@ -9,7 +9,6 @@ const getCachedMediaUrl = async function (url: string) {
     const cached = await cache.match(url);
 
     if (!cached) {
-      // fetch dan simpan ke cache
       const response = await fetch(url, { mode: "cors" });
       if (response.ok) {
         cache.put(url, response.clone());
@@ -21,7 +20,7 @@ const getCachedMediaUrl = async function (url: string) {
     return URL.createObjectURL(blob);
   } catch (err) {
     console.warn("Cache API error:", err);
-    return url; // fallback
+    return url;
   }
 };
 

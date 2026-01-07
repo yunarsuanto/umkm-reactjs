@@ -1,5 +1,4 @@
 import { useAppDispatch, useAppSelector } from "@/app/hooks";
-import { setLoadedImages, setLoading } from "@/features/generalSlice";
 import {
   DndContext,
   useDraggable,
@@ -17,10 +16,14 @@ import getRandomOptions from "@/constants/random_option";
 import ShowInfo from "./Info";
 import speak from "@/constants/speak";
 import "@lottiefiles/lottie-player";
+import { setLoadedImages, setLoading } from "@/features/generalSlice";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { GetLessonItemDataResponse } from "@/types/admin/lesson_item/GetLessonItemTypes";
+
 
 interface MatchingSlideThemeProps {
-  single: GetCategoryLessonPublicDataLessonItemResponse;
-  array: GetCategoryLessonPublicDataLessonItemResponse[];
+  single: GetCategoryLessonPublicDataLessonItemResponse | GetLessonItemDataResponse;
+  array: GetCategoryLessonPublicDataLessonItemResponse[] | GetLessonItemDataResponse[];
   description: string;
   onCorrectAnswer: () => void;
   onWrongAnswer: () => void;
@@ -33,6 +36,7 @@ const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWro
   const [options, setOptions] = useState<GetCategoryLessonPublicDataLessonItemResponse[]>()
   const playerRef = useRef<(HTMLElement | null)[]>([]);
   const [activeItem, setActiveItem] = useState<GetCategoryLessonPublicDataLessonItemResponse>()
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (single) {
@@ -41,14 +45,6 @@ const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWro
       )
     }
   }, [single, array])
-
-
-  useEffect(() => {
-    if (options && options.length > 0) {
-      dispatch(setLoading(true));
-      dispatch(setLoadedImages(new Array(options.length + 1).fill(false)));
-    }
-  }, [])
 
   useEffect(() => {
     if (!options) return;
@@ -78,31 +74,20 @@ const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWro
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 15,
+        distance: 3,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 150,
-        tolerance: 5,
+        distance: 3,
+        // delay: 150,
+        // tolerance: 5,
       },
     })
   );
 
   const DragOverlayItem = ({ media }: { media: string }) => {
-    return (
-      <lottie-player
-        autoplay
-        loop
-        mode="normal"
-        src={`${import.meta.env.VITE_API_IMAGE_URL}${media}`}
-        style={{
-          width: '100%',
-          pointerEvents: 'none',
-          touchAction: 'none'
-        }}
-      />
-    );
+    return (<></>);
   };
 
   const DraggableItem = ({ id, children, isDragging }: any) => {
@@ -163,14 +148,14 @@ const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWro
       onDragEnd={handleDragEnd}
       sensors={sensors}
       collisionDetection={pointerWithin}
-      modifiers={[]}
+      modifiers={[restrictToWindowEdges]}
     >
-      <div>
+      <div className="relative z-1">
         {single && (
           <ShowInfo description={description.replaceAll('{content}', single.content)} />
         )}
-        <div className="h-[72dvh] w-full flex flex-col">
-          <div className="h-[27dvh]">
+        <div ref={containerRef} className="h-[72dvh] w-full flex flex-col">
+          <div className="h-[25dvh]">
             {single && (
               <DroppableItem id={single.id}>
                 <lottie-player
@@ -179,20 +164,15 @@ const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWro
                   loop
                   mode="normal"
                   src={`${import.meta.env.VITE_API_IMAGE_URL}${single.media}`}
-                  onLoad={() => {
-                    const newLoaded = [...loadedImages];
-                    newLoaded[0] = true;
-                    dispatch(setLoadedImages(newLoaded));
-                  }}
                   style={{
                     filter: isCorrect ? 'brightness(1)' : 'brightness(0)',
-                    height: '27dvh',
+                    height: '22dvh',
                   }}
                 />
               </DroppableItem>
             )}
           </div>
-          <div className="h-[45dvh] grid grid-cols-2 gap-0">
+          <div className="h-[45dvh] grid grid-cols-2 gap-0 mt-4">
             {options && options.map((item, index) => {
               return (
                 <DraggableItem
@@ -206,14 +186,10 @@ const MatchingSlideTheme = ({ single, array, description, onCorrectAnswer, onWro
                     loop
                     mode="normal"
                     src={`${import.meta.env.VITE_API_IMAGE_URL}${item.media}`}
-                    onLoad={() => {
-                      const newLoaded = [...loadedImages];
-                      newLoaded[index + 1] = true;
-                      dispatch(setLoadedImages(newLoaded));
-                    }}
                     style={{
                       pointerEvents: 'none',
-                      touchAction: 'none'
+                      touchAction: 'none',
+                      height: '18dvh'
                     }}
                   />
                 </DraggableItem>

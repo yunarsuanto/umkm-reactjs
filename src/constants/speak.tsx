@@ -52,7 +52,8 @@ const speak = async (text: string) => {
     // Add error handlers
     utterance.onerror = (event) => {
       // Ignore "canceled" error - it's expected when we call speechSynthesis.cancel()
-      if (event.error === 'canceled') {
+      if (event.error === 'canceled' || event.error === 'interrupted') {
+        // abaikan
         return;
       }
 

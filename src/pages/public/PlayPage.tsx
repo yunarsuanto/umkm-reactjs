@@ -82,7 +82,7 @@ const PlayPage = ({ setMode }: PlayPageProps) => {
 
   return (
     <PublicLayout setMode={setMode}>
-      <div className='flex flex-col p-2 gap-2 mt-[60px] pb-[60px]'>
+      <div className='flex flex-col p-2 gap-2 mt-[60px] pb-[60px] overflow-y-auto'>
         {dataShow && dataShow.length > 0 && dataShow.map((item, index) => {
           return (
             <a onClick={() => navigate(`/play/${item.id}`, { state: item })}

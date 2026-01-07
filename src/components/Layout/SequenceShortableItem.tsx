@@ -1,8 +1,9 @@
 import { GetCategoryLessonPublicDataLessonItemResponse } from "@/types/admin/category_lesson/GetCategoryLessonPublicTypes";
+import { GetLessonItemDataResponse } from "@/types/admin/lesson_item/GetLessonItemTypes";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-const SequenceSortableItem = ({ item, children }: {item: GetCategoryLessonPublicDataLessonItemResponse, children: any}) => {
+const SequenceSortableItem = ({ item, children }: {item: GetCategoryLessonPublicDataLessonItemResponse | GetLessonItemDataResponse, children: any}) => {
   const {
     setNodeRef,
     attributes,

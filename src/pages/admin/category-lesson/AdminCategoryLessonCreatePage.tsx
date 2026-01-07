@@ -136,8 +136,7 @@ const AdminCategoryLessonCreatePage = () => {
                   required: "isian ini harus diisi"
                 }}
                 render={({ field }) => (
-                  <select
-                    {...field}
+                  <select {...field}
                     className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
                       errors.category_lesson_type ? 'border-red-500' : 'border-gray-300'
                     }`}

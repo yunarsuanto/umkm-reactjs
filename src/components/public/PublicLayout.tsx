@@ -18,8 +18,11 @@ const PublicLayout = ({ children, setMode }: PublicLayoutProps) => {
     setTimeout(() => setReady(true), 50);
   }, []);
   return (
-    <div className="bg-gray-100">
-      <Header setModeHeader={setMode} />
+    <div className="bg-gray-100" style={{
+      touchAction: "none",
+      overscrollBehavior: "none"
+    }}>
+      <Header />
       {loading && ready && (
         <div style={{ height: '100dvh' }} className="fixed inset-0 flex justify-center items-center z-50 bg-black/50">
           <Player src="/loading.json" autoplay loop style={{ width: 100, height: 100 }} />
